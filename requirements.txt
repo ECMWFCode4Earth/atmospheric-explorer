@@ -1,4 +1,4 @@
-setuptools=66.0.0
+setuptools==66.0.0
 wheel==0.38.4
 cdsapi==0.6.1
 click==8.1.3

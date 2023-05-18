@@ -4,6 +4,7 @@ __pycache___
 files
 ../.pytest_cache
 .coverage
+.ruff_cache
 
 bin
 obj
@@ -33,6 +34,8 @@ dist
 
 # Local python packages
 .python_packages/
+build
+*.egg-info
 
 # Python Environments
 .venv
