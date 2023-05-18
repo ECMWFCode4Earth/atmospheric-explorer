@@ -1,6 +1,5 @@
 [project]
 name = "atmospheric-explorer"
-version = "0.1.0.dev0"
 authors = [
     {name="Elisa Aliverti", email="e.alivertipiuri@gmail.com"},
     {name="Luigi Brancati", email="luigi.brancati93@gmail.com"},
@@ -25,7 +24,7 @@ classifiers = [
 dynamic = ["dependencies", "optional-dependencies", "version"]
 
 [tool.setuptools.dynamic]
-version = {attr = "package.__version__"}
+version = {attr = "atmospheric-explorer.__version__"}
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies.dev = {file = ["dev-requirements.txt"]}
 
