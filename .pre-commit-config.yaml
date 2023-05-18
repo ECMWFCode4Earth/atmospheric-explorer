@@ -1,0 +1,45 @@
+minimum_pre_commit_version: 2.15.0
+exclude: ^LICENSES/|\.(html|csv|svg)$
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+-   repo: local
+    hooks:
+    -   id: black
+        name: black
+        description: "Black: The uncompromising Python code formatter"
+        entry: black
+        language: python
+        require_serial: true
+        types_or: [python, pyi]
+        additional_dependencies: [black==23.3.0]
+    -   id: mypy
+        # note: assumes python env is setup and activated
+        name: mypy
+        entry: mypy
+        language: system
+        pass_filenames: false
+        types: [python]
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.264
+    hooks:
+    -   id: ruff
+        args: [--exit-non-zero-on-fix]
+-   repo: https://github.com/pycqa/pylint
+    rev: v2.16.2
+    hooks:
+    -   id: pylint
+        args: [--load-plugins=pylint.extensions.redefined_loop_name]
+    -   id: pylint
+        alias: unspecified-encoding
+        name: Using open without explicitly specifying an encoding
+        args: [--disable=all, --enable=unspecified-encoding]
