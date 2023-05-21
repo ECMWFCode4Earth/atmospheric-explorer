@@ -5,6 +5,7 @@ files
 ../.pytest_cache
 .coverage
 .ruff_cache
+.vscode
 
 bin
 obj
@@ -49,3 +50,6 @@ venv.bak/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# DATA
+.data
