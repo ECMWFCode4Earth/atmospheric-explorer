@@ -1,0 +1,39 @@
+[project]
+name = "atmospheric-explorer"
+authors = [
+    {name="Elisa Aliverti", email="e.alivertipiuri@gmail.com"},
+    {name="Luigi Brancati", email="luigi.brancati93@gmail.com"},
+    {name="Giulia Fiantanese", email="giuliacrispy22@gmail.com"},
+]
+description = "APIs and interactive GUI to explore CAMS ADS"
+readme = "README.md"
+requires-python = ">=3.8,<3.12"
+classifiers = [
+    "Programming Language :: Python",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Software Distribution",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dynamic = ["dependencies", "optional-dependencies", "version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "atmospheric-explorer.__version__"}
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies.dev = {file = ["dev-requirements.txt"]}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["atmospheric-explorer*"]
+exclude = ["tests*"]
+namespaces = false
+
+[build-system]
+requires = ["setuptools>=64.0", "setuptools-scm", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,42 @@
+minimum_pre_commit_version: 2.15.0
+exclude: ^LICENSES/|\.(html|csv|svg)$
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+-   repo: local
+    hooks:
+    -   id: black
+        # note: assumes python env is setup and activated
+        name: black
+        entry: black
+        language: system
+        require_serial: true
+        types_or: [python, pyi]
+        verbose: true
+    -   id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types_or: [python, pyi]
+        args: [--load-plugins=pylint.extensions.redefined_loop_name]
+    -   id: pylint
+        entry: pylint
+        name: Using open without explicitly specifying an encoding
+        alias: unspecified-encoding
+        language: system
+        types_or: [python, pyi]
+        args: [--disable=all, --enable=unspecified-encoding]
+-   repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.264
+    hooks:
+    -   id: ruff
+        args: [--exit-non-zero-on-fix]
