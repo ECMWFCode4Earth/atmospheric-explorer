@@ -1,94 +1,91 @@
 import streamlit as st
-import cdsapi
 import os
 import sys
 import requests
-import zipfile
-import glob
+import requests.utils
 from streamlit_folium import st_folium
 import geopandas as gpd
 import folium
-from io import BytesIO
+import folium.features
+import time
+
+PROGRESS_BAR = st.progress(0)
+
+def download_shapefile(data_dir):
+    SHAPEFILE_URL = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip"
+    if not os.path.exists(f"{data_dir}/world_shapefile.zip"):
+        headers = requests.utils.default_headers()
+        headers.update({
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
+        })
+        r = requests.get(SHAPEFILE_URL, headers=headers)
+        # Save downloaded data to zip file
+        with open(f"{data_dir}/world_shapefile.zip", "wb") as f:
+            f.write(r.content)
+
+@st.cache_data
+def load_shapefile(data_dir):
+    shapefile = gpd.read_file(f"{data_dir}/world_shapefile.zip")
+    shapefile.index = shapefile.GEOUNIT
+    shapefile['name'] = shapefile.GEOUNIT
+    return shapefile
+
+def get_country_polygon(shapefile:gpd.GeoDataFrame, country:str):
+    return shapefile[shapefile['ADMIN'] == country]['geometry']
 
 st.title("Atmospheric Explorer POC")
 with st.sidebar:
     st.title("Atmospheric Explorer POC")
-progress = st.text("Create data folder")
+
+PROGRESS_BAR.progress(0.2, "Create data folder and download shapefile")
 data_dir = os.path.dirname(sys.argv[0]) + '/.data'
 if not os.path.exists(data_dir):
     os.makedirs(data_dir)
+PROGRESS_BAR.progress(0.4, "Download world shapefile")
+download_shapefile(data_dir)
+PROGRESS_BAR.progress(0.6, "Reading world shapefile")
+shapefile = load_shapefile(data_dir)
 
-# Download earth shapefile zip from naturalearthdata
-if not os.path.exists(f"{data_dir}/world_shapefile.zip"):
-    progress.text("Download world shapefile")
-    shapefile_url = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_countries.zip"
-    headers = requests.utils.default_headers()
-    headers.update({
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-    })
-    r = requests.get(shapefile_url, headers=headers)
-    # Save downloaded data to zip file
-    with open(f"{data_dir}/world_shapefile.zip", "wb") as f:
-        f.write(r.content)
-# # Unzip file to directory
-# with zipfile.ZipFile(f"{data_dir}/world_shapefile.zip", 'r') as zip_ref:
-#     zip_ref.extractall(f"{data_dir}/world_shapefile")
-# # Remove zip file
-# os.remove(f"{data_dir}/world_shapefile.zip")
-# # Rename all files inside zip
-# for file in glob.glob(f"{data_dir}/world_shapefile/*"):
-#     ext = file.split('.')[-1]
-#     os.rename(file, f'{data_dir}/world_shapefile/world_shapefile.{ext}')
+if "last_object_clicked" not in st.session_state:
+    st.session_state["last_object_clicked"] = [42, 13]
+if "selected_state" not in st.session_state:
+    st.session_state["selected_state"] = "Italy"
 
-# # Download CAMS data
-# st.write("Download CAMS data")
-# c = cdsapi.Client()
-# c.retrieve(
-#     'cams-global-reanalysis-eac4',
-#     {
-#         'format': 'netcdf',
-#         'variable': [
-#             'total_aerosol_optical_depth_1240nm', 'total_aerosol_optical_depth_469nm', 'total_aerosol_optical_depth_550nm',
-#             'total_aerosol_optical_depth_670nm', 'total_aerosol_optical_depth_865nm', 'total_column_carbon_monoxide',
-#             'total_column_ethane', 'total_column_formaldehyde', 'total_column_hydrogen_peroxide',
-#             'total_column_hydroxyl_radical', 'total_column_isoprene', 'total_column_methane',
-#             'total_column_nitric_acid', 'total_column_nitrogen_dioxide', 'total_column_nitrogen_monoxide',
-#             'total_column_ozone', 'total_column_peroxyacetyl_nitrate', 'total_column_propane',
-#             'total_column_sulphur_dioxide', 'total_column_water_vapour',
-#         ],
-#         'date': '2021-01-01/2021-01-31',
-#         'time': '00:00',
-#         'area': [
-#             47, 7, 36,
-#             18,
-#         ],
-#     },
-#     f'{data_dir}/italiaecmwf.nc')
+country_polygon = get_country_polygon(shapefile, st.session_state["selected_state"])
+with st.sidebar:
+    st.write(f"Selected country: {st.session_state['selected_state']}")
 
-progress.text("Reading world shapefile")
-if os.path.exists(f"{data_dir}/world_shapefile.zip"):
-    shapefile = gpd.read_file(f"{data_dir}/world_shapefile.zip")
-else:
-    shapefile = gpd.read_file("https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries_ita.zip")
-shapes = shapefile['geometry']
-countries = shapefile.copy()
-countries.index = countries.GEOUNIT
-countries['name'] = countries.GEOUNIT
+center = None
+if st.session_state["last_object_clicked"]:
+    center = st.session_state["last_object_clicked"]
 
-def folium_map():
-    m = folium.Map()
-    folium.GeoJson(shapefile.to_json(), name="geojson", tooltip='ADMIN').add_to(m)
-    # if selection:
-    #     folium.GeoJson(selection.to_json(), name="geojson_selection").add_to(m)
-    return m
+PROGRESS_BAR.progress(1.0, "Done")
+time.sleep(1)
+PROGRESS_BAR.empty()
+m = folium.Map()
+folium.GeoJson(shapefile, name="geojson").add_to(m)
+fg = folium.FeatureGroup(name="Countries")
+fg.add_child(folium.features.GeoJson(data=country_polygon, style_function=lambda x: {'fillColor': 'green', 'color': 'green'}))
+fg.add_to(m)
 
-progress.text("Done")
-try:
-    m = folium_map()
-    st.session_state['country_selection'] = st_folium(m, key='folium_map', returned_objects=["last_active_drawing"])
-    with st.sidebar:
-        st.write(f"Selected country: {st.session_state['country_selection']['last_active_drawing']['properties']['ADMIN']}")
-except:
-    pass
+col1, col2 = st.columns(2)
+with col1:
+    out = st_folium(
+        m,
+        feature_group_to_add=fg,
+        key='folium_map',
+        center=center,
+        returned_objects=['last_active_drawing', 'last_object_clicked']
+    )
+with col2:
+    st.write(out)
 
-st.write("Plots")
+if out['last_active_drawing'] is not None and out["last_active_drawing"]['id'] != st.session_state["selected_state"]:
+    try:
+        st.session_state["selected_state"] = out['last_active_drawing']['properties']['ADMIN']
+    except KeyError:
+        st.session_state["selected_state"] = out['last_active_drawing']['id']
+
+if (out["last_object_clicked"] and out["last_object_clicked"] != st.session_state["last_object_clicked"]):
+    st.session_state["last_object_clicked"] = out["last_object_clicked"]
+    st.experimental_rerun()
