@@ -24,13 +24,13 @@ classifiers = [
 dynamic = ["dependencies", "optional-dependencies", "version"]
 
 [tool.setuptools.dynamic]
-version = {attr = "atmospheric-explorer.__version__"}
+version = {attr = "atmospheric_explorer.__version__"}
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies.dev = {file = ["dev-requirements.txt"]}
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["atmospheric-explorer*"]
+include = ["atmospheric_explorer*"]
 exclude = ["tests*"]
 namespaces = false
 
