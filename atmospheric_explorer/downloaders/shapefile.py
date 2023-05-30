@@ -5,11 +5,11 @@ import os.path
 import zipfile
 import glob
 import logging
+import logging.config
+from .. import LOGGING
 
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(filename='example.log', encoding='utf-8', level=logging.DEBUG)
-
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger('mainlogger')
 
 class ShapefileDownloader:
     _BASE_URL = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
@@ -61,7 +61,7 @@ class ShapefileDownloader:
         for file in glob.glob(f"{self.shapefile_dir}/*"):
             ext = file.split('.')[-1]
             os.rename(file, f'{self.shapefile_dir}/{self.instance}_shapefile.{ext}')
-            logger.info("Renamed all shapefiles")
+            logger.debug(f"Renamed {file} to {self.shapefile_dir}/{self.instance}_shapefile.{ext}")
     
     def _clear_shapefile_content(self:ShapefileDownloader) -> None:
         self.shapefile_content = None
