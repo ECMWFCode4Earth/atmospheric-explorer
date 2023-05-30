@@ -1,25 +1,24 @@
-import geopandas as gpd
-import pandas as pd
 from io import BytesIO
-import requests
-import pydeck as pdk
-from pydeck.types import String
-import streamlit as st
-import streamlit.components.v1 as components
+
 import folium
+import geopandas as gpd
+import requests
+import streamlit as st
 from streamlit_folium import st_folium
 
-url_to_download    = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_map_units.zip"
+url_to_download = "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/110m/cultural/ne_110m_admin_0_map_units.zip"
 headers = requests.utils.default_headers()
-headers.update({
-    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
-})
+headers.update(
+    {
+        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0",
+    }
+)
 r = requests.get(url_to_download, headers=headers)
 shapefile = gpd.read_file(BytesIO(r.content))
-shapes = shapefile['geometry']
+shapes = shapefile["geometry"]
 countries = shapefile.copy()
 countries.index = countries.GEOUNIT
-countries['name'] = countries.GEOUNIT
+countries["name"] = countries.GEOUNIT
 
 # PYDECK
 # geo_layer = pdk.Layer(
@@ -62,14 +61,16 @@ countries['name'] = countries.GEOUNIT
 # r.deck_widget.on_click(test_click)
 # st.pydeck_chart(r)
 
+
 def folium_map():
     m = folium.Map(location=[45.5236, -122.6750], min_zoom=1)
-    folium.GeoJson(shapefile.to_json(), name="geojson", tooltip='ADMIN').add_to(m)
+    folium.GeoJson(shapefile.to_json(), name="geojson", tooltip="ADMIN").add_to(m)
     return m
+
 
 try:
     m = folium_map()
-    data = st_folium(m, key='folium_map', returned_objects=["last_active_drawing"])
-    st.write(data['last_active_drawing']['properties']['ADMIN'])
+    data = st_folium(m, key="folium_map", returned_objects=["last_active_drawing"])
+    st.write(data["last_active_drawing"]["properties"]["ADMIN"])
 except:
     pass
