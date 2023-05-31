@@ -1,4 +1,7 @@
-"""Module to manage shapefiles"""
+"""\
+Module to manage shapefiles.
+This module defines a class that donwloads, extracts and saves one or more shapefiles.
+"""
 
 from __future__ import annotations
 

@@ -53,3 +53,4 @@ __pycache__/
 
 # DATA
 .data
+*.xml

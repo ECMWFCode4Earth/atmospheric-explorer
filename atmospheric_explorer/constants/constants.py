@@ -1,4 +1,7 @@
-"""Module to manage constants"""
+"""\
+Module to manage constants.
+This module defines a Singleton, in this way the file constants.cfg is loaded only once.
+"""
 
 import configparser
 
@@ -37,5 +40,5 @@ class Constants(metaclass=ConstantsMeta):
 
 
 def get_constants():
-    """Function to get the actual constants object."""
+    """Function to get the actual constants object from the singleton class."""
     return Constants.get_constants()
