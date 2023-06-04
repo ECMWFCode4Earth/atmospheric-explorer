@@ -74,19 +74,22 @@ class ShapefileDownloader:
         os.remove(filepath)
         logger.info("Removed file %s", filepath)
 
+    def _rename_file(self, filename: str):
+        ext = filename.split(".")[-1]
+        os.rename(filename, f"{self.shapefile_dir}/{self.instance}_shapefile.{ext}")
+        logger.debug(
+            "Renamed %s to %s/%s_shapefile.%s",
+            filename,
+            self.shapefile_dir,
+            self.instance,
+            ext,
+        )
+
     def _rename_all_shapefiles(self: ShapefileDownloader):
         """Rename all files"""
         # Rename all files inside zip
         for file in glob.glob(f"{self.shapefile_dir}/*"):
-            ext = file.split(".")[-1]
-            os.rename(file, f"{self.shapefile_dir}/{self.instance}_shapefile.{ext}")
-            logger.debug(
-                "Renamed %s to %s/%s_shapefile.%s",
-                file,
-                self.shapefile_dir,
-                self.instance,
-                ext,
-            )
+            self._rename_file(file)
 
     def _clear_shapefile_content(self: ShapefileDownloader) -> None:
         """Clear content"""
