@@ -1,6 +1,8 @@
 """\
 Module to manage constants.
 This module defines a Singleton, in this way the file constants.cfg is loaded only once.
+The singleton pattern was taken from here
+https://refactoring.guru/design-patterns/singleton/python/example#example-0
 """
 
 import configparser

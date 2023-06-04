@@ -12,3 +12,11 @@ This repo uses `pre-commit` to run a number of checks before committing (formatt
 - To see the output of all checks before committing, you can run `pre-commit` in a terminal
 
 Once pre-commit is enabled, it will run a number of check on **staged files**. All checks should pass before the changes can be commited.
+
+# How to use the logger
+The logger configuration is defined in `logging.ini` and is loaded in `logger.py`.
+
+At the moment we only have one logger called `main`, if you want to use it just import it as show below
+```
+from .loggers import _main_logger as logger
+```
