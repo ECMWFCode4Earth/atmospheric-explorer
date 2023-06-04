@@ -12,6 +12,7 @@ repos:
     rev: 5.12.0
     hooks:
     -   id: isort
+        args: ["--profile", "black"]
 -   repo: local
     # note: assumes python env is setup and activated
     hooks:
