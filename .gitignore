@@ -52,5 +52,11 @@ __pycache__/
 *$py.class
 
 # DATA
+data/
 .data
 *.xml
+
+# LOGGING
+*.log
+logs/
+.logs

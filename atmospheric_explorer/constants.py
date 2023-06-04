@@ -4,14 +4,9 @@ This module defines a Singleton, in this way the file constants.cfg is loaded on
 """
 
 import configparser
-import logging
-import logging.config
 import os
 
-from ..config import LOGGING
-
-logging.config.dictConfig(LOGGING)
-logger = logging.getLogger("mainlogger")
+from .loggers import _main_logger as logger
 
 
 class ConstantsMeta(type):

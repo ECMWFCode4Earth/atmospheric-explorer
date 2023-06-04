@@ -6,18 +6,12 @@ This module defines a class that donwloads, extracts and saves one or more shape
 from __future__ import annotations
 
 import glob
-import logging
-import logging.config
 import os.path
-import sys
 import zipfile
 
 import requests
 
-from ..config import LOGGING
-
-logging.config.dictConfig(LOGGING)
-logger = logging.getLogger("mainlogger")
+from .loggers import _main_logger as logger
 
 
 class ShapefileDownloader:
@@ -40,7 +34,7 @@ class ShapefileDownloader:
         self.info_type = None
         self.depth = None
         self.instance = None
-        self.data_dir = os.path.dirname(sys.argv[0])
+        self.data_dir = os.path.dirname(os.path.abspath(__file__))
 
     @property
     def shapefile_dir(self: ShapefileDownloader) -> str:
