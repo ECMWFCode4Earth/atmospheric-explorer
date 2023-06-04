@@ -39,7 +39,7 @@ repos:
         exclude: docs/
     -   id: pytest
         name: pytest
-        entry: pytest
+        entry: pytest tests/
         language: system
         always_run: true
         types_or: [python, pyi]
