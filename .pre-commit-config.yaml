@@ -13,9 +13,9 @@ repos:
     hooks:
     -   id: isort
 -   repo: local
+    # note: assumes python env is setup and activated
     hooks:
     -   id: black
-        # note: assumes python env is setup and activated
         name: black
         entry: black
         language: system
@@ -29,7 +29,7 @@ repos:
         types_or: [python, pyi]
         args: [--load-plugins=pylint.extensions.redefined_loop_name]
         exclude: docs/
-    -   id: pylint
+    -   id: pylint-unspecified-encoding
         entry: pylint
         name: Using open without explicitly specifying an encoding
         alias: unspecified-encoding
@@ -37,6 +37,13 @@ repos:
         types_or: [python, pyi]
         args: [--disable=all, --enable=unspecified-encoding]
         exclude: docs/
+    -   id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        always_run: true
+        types_or: [python, pyi]
+        verbose: true
 -   repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.0.264
     hooks:
