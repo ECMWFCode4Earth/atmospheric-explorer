@@ -14,7 +14,7 @@ import zipfile
 
 import requests
 
-from .. import LOGGING
+from ..config import LOGGING
 
 logging.config.dictConfig(LOGGING)
 logger = logging.getLogger("mainlogger")

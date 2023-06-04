@@ -4,6 +4,14 @@ This module defines a Singleton, in this way the file constants.cfg is loaded on
 """
 
 import configparser
+import logging
+import logging.config
+import os
+
+from ..config import LOGGING
+
+logging.config.dictConfig(LOGGING)
+logger = logging.getLogger("mainlogger")
 
 
 class ConstantsMeta(type):
@@ -15,8 +23,12 @@ class ConstantsMeta(type):
     _instances = {}
 
     def __init__(cls, *args, **kwargs):
+        filepath = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "constants.cfg"
+        )
         cls.constants = configparser.ConfigParser()
-        cls.constants.read("./constants.cfg")
+        cls.constants.read(filepath)
+        logger.info("Loaded constants from file constants.cfg")
         super().__init__(*args, **kwargs)
 
     def __call__(cls, *args, **kwargs):
