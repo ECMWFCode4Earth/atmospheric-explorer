@@ -12,7 +12,7 @@ from atmospheric_explorer.units_conversion import (
 )
 
 
-def test_aithmetic_parser():
+def test_arithmetic_eval():
     parser = OperationParser()
     assert parser.arithmetic_eval("1+1") == 2
     assert parser.arithmetic_eval("1-1") == 0
@@ -21,7 +21,7 @@ def test_aithmetic_parser():
     assert parser.arithmetic_eval("15%11") == 4
 
 
-def test_unsupported_op():
+def test_arithmetic_unsupported():
     with pytest.raises(OperationNotAllowed):
         parser = OperationParser()
         parser.arithmetic_eval("2**2")
