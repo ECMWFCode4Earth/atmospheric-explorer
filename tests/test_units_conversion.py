@@ -35,7 +35,7 @@ def test_singleton():
 
 def test_get_constants():
     constants = get_constants()
-    assert len(constants.sections()) == 14
+    assert len(constants.sections()) == 155
     assert constants["total_column_ozone"]["factor"] == "46698"
     assert constants["total_column_ozone"]["unit"] == "DU"
 
