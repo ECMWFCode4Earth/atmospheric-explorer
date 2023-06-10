@@ -10,6 +10,16 @@ import pytest
 from atmospheric_explorer.shapefile import ShapefileDownloader
 
 
+def test__init():
+    sh_down = ShapefileDownloader()
+    assert sh_down.shapefile_content is None
+    assert sh_down.dst_dir == "./.data/shapefiles"
+    assert sh_down.resolution == "50m"
+    assert sh_down.info_type == "admin"
+    assert sh_down.depth == 0
+    assert sh_down.instance == "countries"
+
+
 def test__save_shapefile_to_zip():
     sh_down = ShapefileDownloader()
     with pytest.raises(ValueError):
@@ -28,7 +38,7 @@ def test__rename_file():
             pass
         sh_down = ShapefileDownloader()
         sh_down.instance = "test"
-        sh_down.data_dir = tmpdir
+        sh_down.dst_dir = tmpdir
         sh_down._rename_file(filename)
         files = glob.glob(os.path.join(shp_dir, "*"))
         filename = files[0].split(os.path.sep)[-1]

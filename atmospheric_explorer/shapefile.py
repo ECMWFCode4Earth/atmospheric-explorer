@@ -8,6 +8,7 @@ from __future__ import annotations
 import glob
 import os.path
 import zipfile
+from textwrap import dedent
 
 import requests
 
@@ -23,14 +24,14 @@ class ShapefileDownloader:
 
     Attributes:
         shapefile_content (bytes): downloaded shapefile
+        dst_dir (str): directory where the downloaded shapefile will be saved
         resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
-        info_type (str): shapefile type, e.g. admin, lakes, etc. You can check
-            possible values depending on the resolution on the webpage below
-        depth (str): different info_type shapefiles can have different values.
-            Use 0 for administrative shapefiles (countries)
-        instance (str): the specific shapefile to be downloaded. Example:
-            countries_ita
-        data_dir (str): directory where the downloaded shapefile will be saved
+        info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
+                         values depending on the resolution on the webpage below
+        depth (int): different info_type shapefiles can have different values.
+                     Use 0 for administrative shapefiles (countries)
+        instance (str): the specific shapefile to be downloaded. Example: countries_ita
+
 
     See some more details here: https://www.naturalearthdata.com/downloads/
     """
@@ -46,18 +47,45 @@ class ShapefileDownloader:
         }
     )
 
-    def __init__(self: ShapefileDownloader):
+    def __init__(
+        self: ShapefileDownloader,
+        dst_dir: str = "./.data/shapefiles",
+        resolution: str = "50m",
+        info_type: str = "admin",
+        depth: int = 0,
+        instance: str = "countries",
+    ):  # pylint: disable=too-many-arguments
         self.shapefile_content = None
-        self.resolution = None
-        self.info_type = None
-        self.depth = None
-        self.instance = None
-        self.data_dir = os.path.dirname(os.path.abspath(__file__))
+        self.dst_dir = dst_dir
+        self.resolution = resolution
+        self.info_type = info_type
+        self.depth = depth
+        self.instance = instance
+        logger.debug(
+            dedent(
+                """\
+                Created ShapefileDownloader object with attributes
+                dst_dir: %s
+                resolution: %s
+                info_type: %s
+                depth: %s
+                instance: %s
+                """
+            ),
+            self.dst_dir,
+            self.resolution,
+            self.info_type,
+            self.depth,
+            self.instance,
+        )
+        if not os.path.exists(self.dst_dir):
+            os.makedirs(self.dst_dir)
+            logger.info("Created folder %s to save shapefiles", self.dst_dir)
 
     @property
     def shapefile_dir(self: ShapefileDownloader) -> str:
         """Shapefile directory"""
-        return os.path.join(self.data_dir, f"{self.instance}_shapefile")
+        return os.path.join(self.dst_dir, f"{self.instance}_shapefile")
 
     @property
     def shapefile_url(self: ShapefileDownloader) -> str:
@@ -110,18 +138,8 @@ class ShapefileDownloader:
         """Clear content"""
         self.shapefile_content = None
 
-    def download_shapefile(
-        self: ShapefileDownloader,
-        resolution: str,
-        info_type: str,
-        depth: int,
-        instance: str,
-    ) -> None:
-        """Main function"""
-        self.resolution = resolution
-        self.info_type = info_type
-        self.depth = depth
-        self.instance = instance
+    def download_shapefile(self: ShapefileDownloader) -> None:
+        """Download, extracts and rename shapefile"""
         self._download_shapefile()
         self._save_shapefile_to_zip()
         self._extract_to_folder()
