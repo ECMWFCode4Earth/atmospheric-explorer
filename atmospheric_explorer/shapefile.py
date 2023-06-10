@@ -15,7 +15,25 @@ from .loggers import _main_logger as logger
 
 
 class ShapefileDownloader:
-    """This class manages the download, extraction and saving on disk of shapefiles."""
+    """\
+    This class manages the download, extraction and saving on disk of
+    shapefiles.
+    Shapefiles will be downloaded as zip files and then extracted via
+    different class methods.
+
+    Attributes:
+        shapefile_content (bytes): downloaded shapefile
+        resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
+        info_type (str): shapefile type, e.g. admin, lakes, etc. You can check
+            possible values depending on the resolution on the webpage below
+        depth (str): different info_type shapefiles can have different values.
+            Use 0 for administrative shapefiles (countries)
+        instance (str): the specific shapefile to be downloaded. Example:
+            countries_ita
+        data_dir (str): directory where the downloaded shapefile will be saved
+
+    See some more details here: https://www.naturalearthdata.com/downloads/
+    """
 
     # pylint: disable=line-too-long
     _BASE_URL = (
