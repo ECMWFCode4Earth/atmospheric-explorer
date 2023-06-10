@@ -52,4 +52,13 @@ __pycache__/
 *$py.class
 
 # DATA
+data/
 .data
+*.xml
+*.nc
+*.grib
+
+# LOGGING
+*.log
+logs/
+.logs
