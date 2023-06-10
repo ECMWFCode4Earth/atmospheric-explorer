@@ -39,7 +39,7 @@ class ShapefileDownloader:
     @property
     def shapefile_dir(self: ShapefileDownloader) -> str:
         """Shapefile directory"""
-        return f"{self.data_dir}/{self.instance}_shapefile"
+        return os.path.join(self.data_dir, f"{self.instance}_shapefile")
 
     @property
     def shapefile_url(self: ShapefileDownloader) -> str:
@@ -76,14 +76,11 @@ class ShapefileDownloader:
 
     def _rename_file(self, filename: str):
         ext = filename.split(".")[-1]
-        os.rename(filename, f"{self.shapefile_dir}/{self.instance}_shapefile.{ext}")
-        logger.debug(
-            "Renamed %s to %s/%s_shapefile.%s",
-            filename,
-            self.shapefile_dir,
-            self.instance,
-            ext,
+        new_filename = os.path.join(
+            self.shapefile_dir, f"{self.instance}_shapefile.{ext}"
         )
+        os.rename(filename, new_filename)
+        logger.debug("Renamed %s to %s", filename, new_filename)
 
     def _rename_all_shapefiles(self: ShapefileDownloader):
         """Rename all files"""
