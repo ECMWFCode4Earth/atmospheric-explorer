@@ -11,11 +11,11 @@
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=tests/*|docs/*
+ignore=tests_*.py
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
-ignore-patterns=test_*.py
+ignore-patterns=tests_*.py
 
 # Pickle collected data for later comparisons.
 persistent=yes
