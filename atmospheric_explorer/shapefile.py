@@ -12,8 +12,10 @@ from textwrap import dedent
 import requests
 import requests.utils
 
-from .loggers import _main_logger as logger
+from .loggers import get_logger
 from .utils import get_local_folder
+
+logger = get_logger("main")
 
 
 class ShapefilesDownloader:

@@ -16,7 +16,9 @@ import os
 import xarray as xr
 
 from .exceptions import OperationNotAllowed
-from .loggers import _main_logger as logger
+from .loggers import get_logger
+
+logger = get_logger("main")
 
 
 class OperationParser:
