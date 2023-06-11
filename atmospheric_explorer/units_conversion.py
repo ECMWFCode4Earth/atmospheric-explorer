@@ -39,7 +39,7 @@ class OperationParser:
 
     def arithmetic_eval(self: OperationParser, operation_str: str):
         """Parse an arithmetic operation."""
-        logger.info("Parsing %s", operation_str)
+        logger.debug("Parsing %s", operation_str)
         node = ast.parse(operation_str, mode="eval")
 
         def _eval(node):

@@ -38,9 +38,9 @@ class LoggersMeta(type):
             },
         },
         "formatters": {
-            "simple": {"format": "%(levelname)s %(message)s"},
+            "simple": {"format": "%(levelname)s|%(module)s: %(message)s"},
             "verbose": {
-                "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"  # noqa: E501
+                "format": "%(asctime)s|%(levelname)s|%(module)s|%(process)d|%(thread)d: %(message)s"  # noqa: E501
             },
         },
     }
