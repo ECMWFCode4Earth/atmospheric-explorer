@@ -32,8 +32,8 @@ class LoggersMeta(type):
             "rotatingfile": {
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "verbose",
-                "maxBytes": 1024,
-                "backupCount": 10,
+                "maxBytes": 51200,
+                "backupCount": 20,
                 "filename": os.path.join(_logs_root_dir, "logconfig.log"),
             },
         },
