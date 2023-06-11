@@ -5,17 +5,17 @@ This module defines a class that donwloads, extracts and saves one or more shape
 
 from __future__ import annotations
 
-import glob
 import os.path
 import zipfile
 from textwrap import dedent
 
 import requests
+import requests.utils
 
 from .loggers import _main_logger as logger
 
 
-class ShapefileDownloader:
+class ShapefilesDownloader:
     """\
     This class manages the download, extraction and saving on disk of
     shapefiles.
@@ -23,7 +23,7 @@ class ShapefileDownloader:
     different class methods.
 
     Attributes:
-        shapefile_content (bytes): downloaded shapefile
+        shapefiles_content (bytes): downloaded shapefile
         dst_dir (str): directory where the downloaded shapefile will be saved
         resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
         info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
@@ -48,14 +48,14 @@ class ShapefileDownloader:
     )
 
     def __init__(
-        self: ShapefileDownloader,
+        self: ShapefilesDownloader,
         dst_dir: str = "./.data/shapefiles",
         resolution: str = "50m",
         info_type: str = "admin",
         depth: int = 0,
         instance: str = "countries",
     ):  # pylint: disable=too-many-arguments
-        self.shapefile_content = None
+        self.shapefiles_content = None
         self.dst_dir = dst_dir
         self.resolution = resolution
         self.info_type = info_type
@@ -64,7 +64,7 @@ class ShapefileDownloader:
         logger.debug(
             dedent(
                 """\
-                Created ShapefileDownloader object with attributes
+                Created ShapefilesDownloader object with attributes
                 dst_dir: %s
                 resolution: %s
                 info_type: %s
@@ -83,65 +83,57 @@ class ShapefileDownloader:
             logger.info("Created folder %s to save shapefiles", self.dst_dir)
 
     @property
-    def shapefile_dir(self: ShapefileDownloader) -> str:
+    def shapefiles_name(self: ShapefilesDownloader) -> str:
         """Shapefile directory"""
-        return os.path.join(self.dst_dir, f"{self.instance}_shapefile")
+        return f"ne_{self.resolution}_{self.info_type}_{self.depth}_{self.instance}"
 
     @property
-    def shapefile_url(self: ShapefileDownloader) -> str:
+    def shapefiles_dir(self: ShapefilesDownloader) -> str:
+        """Shapefile directory"""
+        return os.path.join(self.dst_dir, self.shapefiles_name)
+
+    @property
+    def shapefiles_url(self: ShapefilesDownloader) -> str:
         """Shapefile download url"""
         # pylint: disable=line-too-long
-        return f"{self._BASE_URL}/{self.resolution}/cultural/ne_{self.resolution}_{self.info_type}_{self.depth}_{self.instance}.zip"  # noqa: E501
+        return f"{self._BASE_URL}/{self.resolution}/cultural/{self.shapefiles_name}.zip"  # noqa: E501
 
-    def _download_shapefile(self: ShapefileDownloader) -> None:
-        """Download shapefile"""
-        logger.info("Downloading shapefile from %s", self.shapefile_url)
-        self.shapefile_content = requests.get(
-            self.shapefile_url, headers=self._HEADERS, timeout=30
+    def _download_shapefiles(self: ShapefilesDownloader) -> None:
+        """Download shapefile as a zip"""
+        logger.info("Downloading shapefiles from %s", self.shapefiles_url)
+        self.shapefiles_content = requests.get(
+            self.shapefiles_url, headers=self._HEADERS, timeout=30
         ).content
 
-    def _save_shapefile_to_zip(self: ShapefileDownloader) -> None:
+    def _save_shapefiles_to_zip(self: ShapefilesDownloader) -> None:
         """Save shapefile to zip file"""
-        if self.shapefile_content is None:
+        if self.shapefiles_content is None:
             logger.error("No content in shapefile")
             raise ValueError("No content in shapefile")
-        with open(self.shapefile_dir + ".zip", "wb") as file_zip:
-            file_zip.write(self.shapefile_content)
-            logger.info("Shapefile downloaded to file %s", file_zip.name)
+        with open(self.shapefiles_dir + ".zip", "wb") as file_zip:
+            file_zip.write(self.shapefiles_content)
+            logger.info("Shapefiles downloaded to file %s", file_zip.name)
 
-    def _extract_to_folder(self: ShapefileDownloader):
-        """Extracts shapefile zip to directory"""
+    def _extract_to_folder(self: ShapefilesDownloader):
+        """\
+        Extracts shapefile zip to directory.
+        The directory will have the same name of the original zip file"""
         # Unzip file to directory
-        filepath = self.shapefile_dir + ".zip"
+        filepath = self.shapefiles_dir + ".zip"
         with zipfile.ZipFile(filepath, "r") as zip_ref:
-            zip_ref.extractall(self.shapefile_dir)
-            logger.info("Shapefile extracted to %s", self.shapefile_dir)
+            zip_ref.extractall(self.shapefiles_dir)
+            logger.info("Shapefile extracted to %s", self.shapefiles_dir)
         # Remove zip file
         os.remove(filepath)
         logger.info("Removed file %s", filepath)
 
-    def _rename_file(self, filename: str):
-        ext = filename.split(".")[-1]
-        new_filename = os.path.join(
-            self.shapefile_dir, f"{self.instance}_shapefile.{ext}"
-        )
-        os.rename(filename, new_filename)
-        logger.debug("Renamed %s to %s", filename, new_filename)
-
-    def _rename_all_shapefiles(self: ShapefileDownloader):
-        """Rename all files"""
-        # Rename all files inside zip
-        for file in glob.glob(os.path.join(self.shapefile_dir, "*")):
-            self._rename_file(file)
-
-    def _clear_shapefile_content(self: ShapefileDownloader) -> None:
+    def _clear_shapefiles_content(self: ShapefilesDownloader) -> None:
         """Clear content"""
-        self.shapefile_content = None
+        self.shapefiles_content = None
 
-    def download_shapefile(self: ShapefileDownloader) -> None:
-        """Download, extracts and rename shapefile"""
-        self._download_shapefile()
-        self._save_shapefile_to_zip()
+    def download_shapefile(self: ShapefilesDownloader) -> None:
+        """Download and extracts shapefiles"""
+        self._download_shapefiles()
+        self._save_shapefiles_to_zip()
         self._extract_to_folder()
-        self._rename_all_shapefiles()
-        self._clear_shapefile_content()
+        self._clear_shapefiles_content()
