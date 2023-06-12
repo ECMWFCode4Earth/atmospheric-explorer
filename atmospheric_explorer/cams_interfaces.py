@@ -7,9 +7,11 @@ from __future__ import annotations
 
 import os
 import zipfile
-from abc import ABC, abstractmethod
+from abc import ABC
+from datetime import datetime
 from glob import glob
 from itertools import count
+from typing import Any
 
 import cdsapi
 
@@ -35,7 +37,7 @@ class CAMSDataInterface(ABC):
 
     def __init__(
         self: CAMSDataInterface,
-        data_variables: str | list[str],
+        data_variables: str | set[str],
         file_format: str,
         filename: str | None = None,
     ):
@@ -75,7 +77,6 @@ class CAMSDataInterface(ABC):
         if not os.path.exists(cls._data_folder):
             os.makedirs(cls._data_folder)
 
-    @abstractmethod
     def _build_call_body(self: CAMSDataInterface) -> dict:
         """Build the CDSAPI call body"""
         call_body = {"format": self.file_format, "variable": self.data_variables}
@@ -90,6 +91,23 @@ class CAMSDataInterface(ABC):
         client.retrieve(
             self._dataset_name, self._build_call_body(), self._file_fullpath
         )
+
+    @staticmethod
+    def _is_subset_element(
+        arg1: Any | set[Any] | None, arg2: Any | set[Any] | None
+    ) -> bool:
+        """Utility function. This function"""
+        if isinstance(arg1, set):
+            if isinstance(arg2, set):
+                return arg2.issubset(arg1)
+            return arg2 in arg1
+        return arg1 == arg2
+
+    def _includes_data_variables(
+        self: CAMSDataInterface, data_variables: str | set[str]
+    ):
+        """Determines if the object data variables include the input data variables"""
+        return CAMSDataInterface._is_subset_element(self.data_variables, data_variables)
 
 
 class EAC4Instance(CAMSDataInterface):
@@ -113,23 +131,32 @@ class EAC4Instance(CAMSDataInterface):
             with a dinamically generated name
         area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
             [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
+        pressure_level (str | list[str] | None): pressure levels to be considered for multilevel variables.
+            Can be a single level or a list of levels, see documentation linked above for all possible values.
+        model_level (str | list[str] | None): model levels to be considered for multilevel variables.
+            Can be a single level or a list of levels, chosen in a range from 1 to 60.
+            See documentation linked above for all possible values.
     """
     _dataset_name: str = "cams-global-reanalysis-eac4"
     _data_folder: str = os.path.join(get_local_folder(), "data", "eac4")
 
     def __init__(
         self,
-        data_variables: list[str],
+        data_variables: set[str],
         file_format: str,
         dates_range: str,
-        time_values: str | list[str],
+        time_values: str | set[str],
         filename: str | None = None,
         area: list[int] | None = None,
+        pressure_level: str | set[str] | None = None,
+        model_level: str | set[str] | None = None,
     ):
         super().__init__(data_variables, file_format, filename)
         self.dates_range = dates_range
         self.time_values = time_values
         self.area = area
+        self.pressure_level = pressure_level
+        self.model_level = model_level
 
     def _build_call_body(self: EAC4Instance) -> dict:
         """Build the CDSAPI call body"""
@@ -138,6 +165,10 @@ class EAC4Instance(CAMSDataInterface):
         call_body["time"] = self.time_values
         if self.area is not None:
             call_body["area"] = self.area
+        if self.pressure_level is not None:
+            call_body["pressure_level"] = self.pressure_level
+        if self.model_level is not None:
+            call_body["model_level"] = self.model_level
         return call_body
 
     def download(self: EAC4Instance) -> None:
@@ -146,6 +177,45 @@ class EAC4Instance(CAMSDataInterface):
         Uses cdsapi to interact with CAMS ADS.
         """
         return super()._download()
+
+    def _includes_file_format(self: EAC4Instance, file_format: str) -> bool:
+        """Determines if the provided file format is the same as the file format used by this object"""
+        return self.file_format == file_format
+
+    def _includes_dates_range(self: EAC4Instance, dates_range_input: str) -> bool:
+        """Determines if the provided dates range is included in the dates range used by this object"""
+        start_date, end_date = map(
+            lambda d: datetime.strptime(d, "%Y-%m-%d"), self.dates_range.split("/")
+        )
+        start_date_input, end_date_input = map(
+            lambda d: datetime.strptime(d, "%Y-%m-%d"), dates_range_input.split("/")
+        )
+        return (start_date <= start_date_input) and (end_date >= end_date_input)
+
+    def _includes_time_values(self: EAC4Instance, time_values: str | set[str]) -> bool:
+        """Determines if the provided time values are included in the time values used by this object"""
+        return EAC4Instance._is_subset_element(self.time_values, time_values)
+
+    def _includes_area(self: EAC4Instance, area: list[int]) -> bool:
+        """Determines if the provided area is included in the area used by this object"""
+        if self.area is not None:
+            for direction, value in enumerate(self.area):
+                if area[direction] >= value:
+                    return False
+            return True
+        return True
+
+    def _includes_pressure_level(
+        self: EAC4Instance, pressure_level: str | set[str] | None
+    ) -> bool:
+        """Determines if the provided pressure levels are included in the pressure levels used by this object"""
+        return EAC4Instance._is_subset_element(self.pressure_level, pressure_level)
+
+    def _includes_model_level(
+        self: EAC4Instance, model_level: str | set[str] | None
+    ) -> bool:
+        """Determines if the provided model levels are included in the model levels used by this object"""
+        return EAC4Instance._is_subset_element(self.model_level, model_level)
 
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
@@ -177,13 +247,13 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def __init__(
         self: InversionOptimisedGreenhouseGas,
-        data_variables: str | list[str],
+        data_variables: str | set[str],
         file_format: str,
         quantity: str,
         input_observations: str,
         time_aggregation: str,
-        year: str | list[str],
-        month: str | list[str],
+        year: str | set[str],
+        month: str | set[str],
         filename: str | None = None,
         version: str = "latest",
     ):
