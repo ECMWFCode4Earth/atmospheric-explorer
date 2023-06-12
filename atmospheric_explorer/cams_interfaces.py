@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import os
 import zipfile
-from abc import ABC
+from abc import ABC, abstractmethod
 from datetime import datetime
 from glob import glob
 from itertools import count
@@ -79,7 +79,7 @@ class CAMSDataInterface(ABC):
 
     def _build_call_body(self: CAMSDataInterface) -> dict:
         """Build the CDSAPI call body"""
-        call_body = {"format": self.file_format, "variable": self.data_variables}
+        call_body = {"format": self.file_format, "variable": list(self.data_variables)}
         return call_body
 
     def _download(self: CAMSDataInterface) -> None:
@@ -108,6 +108,11 @@ class CAMSDataInterface(ABC):
     ):
         """Determines if the object data variables include the input data variables"""
         return CAMSDataInterface._is_subset_element(self.data_variables, data_variables)
+
+    @abstractmethod
+    def is_included(self: CAMSDataInterface, other: CAMSDataInterface):
+        """Determines if another object is already included in self"""
+        raise NotImplementedError("Method not implemented")
 
 
 class EAC4Instance(CAMSDataInterface):
@@ -162,13 +167,25 @@ class EAC4Instance(CAMSDataInterface):
         """Build the CDSAPI call body"""
         call_body = super()._build_call_body()
         call_body["date"] = self.dates_range
-        call_body["time"] = self.time_values
+        call_body["time"] = (
+            list(self.time_values)
+            if isinstance(self.time_values, set)
+            else self.time_values
+        )
         if self.area is not None:
             call_body["area"] = self.area
         if self.pressure_level is not None:
-            call_body["pressure_level"] = self.pressure_level
+            call_body["pressure_level"] = (
+                list(self.pressure_level)
+                if isinstance(self.pressure_level, set)
+                else self.pressure_level
+            )
         if self.model_level is not None:
-            call_body["model_level"] = self.model_level
+            call_body["model_level"] = (
+                list(self.model_level)
+                if isinstance(self.model_level, set)
+                else self.model_level
+            )
         return call_body
 
     def download(self: EAC4Instance) -> None:
@@ -177,10 +194,6 @@ class EAC4Instance(CAMSDataInterface):
         Uses cdsapi to interact with CAMS ADS.
         """
         return super()._download()
-
-    def _includes_file_format(self: EAC4Instance, file_format: str) -> bool:
-        """Determines if the provided file format is the same as the file format used by this object"""
-        return self.file_format == file_format
 
     def _includes_dates_range(self: EAC4Instance, dates_range_input: str) -> bool:
         """Determines if the provided dates range is included in the dates range used by this object"""
@@ -196,13 +209,15 @@ class EAC4Instance(CAMSDataInterface):
         """Determines if the provided time values are included in the time values used by this object"""
         return EAC4Instance._is_subset_element(self.time_values, time_values)
 
-    def _includes_area(self: EAC4Instance, area: list[int]) -> bool:
+    def _includes_area(self: EAC4Instance, area: list[int] | None) -> bool:
         """Determines if the provided area is included in the area used by this object"""
         if self.area is not None:
-            for direction, value in enumerate(self.area):
-                if area[direction] >= value:
-                    return False
-            return True
+            if area is not None:
+                for direction, value in enumerate(self.area):
+                    if abs(area[direction]) > abs(value):
+                        return False
+                return True
+            return False
         return True
 
     def _includes_pressure_level(
@@ -216,6 +231,17 @@ class EAC4Instance(CAMSDataInterface):
     ) -> bool:
         """Determines if the provided model levels are included in the model levels used by this object"""
         return EAC4Instance._is_subset_element(self.model_level, model_level)
+
+    def is_included(self: EAC4Instance, other: EAC4Instance) -> bool:
+        """Determines if another object is already included in self"""
+        return (
+            self._includes_data_variables(other.data_variables)
+            and self._includes_dates_range(other.dates_range)
+            and self._includes_time_values(other.time_values)
+            and self._includes_area(other.area)
+            and self._includes_pressure_level(other.pressure_level)
+            and self._includes_model_level(other.model_level)
+        )
 
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
@@ -296,3 +322,29 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         os.remove(zip_filename)
         # Change file format to consider extracted netcdf file
         self.file_format = "netcdf"
+
+    def _includes_year(
+        self: InversionOptimisedGreenhouseGas, year: str | set[str]
+    ) -> bool:
+        """Determines if the provided year(s) are included in the year(s) used by this object"""
+        return InversionOptimisedGreenhouseGas._is_subset_element(self.year, year)
+
+    def _includes_month(
+        self: InversionOptimisedGreenhouseGas, month: str | set[str]
+    ) -> bool:
+        """Determines if the provided month(s) are included in the month(s) used by this object"""
+        return InversionOptimisedGreenhouseGas._is_subset_element(self.month, month)
+
+    def is_included(
+        self: InversionOptimisedGreenhouseGas, other: InversionOptimisedGreenhouseGas
+    ) -> bool:
+        """Determines if another object is already included in self"""
+        return (
+            self._includes_data_variables(other.data_variables)
+            and (self.quantity == other.quantity)
+            and (self.input_observations == other.input_observations)
+            and (self.time_aggregation == other.time_aggregation)
+            and self._includes_year(other.year)
+            and self._includes_month(other.month)
+            and (self.version == other.version)
+        )
