@@ -37,12 +37,14 @@ class CAMSDataInterface(ABC):
 
     def __init__(
         self: CAMSDataInterface,
-        data_variables: str | set[str],
+        data_variables: str | set[str] | list[str],
         file_format: str,
         filename: str | None = None,
     ):
         self._id = next(self._ids)
         self._instances.append(self)
+        if isinstance(data_variables, list):
+            data_variables = set(data_variables)
         self.data_variables = data_variables
         self.file_format = file_format
         self._filename = filename
@@ -147,7 +149,7 @@ class EAC4Instance(CAMSDataInterface):
 
     def __init__(
         self,
-        data_variables: set[str],
+        data_variables: str | set[str] | list[str],
         file_format: str,
         dates_range: str,
         time_values: str | set[str],
@@ -273,7 +275,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def __init__(
         self: InversionOptimisedGreenhouseGas,
-        data_variables: str | set[str],
+        data_variables: str | set[str] | list[str],
         file_format: str,
         quantity: str,
         input_observations: str,

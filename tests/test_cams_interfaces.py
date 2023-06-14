@@ -2,6 +2,7 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
+
 from atmospheric_explorer.cams_interfaces import (
     CAMSDataInterface,
     EAC4Instance,
@@ -12,6 +13,14 @@ from .conftest import CAMSDataInterfaceTesting
 
 
 class TestCAMSDataInterface:
+    def test__init(self):
+        obj = CAMSDataInterfaceTesting({"a", "b", "c"}, "netcdf", "test")
+        assert obj.data_variables == {"a", "b", "c"}
+        assert obj.file_format == "netcdf"
+        assert obj._filename == "test"
+        obj = CAMSDataInterfaceTesting(["a", "b", "d", "d"], "netcdf")
+        assert obj.data_variables == {"a", "b", "d"}
+
     def test__is_subset_element(self):
         assert CAMSDataInterface._is_subset_element({"a", "b", "c"}, {"a", "b"})
         assert not CAMSDataInterface._is_subset_element({"a", "b", "c"}, {"e", "d"})
