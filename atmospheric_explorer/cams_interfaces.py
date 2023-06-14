@@ -110,7 +110,7 @@ class CAMSDataInterface(ABC):
         return CAMSDataInterface._is_subset_element(self.data_variables, data_variables)
 
     @abstractmethod
-    def is_included(self: CAMSDataInterface, other: CAMSDataInterface):
+    def includes(self: CAMSDataInterface, other: CAMSDataInterface):
         """Determines if another object is already included in self"""
         raise NotImplementedError("Method not implemented")
 
@@ -232,7 +232,7 @@ class EAC4Instance(CAMSDataInterface):
         """Determines if the provided model levels are included in the model levels used by this object"""
         return EAC4Instance._is_subset_element(self.model_level, model_level)
 
-    def is_included(self: EAC4Instance, other: EAC4Instance) -> bool:
+    def includes(self: EAC4Instance, other: EAC4Instance) -> bool:
         """Determines if another object is already included in self"""
         return (
             self._includes_data_variables(other.data_variables)
@@ -335,7 +335,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         """Determines if the provided month(s) are included in the month(s) used by this object"""
         return InversionOptimisedGreenhouseGas._is_subset_element(self.month, month)
 
-    def is_included(
+    def includes(
         self: InversionOptimisedGreenhouseGas, other: InversionOptimisedGreenhouseGas
     ) -> bool:
         """Determines if another object is already included in self"""
