@@ -88,7 +88,7 @@ class TestEAC4Instance:
         assert obj._includes_area([80, -160, -80, 170])
         assert obj._includes_area(None)
 
-    def test_is_included(self):
+    def test_includes(self):
         obj1 = EAC4Instance(
             {"a", "b", "c"},
             "netcdf",
@@ -110,8 +110,8 @@ class TestEAC4Instance:
             "00:00",
             area=[60, -170, -80, 170],
         )
-        assert obj1.is_included(obj2)
-        assert not obj1.is_included(obj3)
+        assert obj1.includes(obj2)
+        assert not obj1.includes(obj3)
 
 
 class TestInversionOptimisedGreenhouseGas:
@@ -141,7 +141,7 @@ class TestInversionOptimisedGreenhouseGas:
             "version": "latest",
         }
 
-    def test_is_included(self):
+    def test_includes(self):
         obj1 = InversionOptimisedGreenhouseGas(
             {"a", "b", "c"},
             "netcdf",
@@ -176,5 +176,5 @@ class TestInversionOptimisedGreenhouseGas:
             {"01", "02"},
             version="21",
         )
-        assert obj1.is_included(obj2)
-        assert not obj1.is_included(obj3)
+        assert obj1.includes(obj2)
+        assert not obj1.includes(obj3)
