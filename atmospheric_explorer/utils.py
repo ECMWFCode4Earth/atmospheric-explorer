@@ -15,3 +15,9 @@ def get_local_folder():
     if not os.path.exists(main_dir):
         os.makedirs(main_dir)
     return main_dir
+
+
+def create_folder(folder: str) -> None:
+    """Create data folder if it doensn't exists"""
+    if not os.path.exists(folder):
+        os.makedirs(folder)

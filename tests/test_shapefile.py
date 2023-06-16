@@ -18,8 +18,8 @@ def test__init():
     assert sh_down.info_type == "admin"
     assert sh_down.depth == 0
     assert sh_down.instance == "countries"
-    assert sh_down.shapefiles_name == "ne_50m_admin_0_countries"
-    assert sh_down.shapefiles_dir == os.path.join(
+    assert sh_down.shapefile_name == "ne_50m_admin_0_countries"
+    assert sh_down.shapefile_dir == os.path.join(
         get_local_folder(), root_dir, "ne_50m_admin_0_countries"
     )
     assert (

@@ -15,7 +15,10 @@ from typing import Any
 
 import cdsapi
 
-from atmospheric_explorer.utils import get_local_folder
+from atmospheric_explorer.loggers import get_logger
+from atmospheric_explorer.utils import create_folder, get_local_folder
+
+logger = get_logger("main")
 
 
 class CAMSDataInterface(ABC):
@@ -44,7 +47,8 @@ class CAMSDataInterface(ABC):
         self._instances.append(self)
         self.data_variables = data_variables
         self.file_format = file_format
-        self._create_folder(self._data_folder)
+        create_folder(self._data_folder)
+        logger.info("Created folder %s to save shapefiles", self._data_folder)
 
     @property
     def data_variables(self: CAMSDataInterface) -> str | list[str]:
@@ -72,12 +76,6 @@ class CAMSDataInterface(ABC):
             case _:
                 return self.file_format
 
-    @staticmethod
-    def _create_folder(folder) -> None:
-        """Create data folder if it doensn't exists"""
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
     def _build_call_body(self: CAMSDataInterface) -> dict:
         """Build the CDSAPI call body"""
         call_body = {"format": self.file_format, "variable": self.data_variables}
@@ -90,6 +88,7 @@ class CAMSDataInterface(ABC):
         """
         client = cdsapi.Client()
         client.retrieve(self._dataset_name, self._build_call_body(), file_fullpath)
+        logger.info("Finished downloading file %s", file_fullpath)
 
     @staticmethod
     def _is_subset_element(
@@ -165,7 +164,8 @@ class EAC4Instance(CAMSDataInterface):
         self.model_level = model_level
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
-        self._create_folder(self.files_dir_path)
+        create_folder(self.files_dir_path)
+        logger.info("Created folder %s to save shapefiles", self.files_dir_path)
 
     @property
     def file_full_path(self: EAC4Instance) -> str:
@@ -344,7 +344,8 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
         self.file_full_path = self.files_dirname
-        self._create_folder(self.files_dir_path)
+        create_folder(self.files_dir_path)
+        logger.info("Created folder %s to save shapefiles", self.files_dir_path)
 
     @property
     def file_full_path(self: InversionOptimisedGreenhouseGas) -> str:
@@ -414,9 +415,16 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             ext = zip_ref.filelist[0].filename.split(".")[-1]
             self.file_format = "netcdf" if ext == "nc" else ext
             zip_ref.extractall(self.files_dir_path)
+            logger.info(
+                "Extracted file %s to folder %s",
+                self.file_full_path,
+                self.files_dir_path,
+            )
         self.file_full_path = "*"
+        logger.info("Updated file_full_path to wildcard path %s", self.file_full_path)
         # Remove zip file
         os.remove(zip_filename)
+        logger.info("Removed %s", zip_filename)
 
     def _includes_year(
         self: InversionOptimisedGreenhouseGas, year: str | set[str]
