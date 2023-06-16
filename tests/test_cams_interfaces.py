@@ -14,10 +14,9 @@ from .conftest import CAMSDataInterfaceTesting
 
 class TestCAMSDataInterface:
     def test__init(self):
-        obj = CAMSDataInterfaceTesting({"a", "b", "c"}, "netcdf", "test")
+        obj = CAMSDataInterfaceTesting({"a", "b", "c"}, "netcdf")
         assert obj._data_variables == {"a", "b", "c"}
         assert obj.file_format == "netcdf"
-        assert obj._filename == "test"
 
     def test_data_variables(self):
         obj = CAMSDataInterfaceTesting(["a", "b", "d", "d"], "netcdf")
@@ -58,7 +57,7 @@ class TestEAC4Instance:
             area=[0, 0, 0, 0],
             pressure_level={"1", "2"},
             model_level={"1", "2"},
-            filename="test",
+            files_dir="test",
         )
         assert obj._data_variables == {"a", "b", "c"}
         assert obj.file_format == "netcdf"
@@ -67,7 +66,7 @@ class TestEAC4Instance:
         assert obj.area == [0, 0, 0, 0]
         assert obj._pressure_level == {"1", "2"}
         assert obj._model_level == {"1", "2"}
-        assert obj._filename == "test"
+        assert obj.files_dirname == "test"
 
     def test_time_values(self):
         obj = EAC4Instance(
@@ -192,7 +191,7 @@ class TestInversionOptimisedGreenhouseGas:
             "time_aggregation",
             {"2021", "2022"},
             {"01", "02"},
-            filename="test",
+            files_dir="test",
         )
         assert obj._data_variables == {"a", "b", "c"}
         assert obj.file_format == "zip"
@@ -201,7 +200,7 @@ class TestInversionOptimisedGreenhouseGas:
         assert obj.time_aggregation == "time_aggregation"
         assert obj._year == {"2021", "2022"}
         assert obj._month == {"01", "02"}
-        assert obj._filename == "test"
+        assert obj.files_dirname == "test"
         assert obj.version == "latest"
 
     def test_year(self):

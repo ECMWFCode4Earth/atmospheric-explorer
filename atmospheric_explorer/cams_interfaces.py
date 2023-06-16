@@ -39,14 +39,12 @@ class CAMSDataInterface(ABC):
         self: CAMSDataInterface,
         data_variables: str | set[str] | list[str],
         file_format: str,
-        filename: str | None = None,
     ):
         self._id = next(self._ids)
         self._instances.append(self)
         self.data_variables = data_variables
         self.file_format = file_format
-        self._filename = filename
-        self._create_folder()
+        self._create_folder(self._data_folder)
 
     @property
     def data_variables(self: CAMSDataInterface) -> str | list[str]:
@@ -74,40 +72,24 @@ class CAMSDataInterface(ABC):
             case _:
                 return self.file_format
 
-    @property
-    def _file_fullpath(self: CAMSDataInterface) -> str:
-        """Full path of the saved file"""
-        return os.path.join(self._data_folder, self.filename)
-
-    @property
-    def filename(self: CAMSDataInterface) -> str:
-        """Name of the saved file"""
-        return (
-            self._filename
-            if self._filename is not None
-            else f"data_{self._id}.{self._file_ext}"
-        )
-
-    @classmethod
-    def _create_folder(cls) -> None:
+    @staticmethod
+    def _create_folder(folder) -> None:
         """Create data folder if it doensn't exists"""
-        if not os.path.exists(cls._data_folder):
-            os.makedirs(cls._data_folder)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
 
     def _build_call_body(self: CAMSDataInterface) -> dict:
         """Build the CDSAPI call body"""
         call_body = {"format": self.file_format, "variable": self.data_variables}
         return call_body
 
-    def _download(self: CAMSDataInterface) -> None:
+    def _download(self: CAMSDataInterface, file_fullpath: str) -> None:
         """\
         Download the dataset and saves it to file specified in filename.
         Uses cdsapi to interact with CAMS ADS.
         """
         client = cdsapi.Client()
-        client.retrieve(
-            self._dataset_name, self._build_call_body(), self._file_fullpath
-        )
+        client.retrieve(self._dataset_name, self._build_call_body(), file_fullpath)
 
     @staticmethod
     def _is_subset_element(
@@ -170,17 +152,27 @@ class EAC4Instance(CAMSDataInterface):
         file_format: str,
         dates_range: str,
         time_values: str | set[str] | list[str],
-        filename: str | None = None,
+        files_dir: str | None = None,
         area: list[int] | None = None,
         pressure_level: str | set[str] | list[str] | None = None,
         model_level: str | set[str] | list[str] | None = None,
     ):
-        super().__init__(data_variables, file_format, filename)
+        super().__init__(data_variables, file_format)
         self.dates_range = dates_range
         self.time_values = time_values
         self.area = area
         self.pressure_level = pressure_level
         self.model_level = model_level
+        self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
+        self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
+        self._create_folder(self.files_dir_path)
+
+    @property
+    def file_full_path(self: EAC4Instance) -> str:
+        """Name of the saved file"""
+        return os.path.join(
+            self.files_dir_path, f"{self.files_dirname}.{self._file_ext}"
+        )
 
     @property
     def time_values(self: EAC4Instance) -> str | list[str]:
@@ -251,7 +243,7 @@ class EAC4Instance(CAMSDataInterface):
         Download the dataset and saves it to file specified in filename.
         Uses cdsapi to interact with CAMS ADS.
         """
-        return super()._download()
+        return super()._download(self.file_full_path)
 
     def _includes_dates_range(self: EAC4Instance, dates_range_input: str) -> bool:
         """Determines if the provided dates range is included in the dates range used by this object"""
@@ -339,16 +331,32 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         time_aggregation: str,
         year: str | set[str] | list[str],
         month: str | set[str] | list[str],
-        filename: str | None = None,
+        files_dir: str | None = None,
         version: str = "latest",
     ):
-        super().__init__(data_variables, file_format, filename)
+        super().__init__(data_variables, file_format)
         self.quantity = quantity
         self.input_observations = input_observations
         self.time_aggregation = time_aggregation
         self.year = year
         self.month = month
         self.version = version
+        self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
+        self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
+        self.file_full_path = self.files_dirname
+        self._create_folder(self.files_dir_path)
+
+    @property
+    def file_full_path(self: InversionOptimisedGreenhouseGas) -> str:
+        """Name of the saved file"""
+        return self._file_full_path
+
+    @file_full_path.setter
+    def file_full_path(self: InversionOptimisedGreenhouseGas, filename: str) -> None:
+        """Name of the saved file"""
+        self._file_full_path = os.path.join(
+            self.files_dir_path, f"{filename}.{self._file_ext}"
+        )
 
     @property
     def year(self: InversionOptimisedGreenhouseGas) -> str | list[str]:
@@ -398,19 +406,17 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
         This function also extracts the netcdf file inside the zip file, which is then deleted.
         """
-        super()._download()
-        # This dataset downloads zipfiles with just 1 netcdf file inside
+        super()._download(self.file_full_path)
+        # This dataset downloads zipfiles with possibly multiple netcdf files inside
         # We must extract it
-        zip_filename = self._file_fullpath
-        with zipfile.ZipFile(self._file_fullpath, "r") as zip_ref:
-            self._filename = zip_ref.filelist[0].filename
-            ext = self._filename.split(".")[-1]
+        zip_filename = self.file_full_path
+        with zipfile.ZipFile(zip_filename, "r") as zip_ref:
+            ext = zip_ref.filelist[0].filename.split(".")[-1]
             self.file_format = "netcdf" if ext == "nc" else ext
-            zip_ref.extractall(self._data_folder)
+            zip_ref.extractall(self.files_dir_path)
+        self.file_full_path = "*"
         # Remove zip file
         os.remove(zip_filename)
-        # Change file format to consider extracted netcdf file
-        self.file_format = "netcdf"
 
     def _includes_year(
         self: InversionOptimisedGreenhouseGas, year: str | set[str]
