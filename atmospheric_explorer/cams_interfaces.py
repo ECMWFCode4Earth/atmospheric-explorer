@@ -48,7 +48,7 @@ class CAMSDataInterface(ABC):
         self.data_variables = data_variables
         self.file_format = file_format
         create_folder(self._data_folder)
-        logger.info("Created folder %s to save shapefiles", self._data_folder)
+        logger.info("Created folder %s", self._data_folder)
 
     @property
     def data_variables(self: CAMSDataInterface) -> str | list[str]:
@@ -165,7 +165,7 @@ class EAC4Instance(CAMSDataInterface):
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
         create_folder(self.files_dir_path)
-        logger.info("Created folder %s to save shapefiles", self.files_dir_path)
+        logger.info("Created folder %s", self.files_dir_path)
 
     @property
     def file_full_path(self: EAC4Instance) -> str:
@@ -345,7 +345,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
         self.file_full_path = self.files_dirname
         create_folder(self.files_dir_path)
-        logger.info("Created folder %s to save shapefiles", self.files_dir_path)
+        logger.info("Created folder %s", self.files_dir_path)
 
     @property
     def file_full_path(self: InversionOptimisedGreenhouseGas) -> str:
