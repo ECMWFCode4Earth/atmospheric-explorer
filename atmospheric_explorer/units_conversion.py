@@ -16,7 +16,9 @@ import os
 import xarray as xr
 
 from .exceptions import OperationNotAllowed
-from .loggers import _main_logger as logger
+from .loggers import get_logger
+
+logger = get_logger("main")
 
 
 class OperationParser:
@@ -37,7 +39,7 @@ class OperationParser:
 
     def arithmetic_eval(self: OperationParser, operation_str: str):
         """Parse an arithmetic operation."""
-        logger.info("Parsing %s", operation_str)
+        logger.debug("Parsing %s", operation_str)
         node = ast.parse(operation_str, mode="eval")
 
         def _eval(node):

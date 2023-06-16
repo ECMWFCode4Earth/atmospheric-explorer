@@ -12,7 +12,10 @@ from textwrap import dedent
 import requests
 import requests.utils
 
-from .loggers import _main_logger as logger
+from .loggers import get_logger
+from .utils import get_local_folder
+
+logger = get_logger("main")
 
 
 class ShapefilesDownloader:
@@ -46,17 +49,22 @@ class ShapefilesDownloader:
             "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0",  # noqa: E501
         }
     )
+    _ROOT_DIR = "shapefiles"
 
     def __init__(
         self: ShapefilesDownloader,
-        dst_dir: str = "./.data/shapefiles",
+        dst_dir: str | None = None,
         resolution: str = "50m",
         info_type: str = "admin",
         depth: int = 0,
         instance: str = "countries",
     ):  # pylint: disable=too-many-arguments
         self.shapefiles_content = None
-        self.dst_dir = dst_dir
+        self.dst_dir = (
+            dst_dir
+            if dst_dir is not None
+            else os.path.join(get_local_folder(), self._ROOT_DIR)
+        )
         self.resolution = resolution
         self.info_type = info_type
         self.depth = depth
