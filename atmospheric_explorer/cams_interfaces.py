@@ -43,15 +43,30 @@ class CAMSDataInterface(ABC):
     ):
         self._id = next(self._ids)
         self._instances.append(self)
-        if isinstance(data_variables, list):
-            data_variables = set(data_variables)
         self.data_variables = data_variables
         self.file_format = file_format
         self._filename = filename
         self._create_folder()
 
     @property
-    def _file_ext(self: CAMSDataInterface):
+    def data_variables(self: CAMSDataInterface) -> str | list[str]:
+        """Time values are internally represented as a set, use this property to set/get its value"""
+        return (
+            list(self._data_variables)
+            if isinstance(self._data_variables, set)
+            else self._data_variables
+        )
+
+    @data_variables.setter
+    def data_variables(
+        self: CAMSDataInterface, data_variables_input: str | set[str] | list[str]
+    ) -> None:
+        if isinstance(data_variables_input, list):
+            data_variables_input = set(data_variables_input)
+        self._data_variables = data_variables_input
+
+    @property
+    def _file_ext(self: CAMSDataInterface) -> str:
         """Extension of the saved file"""
         match (self.file_format):
             case "netcdf":
@@ -60,12 +75,12 @@ class CAMSDataInterface(ABC):
                 return self.file_format
 
     @property
-    def _file_fullpath(self: CAMSDataInterface):
+    def _file_fullpath(self: CAMSDataInterface) -> str:
         """Full path of the saved file"""
         return os.path.join(self._data_folder, self.filename)
 
     @property
-    def filename(self: CAMSDataInterface):
+    def filename(self: CAMSDataInterface) -> str:
         """Name of the saved file"""
         return (
             self._filename
@@ -74,14 +89,14 @@ class CAMSDataInterface(ABC):
         )
 
     @classmethod
-    def _create_folder(cls):
+    def _create_folder(cls) -> None:
         """Create data folder if it doensn't exists"""
         if not os.path.exists(cls._data_folder):
             os.makedirs(cls._data_folder)
 
     def _build_call_body(self: CAMSDataInterface) -> dict:
         """Build the CDSAPI call body"""
-        call_body = {"format": self.file_format, "variable": list(self.data_variables)}
+        call_body = {"format": self.file_format, "variable": self.data_variables}
         return call_body
 
     def _download(self: CAMSDataInterface) -> None:
@@ -107,9 +122,11 @@ class CAMSDataInterface(ABC):
 
     def _includes_data_variables(
         self: CAMSDataInterface, data_variables: str | set[str]
-    ):
+    ) -> bool:
         """Determines if the object data variables include the input data variables"""
-        return CAMSDataInterface._is_subset_element(self.data_variables, data_variables)
+        return CAMSDataInterface._is_subset_element(
+            self._data_variables, data_variables
+        )
 
     @abstractmethod
     def includes(self: CAMSDataInterface, other: CAMSDataInterface):
@@ -152,11 +169,11 @@ class EAC4Instance(CAMSDataInterface):
         data_variables: str | set[str] | list[str],
         file_format: str,
         dates_range: str,
-        time_values: str | set[str],
+        time_values: str | set[str] | list[str],
         filename: str | None = None,
         area: list[int] | None = None,
-        pressure_level: str | set[str] | None = None,
-        model_level: str | set[str] | None = None,
+        pressure_level: str | set[str] | list[str] | None = None,
+        model_level: str | set[str] | list[str] | None = None,
     ):
         super().__init__(data_variables, file_format, filename)
         self.dates_range = dates_range
@@ -165,29 +182,68 @@ class EAC4Instance(CAMSDataInterface):
         self.pressure_level = pressure_level
         self.model_level = model_level
 
+    @property
+    def time_values(self: EAC4Instance) -> str | list[str]:
+        """Time values are internally represented as a set, use this property to set/get its value"""
+        return (
+            list(self._time_values)
+            if isinstance(self._time_values, set)
+            else self._time_values
+        )
+
+    @time_values.setter
+    def time_values(
+        self: EAC4Instance, time_values: str | set[str] | list[str]
+    ) -> None:
+        if isinstance(time_values, list):
+            time_values = set(time_values)
+        self._time_values = time_values
+
+    @property
+    def pressure_level(self: EAC4Instance) -> str | list[str] | None:
+        """Pressure level is internally represented as a set, use this property to set/get its value"""
+        return (
+            list(self._pressure_level)
+            if isinstance(self._pressure_level, set)
+            else self._pressure_level
+        )
+
+    @pressure_level.setter
+    def pressure_level(
+        self: EAC4Instance, pressure_level: str | set[str] | list[str] | None
+    ) -> None:
+        if isinstance(pressure_level, list):
+            pressure_level = set(pressure_level)
+        self._pressure_level = pressure_level
+
+    @property
+    def model_level(self: EAC4Instance) -> str | list[str] | None:
+        """Model level is internally represented as a set, use this property to set/get its value"""
+        return (
+            list(self._model_level)
+            if isinstance(self._model_level, set)
+            else self._model_level
+        )
+
+    @model_level.setter
+    def model_level(
+        self: EAC4Instance, model_level: str | set[str] | list[str] | None
+    ) -> None:
+        if isinstance(model_level, list):
+            model_level = set(model_level)
+        self._model_level = model_level
+
     def _build_call_body(self: EAC4Instance) -> dict:
         """Build the CDSAPI call body"""
         call_body = super()._build_call_body()
         call_body["date"] = self.dates_range
-        call_body["time"] = (
-            list(self.time_values)
-            if isinstance(self.time_values, set)
-            else self.time_values
-        )
+        call_body["time"] = self.time_values
         if self.area is not None:
             call_body["area"] = self.area
         if self.pressure_level is not None:
-            call_body["pressure_level"] = (
-                list(self.pressure_level)
-                if isinstance(self.pressure_level, set)
-                else self.pressure_level
-            )
+            call_body["pressure_level"] = self.pressure_level
         if self.model_level is not None:
-            call_body["model_level"] = (
-                list(self.model_level)
-                if isinstance(self.model_level, set)
-                else self.model_level
-            )
+            call_body["model_level"] = self.model_level
         return call_body
 
     def download(self: EAC4Instance) -> None:
@@ -209,7 +265,7 @@ class EAC4Instance(CAMSDataInterface):
 
     def _includes_time_values(self: EAC4Instance, time_values: str | set[str]) -> bool:
         """Determines if the provided time values are included in the time values used by this object"""
-        return EAC4Instance._is_subset_element(self.time_values, time_values)
+        return EAC4Instance._is_subset_element(self._time_values, time_values)
 
     def _includes_area(self: EAC4Instance, area: list[int] | None) -> bool:
         """Determines if the provided area is included in the area used by this object"""
@@ -226,23 +282,24 @@ class EAC4Instance(CAMSDataInterface):
         self: EAC4Instance, pressure_level: str | set[str] | None
     ) -> bool:
         """Determines if the provided pressure levels are included in the pressure levels used by this object"""
-        return EAC4Instance._is_subset_element(self.pressure_level, pressure_level)
+        return EAC4Instance._is_subset_element(self._pressure_level, pressure_level)
 
     def _includes_model_level(
         self: EAC4Instance, model_level: str | set[str] | None
     ) -> bool:
         """Determines if the provided model levels are included in the model levels used by this object"""
-        return EAC4Instance._is_subset_element(self.model_level, model_level)
+        return EAC4Instance._is_subset_element(self._model_level, model_level)
 
     def includes(self: EAC4Instance, other: EAC4Instance) -> bool:
+        # pylint: disable=protected-access
         """Determines if another object is already included in self"""
         return (
-            self._includes_data_variables(other.data_variables)
+            self._includes_data_variables(other._data_variables)
             and self._includes_dates_range(other.dates_range)
-            and self._includes_time_values(other.time_values)
+            and self._includes_time_values(other._time_values)
             and self._includes_area(other.area)
-            and self._includes_pressure_level(other.pressure_level)
-            and self._includes_model_level(other.model_level)
+            and self._includes_pressure_level(other._pressure_level)
+            and self._includes_model_level(other._model_level)
         )
 
 
@@ -280,8 +337,8 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         quantity: str,
         input_observations: str,
         time_aggregation: str,
-        year: str | set[str],
-        month: str | set[str],
+        year: str | set[str] | list[str],
+        month: str | set[str] | list[str],
         filename: str | None = None,
         version: str = "latest",
     ):
@@ -293,15 +350,45 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self.month = month
         self.version = version
 
+    @property
+    def year(self: InversionOptimisedGreenhouseGas) -> str | list[str]:
+        """Year is internally represented as a set, use this property to set/get its value"""
+        return list(self._year) if isinstance(self._year, set) else self._year
+
+    @year.setter
+    def year(
+        self: InversionOptimisedGreenhouseGas, year: str | set[str] | list[str]
+    ) -> None:
+        if isinstance(year, list):
+            year = set(year)
+        self._year = year
+
+    @property
+    def month(self: InversionOptimisedGreenhouseGas) -> str | list[str]:
+        """Month is internally represented as a set, use this property to set/get its value"""
+        return list(self._month) if isinstance(self._month, set) else self._month
+
+    @month.setter
+    def month(
+        self: InversionOptimisedGreenhouseGas, month: str | set[str] | list[str]
+    ) -> None:
+        if isinstance(month, list):
+            month = set(month)
+        self._month = month
+
     def _build_call_body(self: InversionOptimisedGreenhouseGas) -> dict:
         """Build the CDSAPI call body"""
         call_body = super()._build_call_body()
-        call_body["version"] = self.version
-        call_body["quantity"] = self.quantity
-        call_body["input_observations"] = self.input_observations
-        call_body["time_aggregation"] = self.time_aggregation
-        call_body["year"] = self.year
-        call_body["month"] = self.month
+        call_body.update(
+            {
+                "version": self.version,
+                "quantity": self.quantity,
+                "input_observations": self.input_observations,
+                "time_aggregation": self.time_aggregation,
+                "year": self.year,
+                "month": self.month,
+            }
+        )
         return call_body
 
     def download(self: InversionOptimisedGreenhouseGas) -> None:
@@ -329,24 +416,25 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self: InversionOptimisedGreenhouseGas, year: str | set[str]
     ) -> bool:
         """Determines if the provided year(s) are included in the year(s) used by this object"""
-        return InversionOptimisedGreenhouseGas._is_subset_element(self.year, year)
+        return InversionOptimisedGreenhouseGas._is_subset_element(self._year, year)
 
     def _includes_month(
         self: InversionOptimisedGreenhouseGas, month: str | set[str]
     ) -> bool:
         """Determines if the provided month(s) are included in the month(s) used by this object"""
-        return InversionOptimisedGreenhouseGas._is_subset_element(self.month, month)
+        return InversionOptimisedGreenhouseGas._is_subset_element(self._month, month)
 
     def includes(
         self: InversionOptimisedGreenhouseGas, other: InversionOptimisedGreenhouseGas
     ) -> bool:
+        # pylint: disable=protected-access
         """Determines if another object is already included in self"""
         return (
-            self._includes_data_variables(other.data_variables)
+            self._includes_data_variables(other._data_variables)
             and (self.quantity == other.quantity)
             and (self.input_observations == other.input_observations)
             and (self.time_aggregation == other.time_aggregation)
-            and self._includes_year(other.year)
-            and self._includes_month(other.month)
+            and self._includes_year(other._year)
+            and self._includes_month(other._month)
             and (self.version == other.version)
         )
