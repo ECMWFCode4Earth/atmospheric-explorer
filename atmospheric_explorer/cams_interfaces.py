@@ -30,7 +30,7 @@ class CAMSDataInterface(ABC):
         data_variables (str | list[str]): data varaibles to be downloaded from CAMS, depend on the dataset
         file_format (str): format for the downloaded data, e.g. 'netcdf', 'grib', 'zip' etc.
         filename (str | None): file where to save the data. If not provided will be built using file_format and
-            with a dinamically generated name
+            with a dynamically generated name
     """
 
     _dataset_name: str | None = None
