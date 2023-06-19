@@ -12,3 +12,6 @@ class CAMSDataInterfaceTesting(CAMSDataInterface):
     def includes(self: CAMSDataInterfaceTesting, other: CAMSDataInterfaceTesting):
         """Mock function needed to instantiate CAMSDataInterface"""
         return True
+
+    def read_dataset(self: CAMSDataInterface):
+        pass

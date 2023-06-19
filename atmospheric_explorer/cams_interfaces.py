@@ -300,8 +300,17 @@ class EAC4Instance(CAMSDataInterface):
             and self._includes_model_level(other._model_level)
         )
 
-    def read_dataset(self: EAC4Instance):
-        return xr.open_dataset(self.file_full_path)
+    def read_dataset(
+        self: EAC4Instance, var_name: str | list[str] | None = None
+    ) -> xr.Dataset:
+        """Returns data as an xarray.Dataset"""
+        if isinstance(var_name, str):
+            var_name = [var_name]
+        return (
+            xr.open_dataset(self.file_full_path)[var_name]
+            if var_name is not None
+            else xr.open_dataset(self.file_full_path)
+        )
 
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
@@ -463,32 +472,38 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         )
 
     def read_dataset(
-        self: InversionOptimisedGreenhouseGas, var_name: str | None = None
-    ) -> xr.Dataset | xr.DataArray:
+        self: InversionOptimisedGreenhouseGas, var_name: str | list[str] | None = None
+    ) -> xr.Dataset:
+        """Returns data as an xarray.Dataset"""
         # Create dataframe with first file
+        if isinstance(var_name, str):
+            var_name = [var_name]
         files = sorted(glob(self.file_full_path))
-        mm = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
-        df = (
-            xr.open_dataset(files[0])[[var_name]]
+        date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
+        data_frame = (
+            xr.open_dataset(files[0])[var_name]
             if var_name is not None
             else xr.open_dataset(files[0])
         )
-        df = df.expand_dims({"time": [mm]})
+        data_frame = data_frame.expand_dims({"time": [date_index]})
         for file in files[1:]:
             # Merge remaining files
-            # ! This loop replaces xr.open_mfdataset(surface_data.file_full_path) that does not work (because time coordinate is not included in dataframe)
-            mm = datetime.strptime(file.split("_")[-1].split(".")[0], "%Y%m")
+            # ! This loop replaces xr.open_mfdataset(surface_data.file_full_path) that does not work
+            # (because time coordinate is not included in dataframe)
+            date_index = datetime.strptime(file.split("_")[-1].split(".")[0], "%Y%m")
             temp = (
-                xr.open_dataset(file)[[var_name]]
+                xr.open_dataset(file)[var_name]
                 if var_name is not None
                 else xr.open_dataset(file)
             )
-            temp = temp.expand_dims({"time": [mm]})
-            df = xr.combine_by_coords([df, temp])
-        df = df.expand_dims(
+            temp = temp.expand_dims({"time": [date_index]})
+            data_frame = xr.combine_by_coords([data_frame, temp])
+        data_frame = data_frame.expand_dims(
             {
                 "input_observations": [self.input_observations],
                 "time_aggregation": [self.time_aggregation],
             }
         )
-        return df
+        if isinstance(data_frame, xr.DataArray):
+            data_frame = data_frame.to_dataset()
+        return data_frame
