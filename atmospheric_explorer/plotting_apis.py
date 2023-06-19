@@ -88,7 +88,11 @@ def line_with_ci_subplots(
         facet_col_wrap=col_num,
         facet_col_spacing=0.04,
         facet_row_spacing=0.1,
-        category_orders={"admin": admins},
+        category_orders={
+            "admin": admins,
+            "input_observations": ["surface", "satellite"],
+        },
+        color_discrete_sequence=px.colors.qualitative.D3,
     )
     fig.for_each_trace(
         lambda tr: add_ci(
@@ -115,10 +119,12 @@ def line_with_ci_subplots(
     return fig
 
 
-def surface_flux_data(quantity: str, years: list[str], months: list[str]) -> tuple:
-    """Downloads from Inversion Optimized both surface and satellite data for a quantity"""
+def surface_satellite_data(
+    data_variable: str, years: list[str], months: list[str]
+) -> tuple:
+    """Downloads from Inversion Optimized both surface and satellite data for a data variable"""
     surface_data = InversionOptimisedGreenhouseGas(
-        data_variables=quantity,
+        data_variables=data_variable,
         file_format="zip",
         quantity="surface_flux",
         input_observations="surface",
@@ -127,7 +133,7 @@ def surface_flux_data(quantity: str, years: list[str], months: list[str]) -> tup
         month=months,
     )
     satellite_data = InversionOptimisedGreenhouseGas(
-        data_variables=quantity,
+        data_variables=data_variable,
         file_format="zip",
         quantity="surface_flux",
         input_observations="satellite",
@@ -138,8 +144,8 @@ def surface_flux_data(quantity: str, years: list[str], months: list[str]) -> tup
     return surface_data, satellite_data
 
 
-def yearly_lineplot_with_ci(
-    quantity: str,
+def surface_satellite_yearly_plot(
+    data_variable: str,
     countries: list[str],
     years: list[str],
     months: list[str],
@@ -150,31 +156,23 @@ def yearly_lineplot_with_ci(
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Inversion dataset"""
     # pylint: disable=too-many-arguments
     # Download surface data file
-    surface_data, satellite_data = surface_flux_data(quantity, years, months)
+    surface_data, satellite_data = surface_satellite_data(data_variable, years, months)
     surface_data.download()
     satellite_data.download()
     # Read data as dataset
     df_surface = surface_data.read_dataset(var_name=var_name)
     df_satellite = satellite_data.read_dataset(var_name=var_name)
-    df_total = xr.combine_by_coords(
-        [df_surface, df_satellite], combine_attrs="override"
-    )
+    df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
     # Clip countries
     df_total = clip_and_concat_countries(df_total, countries)
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_total = (
-        df_total.where(~df_total[var_name].isnull(), drop=True)
-        .sortby("time")
-        .mean(dim=["longitude", "latitude"])
-    )
+    df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
     # Convert units
-    da_converted = convert_units_array(df_total[var_name], quantity).squeeze(
-        "time_aggregation"
-    )
+    da_converted = convert_units_array(df_total[var_name], data_variable)
     unit = da_converted.attrs["units"]
     # Xarray doesn't cover all pandas functionalities, we need to convert it to a pandas dataframe
-    df_pandas = da_converted.squeeze().to_dataframe().reset_index()
+    df_pandas = da_converted.squeeze().to_dataframe().dropna().reset_index()
     df_pandas["year"] = df_pandas["time"].dt.year
     df_pandas = df_pandas.groupby(["year", "admin", "input_observations"]).agg(
         mean=(var_name, "mean"),
@@ -184,10 +182,11 @@ def yearly_lineplot_with_ci(
     df_pandas[["lower", "upper"]] = pd.DataFrame(
         df_pandas["ci"].to_list(), index=df_pandas.index
     )
+    df_pandas.drop(columns=["ci"], inplace=True)
     # Generate subplots
     return line_with_ci_subplots(df_pandas, countries, col_num, unit, title)
 
 
-def save_plotly_image(fig: go.Figure, path: str, img_format: str = "png") -> None:
+def save_plotly_to_image(fig: go.Figure, path: str, img_format: str = "png") -> None:
     """Save plotly plot to static image"""
     fig.to_image(path, format=img_format)
