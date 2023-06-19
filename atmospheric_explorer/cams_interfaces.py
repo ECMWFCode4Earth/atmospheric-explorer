@@ -14,6 +14,7 @@ from itertools import count
 from typing import Any
 
 import cdsapi
+import xarray as xr
 
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
@@ -112,6 +113,11 @@ class CAMSDataInterface(ABC):
     @abstractmethod
     def includes(self: CAMSDataInterface, other: CAMSDataInterface):
         """Determines if another object is already included in self"""
+        raise NotImplementedError("Method not implemented")
+
+    @abstractmethod
+    def read_dataset(self: CAMSDataInterface):
+        """Returns the files as an xarray.Dataset"""
         raise NotImplementedError("Method not implemented")
 
 
@@ -294,6 +300,9 @@ class EAC4Instance(CAMSDataInterface):
             and self._includes_model_level(other._model_level)
         )
 
+    def read_dataset(self: EAC4Instance):
+        return xr.open_dataset(self.file_full_path)
+
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     # pylint: disable=line-too-long
@@ -452,3 +461,34 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             and self._includes_month(other._month)
             and (self.version == other.version)
         )
+
+    def read_dataset(
+        self: InversionOptimisedGreenhouseGas, var_name: str | None = None
+    ) -> xr.Dataset | xr.DataArray:
+        # Create dataframe with first file
+        files = sorted(glob(self.file_full_path))
+        mm = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
+        df = (
+            xr.open_dataset(files[0])[[var_name]]
+            if var_name is not None
+            else xr.open_dataset(files[0])
+        )
+        df = df.expand_dims({"time": [mm]})
+        for file in files[1:]:
+            # Merge remaining files
+            # ! This loop replaces xr.open_mfdataset(surface_data.file_full_path) that does not work (because time coordinate is not included in dataframe)
+            mm = datetime.strptime(file.split("_")[-1].split(".")[0], "%Y%m")
+            temp = (
+                xr.open_dataset(file)[[var_name]]
+                if var_name is not None
+                else xr.open_dataset(file)
+            )
+            temp = temp.expand_dims({"time": [mm]})
+            df = xr.combine_by_coords([df, temp])
+        df = df.expand_dims(
+            {
+                "input_observations": [self.input_observations],
+                "time_aggregation": [self.time_aggregation],
+            }
+        )
+        return df

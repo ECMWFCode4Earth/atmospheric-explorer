@@ -22,3 +22,4 @@ streamlit-folium==0.11.1
 tqdm==4.65.0
 voila==0.4.0
 xarray[complete]==2023.4.2
+kaleido==0.2.1
