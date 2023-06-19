@@ -185,8 +185,3 @@ def surface_satellite_yearly_plot(
     df_pandas.drop(columns=["ci"], inplace=True)
     # Generate subplots
     return line_with_ci_subplots(df_pandas, countries, col_num, unit, title)
-
-
-def save_plotly_to_image(fig: go.Figure, path: str, img_format: str = "png") -> None:
-    """Save plotly plot to static image"""
-    fig.to_image(path, format=img_format)

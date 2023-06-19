@@ -5,6 +5,8 @@ Module to gather all utility functions and classes.
 import os
 import platform
 
+import plotly.graph_objects as go
+
 
 def get_local_folder():
     """Returns the folder where to put local files based on the user's OS"""
@@ -34,3 +36,8 @@ def hex_to_rgb(hex_color: str) -> tuple:
             hex_color = hex_color * 2
         return int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
     return tuple(hex_color.strip("rgba()").split(",")[:3])
+
+
+def save_plotly_to_image(fig: go.Figure, path: str, img_format: str = "png") -> None:
+    """Save plotly plot to static image"""
+    fig.to_image(path, format=img_format)
