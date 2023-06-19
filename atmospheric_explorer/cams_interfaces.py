@@ -481,6 +481,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         but the file themselves have no time variable inside. It adds a time variable for each file
         and concat all files into a dataset.
         """
+        # Create dataset from first file
         files = sorted(glob(self.file_full_path))
         date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
         data_frame = (
