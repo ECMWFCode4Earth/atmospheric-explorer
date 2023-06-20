@@ -6,11 +6,13 @@ from math import ceil
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import statsmodels.stats.api as sms
 import xarray as xr
 
 from atmospheric_explorer.cams_interfaces import InversionOptimisedGreenhouseGas
-from atmospheric_explorer.data_transformations import clip_and_concat_countries
+from atmospheric_explorer.data_transformations import (
+    clip_and_concat_countries,
+    confidence_interval,
+)
 from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
 
@@ -119,31 +121,6 @@ def line_with_ci_subplots(
     return fig
 
 
-def surface_satellite_data(
-    data_variable: str, years: list[str], months: list[str]
-) -> tuple:
-    """Downloads from Inversion Optimized both surface and satellite data for a data variable"""
-    surface_data = InversionOptimisedGreenhouseGas(
-        data_variables=data_variable,
-        file_format="zip",
-        quantity="surface_flux",
-        input_observations="surface",
-        time_aggregation="monthly_mean",
-        year=years,
-        month=months,
-    )
-    satellite_data = InversionOptimisedGreenhouseGas(
-        data_variables=data_variable,
-        file_format="zip",
-        quantity="surface_flux",
-        input_observations="satellite",
-        time_aggregation="monthly_mean",
-        year=years,
-        month=months,
-    )
-    return surface_data, satellite_data
-
-
 def surface_satellite_yearly_plot(
     data_variable: str,
     countries: list[str],
@@ -156,8 +133,25 @@ def surface_satellite_yearly_plot(
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Inversion dataset"""
     # pylint: disable=too-many-arguments
     # Download surface data file
-    surface_data, satellite_data = surface_satellite_data(data_variable, years, months)
+    surface_data = InversionOptimisedGreenhouseGas(
+        data_variables=data_variable,
+        file_format="zip",
+        quantity="surface_flux",
+        input_observations="surface",
+        time_aggregation="monthly_mean",
+        year=years,
+        month=months,
+    )
     surface_data.download()
+    satellite_data = InversionOptimisedGreenhouseGas(
+        data_variables=data_variable,
+        file_format="zip",
+        quantity="surface_flux",
+        input_observations="satellite",
+        time_aggregation="monthly_mean",
+        year=years,
+        month=months,
+    )
     satellite_data.download()
     # Read data as dataset
     df_surface = surface_data.read_dataset(var_name=var_name)
@@ -169,19 +163,20 @@ def surface_satellite_yearly_plot(
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
     df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
     # Convert units
-    da_converted = convert_units_array(df_total[var_name], data_variable)
-    unit = da_converted.attrs["units"]
-    # Xarray doesn't cover all pandas functionalities, we need to convert it to a pandas dataframe
-    df_pandas = da_converted.squeeze().to_dataframe().dropna().reset_index()
-    df_pandas["year"] = df_pandas["time"].dt.year
-    df_pandas = df_pandas.groupby(["year", "admin", "input_observations"]).agg(
-        mean=(var_name, "mean"),
-        ci=(var_name, lambda d: sms.DescrStatsW(d).tconfint_mean()),
+    da_converted_agg = (
+        convert_units_array(df_total[var_name], data_variable)
+        .resample(time="YS")
+        .map(confidence_interval, dim="time")
     )
-    df_pandas.reset_index(["admin", "input_observations"], inplace=True)
-    df_pandas[["lower", "upper"]] = pd.DataFrame(
-        df_pandas["ci"].to_list(), index=df_pandas.index
+    da_converted_agg.name = var_name
+    da_converted_agg.attrs = df_total[var_name].attrs
+    # Pandas is easier to use for plotting
+    df_pandas = (
+        da_converted_agg.to_dataframe()
+        .unstack("ci")
+        .droplevel(axis=1, level=0)
+        .reset_index(["admin", "input_observations"])
     )
-    df_pandas.drop(columns=["ci"], inplace=True)
-    # Generate subplots
-    return line_with_ci_subplots(df_pandas, countries, col_num, unit, title)
+    return line_with_ci_subplots(
+        df_pandas, countries, col_num, da_converted_agg.attrs["units"], title
+    )
