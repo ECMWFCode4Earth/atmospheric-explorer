@@ -471,13 +471,16 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             and (self.version == other.version)
         )
 
-    def read_dataset(
-        self: InversionOptimisedGreenhouseGas, var_name: str | list[str] | None = None
-    ) -> xr.Dataset:
-        """Returns data as an xarray.Dataset"""
-        # Create dataframe with first file
-        if isinstance(var_name, str):
-            var_name = [var_name]
+    def _read_dataset_no_time_coord(
+        self: InversionOptimisedGreenhouseGas, var_name: list[str] | None = None
+    ):
+        """\
+        Returns data as an xarray.Dataset.
+
+        This function reads multi-file datasets where each file corresponds to a time variable,
+        but the file themselves have no time variable inside. It adds a time variable for each file
+        and concat all files into a dataset.
+        """
         files = sorted(glob(self.file_full_path))
         date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
         data_frame = (
@@ -507,3 +510,16 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         if isinstance(data_frame, xr.DataArray):
             data_frame = data_frame.to_dataset()
         return data_frame
+
+    def read_dataset(
+        self: InversionOptimisedGreenhouseGas, var_name: str | list[str] | None = None
+    ) -> xr.Dataset:
+        """Returns data as an xarray.Dataset"""
+        # Create dataframe with first file
+        if isinstance(var_name, str):
+            var_name = [var_name]
+        if self.data_variables != "methane":
+            # Only methane has the time coordinate, for the others
+            # we need to add it in order to concat all files
+            return self._read_dataset_no_time_coord()
+        return xr.open_mfdataset(self.file_full_path)
