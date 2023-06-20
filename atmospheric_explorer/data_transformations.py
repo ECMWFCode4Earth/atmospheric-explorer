@@ -1,7 +1,11 @@
 """\
 Data transformations needed for the plotting api
 """
+from functools import singledispatch
+
 import geopandas as gpd
+import numpy as np
+import statsmodels.stats.api as sms
 import xarray as xr
 from shapely.geometry import mapping
 
@@ -36,3 +40,27 @@ def clip_and_concat_countries(
         df_clipped = df_clipped.expand_dims({"admin": [country]})
         df_clipped_concat = xr.concat([df_clipped_concat, df_clipped], dim="admin")
     return df_clipped_concat
+
+
+@singledispatch
+def confidence_interval(array: list | np.ndarray) -> tuple:
+    """Compute the confidence interval for an array of samples"""
+    lower, upper = sms.DescrStatsW(array).tconfint_mean()
+    return lower, np.mean(array), upper
+
+
+@confidence_interval.register
+def _(array: xr.DataArray, dim: str) -> xr.DataArray:
+    """\
+    Compute the confidence interval for an xarray.DataArray over a dimension.
+    This function preserves all other dimensions and can be used in resamples and groupby with map.
+    """
+    all_dims = list(array.dims)
+    index = all_dims.index(dim)
+    keep_dims = all_dims
+    keep_dims.remove(dim)
+    return xr.DataArray(
+        np.apply_along_axis(confidence_interval, index, array.values),
+        dims=[*keep_dims, "ci"],
+        coords=[*[array.coords[d] for d in keep_dims], ["lower", "mean", "upper"]],
+    )
