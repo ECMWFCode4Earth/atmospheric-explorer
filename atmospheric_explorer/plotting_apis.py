@@ -127,15 +127,13 @@ def line_with_ci_subplots(
     return fig
 
 
-def surface_satellite_yearly_plot(
+def _surface_satellite_yearly_data(
     data_variable: str,
     countries: list[str],
     years: list[str],
     months: list[str],
-    title: str,
-    col_num: int = 2,
     var_name: str = "flux_foss",
-) -> go.Figure:
+) -> xr.DataArray | xr.Dataset:
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Inversion dataset"""
     # pylint: disable=too-many-arguments
     # Download surface data file
@@ -178,6 +176,24 @@ def surface_satellite_yearly_plot(
     da_converted_agg.name = var_name
     da_converted_agg.attrs = da_converted.attrs
     # Pandas is easier to use for plotting
+    return da_converted_agg
+
+
+def surface_satellite_yearly_plot(
+    data_variable: str,
+    countries: list[str],
+    years: list[str],
+    months: list[str],
+    title: str,
+    col_num: int = 2,
+    var_name: str = "flux_foss",
+) -> go.Figure:
+    """Generate a yearly mean plot with CI for a quantity from the CAMS Global Inversion dataset"""
+    # pylint: disable=too-many-arguments
+    # Download surface data file
+    da_converted_agg = _surface_satellite_yearly_data(
+        data_variable, countries, years, months, var_name
+    )
     df_pandas = (
         da_converted_agg.to_dataframe()
         .unstack("ci")
