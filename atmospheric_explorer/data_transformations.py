@@ -43,13 +43,15 @@ def clip_and_concat_countries(
 
 
 @singledispatch
-def confidence_interval(array: list | np.ndarray) -> tuple:
+def confidence_interval(array: list | np.ndarray) -> np.ndarray:
     """Compute the confidence interval for an array of samples"""
+    if isinstance(array, list):
+        array = np.array(array)
     array_nonan = array[~np.isnan(array)]
     if array_nonan.size > 0:
         array = array_nonan
     lower, upper = sms.DescrStatsW(array).tconfint_mean()
-    return lower, np.mean(array), upper
+    return np.array([lower, np.mean(array), upper])
 
 
 @confidence_interval.register
@@ -60,7 +62,7 @@ def _(array: xr.DataArray, dim: str) -> xr.DataArray:
     """
     all_dims = list(array.dims)
     index = all_dims.index(dim)
-    keep_dims = all_dims
+    keep_dims = all_dims.copy()
     keep_dims.remove(dim)
     return xr.DataArray(
         np.apply_along_axis(confidence_interval, index, array.values),
