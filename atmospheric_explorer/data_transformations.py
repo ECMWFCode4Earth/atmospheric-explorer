@@ -45,6 +45,9 @@ def clip_and_concat_countries(
 @singledispatch
 def confidence_interval(array: list | np.ndarray) -> tuple:
     """Compute the confidence interval for an array of samples"""
+    array_nonan = array[~np.isnan(array)]
+    if array_nonan.size > 0:
+        array = array_nonan
     lower, upper = sms.DescrStatsW(array).tconfint_mean()
     return lower, np.mean(array), upper
 

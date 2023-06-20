@@ -111,7 +111,13 @@ def line_with_ci_subplots(
     fig.update_yaxes(showticklabels=True, matches=None)
     fig.update_xaxes(showticklabels=True, matches=None)
     fig.update_layout(
-        title={"text": title, "x": 0.5, "font": {"size": 19}},
+        title={
+            "text": title,
+            "x": 0.5,
+            "xanchor": "center",
+            "xref": "paper",
+            "font": {"size": 19},
+        },
         height=110 * len(admins),
         hovermode="closest",
     )
@@ -164,8 +170,10 @@ def surface_satellite_yearly_plot(
     df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
     # Convert units
     da_converted = convert_units_array(df_total[var_name], data_variable)
-    da_converted_agg = da_converted.resample(time="YS").map(
-        confidence_interval, dim="time"
+    da_converted_agg = (
+        da_converted.resample(time="YS")
+        .map(confidence_interval, dim="time")
+        .rename({"time": "Year"})
     )
     da_converted_agg.name = var_name
     da_converted_agg.attrs = da_converted.attrs
