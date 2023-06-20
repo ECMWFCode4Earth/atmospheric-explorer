@@ -163,13 +163,12 @@ def surface_satellite_yearly_plot(
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
     df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
     # Convert units
-    da_converted_agg = (
-        convert_units_array(df_total[var_name], data_variable)
-        .resample(time="YS")
-        .map(confidence_interval, dim="time")
+    da_converted = convert_units_array(df_total[var_name], data_variable)
+    da_converted_agg = da_converted.resample(time="YS").map(
+        confidence_interval, dim="time"
     )
     da_converted_agg.name = var_name
-    da_converted_agg.attrs = df_total[var_name].attrs
+    da_converted_agg.attrs = da_converted.attrs
     # Pandas is easier to use for plotting
     df_pandas = (
         da_converted_agg.to_dataframe()
