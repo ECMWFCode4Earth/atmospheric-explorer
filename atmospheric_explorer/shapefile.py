@@ -15,7 +15,7 @@ import requests.utils
 from .loggers import get_logger
 from .utils import create_folder, get_local_folder
 
-logger = get_logger("main")
+logger = get_logger("atmexp")
 
 
 class ShapefilesDownloader:
@@ -54,7 +54,7 @@ class ShapefilesDownloader:
     def __init__(
         self: ShapefilesDownloader,
         dst_dir: str | None = None,
-        resolution: str = "50m",
+        resolution: str = "10m",
         info_type: str = "admin",
         depth: int = 0,
         instance: str = "countries",
