@@ -124,7 +124,15 @@ class ShapefilesDownloader:
             )
         except requests.exceptions.Timeout as err:
             logger.error("Shapefile download timed out.\n%s", err)
-            raise requests.exceptions.Timeout("Shapefile download timed out.")
+            raise requests.exceptions.Timeout(
+                dedent(
+                    f"""\
+                    Shapefile download timed out.
+                    Please check the shapefile URL or
+                    increase the timeout parameter (current value {self.timeout}s)
+                    """
+                )
+            )
 
         if response.status_code != 200:
             logger.error(

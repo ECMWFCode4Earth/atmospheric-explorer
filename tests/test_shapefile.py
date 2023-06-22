@@ -28,7 +28,7 @@ def test__init():
     )
 
 
-def test_wrong_instance():
+def test_wrong_url():
     sh_down = ShapefilesDownloader()
     sh_down.instance = "cont"
     with pytest.raises(requests.exceptions.InvalidURL):
