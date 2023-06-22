@@ -1,6 +1,8 @@
 # pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
+# pylint: disable=unused-argument
 import os
 
 import pytest
@@ -26,6 +28,12 @@ def test__init():
         sh_down.shapefile_url
         == "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip"  # pylint: disable=line-too-long # noqa: E501
     )
+
+
+def test_timeout(mock_get_timeout):
+    sh_down = ShapefilesDownloader()
+    with pytest.raises(requests.exceptions.Timeout):
+        sh_down.download()
 
 
 def test_wrong_url():
