@@ -9,6 +9,7 @@ import os.path
 import zipfile
 from textwrap import dedent
 
+import geopandas as gpd
 import requests
 import requests.utils
 
@@ -21,9 +22,8 @@ logger = get_logger("atmexp")
 class ShapefilesDownloader:
     """\
     This class manages the download, extraction and saving on disk of
-    shapefiles.
-    Shapefiles will be downloaded as zip files and then extracted via
-    different class methods.
+    shapefiles. Shapefiles will be downloaded as zip files and then extracted into a folder.
+    Shapefiles are downloaded from Natural Earth Data.
 
     Attributes:
         shapefiles_content (bytes): downloaded shapefile
@@ -55,20 +55,23 @@ class ShapefilesDownloader:
         self: ShapefilesDownloader,
         dst_dir: str | None = None,
         resolution: str = "10m",
+        map_type: str = "cultural",
         info_type: str = "admin",
         depth: int = 0,
         instance: str = "countries",
+        timeout: int = 10,
     ):  # pylint: disable=too-many-arguments
-        self.shapefiles_content = None
         self.dst_dir = (
             dst_dir
             if dst_dir is not None
             else os.path.join(get_local_folder(), self._ROOT_DIR)
         )
         self.resolution = resolution
+        self.map_type = map_type
         self.info_type = info_type
         self.depth = depth
         self.instance = instance
+        self.timeout = timeout
         logger.debug(
             dedent(
                 """\
@@ -92,6 +95,8 @@ class ShapefilesDownloader:
     @property
     def shapefile_name(self: ShapefilesDownloader) -> str:
         """Shapefile directory"""
+        if self.map_type == "physical":
+            return f"ne_{self.resolution}_{self.info_type}"
         return f"ne_{self.resolution}_{self.info_type}_{self.depth}_{self.instance}"
 
     @property
@@ -105,31 +110,43 @@ class ShapefilesDownloader:
         return os.path.join(self.shapefile_dir, f"{self.shapefile_name}.shp")
 
     @property
-    def shapefiles_url(self: ShapefilesDownloader) -> str:
+    def shapefile_url(self: ShapefilesDownloader) -> str:
         """Shapefile download url"""
         # pylint: disable=line-too-long
-        return f"{self._BASE_URL}/{self.resolution}/cultural/{self.shapefile_name}.zip"  # noqa: E501
+        return f"{self._BASE_URL}/{self.resolution}/{self.map_type}/{self.shapefile_name}.zip"  # noqa: E501
 
-    def _download_shapefiles(self: ShapefilesDownloader) -> None:
-        """Download shapefile as a zip"""
-        logger.info("Downloading shapefiles from %s", self.shapefiles_url)
-        self.shapefiles_content = requests.get(
-            self.shapefiles_url, headers=self._HEADERS, timeout=30
-        ).content
+    def _download_shapefile(self: ShapefilesDownloader) -> bytes:
+        """Download shapefiles and returns their content in bytes"""
+        logger.info("Downloading shapefiles from %s", self.shapefile_url)
+        try:
+            response = requests.get(
+                self.shapefile_url, headers=self._HEADERS, timeout=self.timeout
+            )
+        except requests.exceptions.Timeout as err:
+            logger.error("Shapefile download timed out.\n%s", err)
+            raise requests.exceptions.Timeout("Shapefile download timed out.")
 
-    def _save_shapefiles_to_zip(self: ShapefilesDownloader) -> None:
-        """Save shapefile to zip file"""
-        if self.shapefiles_content is None:
-            logger.error("No content in shapefile")
-            raise ValueError("No content in shapefile")
+        if response.status_code != 200:
+            logger.error(
+                "Failed to download shapefile, a wrong URL has been provided.\n%s",
+                response.text,
+            )
+            raise requests.exceptions.InvalidURL(
+                "Failed to download shapefile, a wrong URL has been provided."
+            )
+        return response.content
+
+    def _download_shapefile_to_zip(self: ShapefilesDownloader) -> None:
+        """Save shapefiles to zip file"""
         with open(self.shapefile_dir + ".zip", "wb") as file_zip:
-            file_zip.write(self.shapefiles_content)
+            file_zip.write(self._download_shapefile())
             logger.info("Shapefiles downloaded to file %s", file_zip.name)
 
     def _extract_to_folder(self: ShapefilesDownloader):
         """\
         Extracts shapefile zip to directory.
-        The directory will have the same name of the original zip file"""
+        The directory will have the same name of the original zip file
+        """
         # Unzip file to directory
         filepath = self.shapefile_dir + ".zip"
         with zipfile.ZipFile(filepath, "r") as zip_ref:
@@ -139,13 +156,21 @@ class ShapefilesDownloader:
         os.remove(filepath)
         logger.info("Removed file %s", filepath)
 
-    def _clear_shapefiles_content(self: ShapefilesDownloader) -> None:
-        """Clear content"""
-        self.shapefiles_content = None
-
-    def download_shapefile(self: ShapefilesDownloader) -> None:
+    def download(self: ShapefilesDownloader) -> None:
         """Download and extracts shapefiles"""
-        self._download_shapefiles()
-        self._save_shapefiles_to_zip()
+        self._download_shapefile_to_zip()
         self._extract_to_folder()
-        self._clear_shapefiles_content()
+
+    def _read_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
+        """Return shapefile as geopandas dataframe"""
+        logger.debug("Reading %s as dataframe", self.shapefile_full_path)
+        return gpd.read_file(self.shapefile_full_path)
+
+    def get_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
+        """Return shapefile as geopandas dataframe, also downloads shapefile if needed"""
+        if not os.path.exists(self.shapefile_full_path):
+            logger.info("Shapefile not found, downloading it from Natural Earth Data")
+            self.download()
+        else:
+            logger.info("Found shapefile %s, reading it", self.shapefile_full_path)
+        return self._read_as_dataframe()
