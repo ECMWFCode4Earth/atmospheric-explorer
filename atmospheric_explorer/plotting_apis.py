@@ -8,7 +8,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interfaces import InversionOptimisedGreenhouseGas
+from atmospheric_explorer.cams_interfaces import (
+    EAC4Instance,
+    InversionOptimisedGreenhouseGas,
+)
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
     confidence_interval,
@@ -18,7 +21,10 @@ from atmospheric_explorer.utils import hex_to_rgb
 
 
 def add_ci(
-    fig: go.Figure, trace: go.Figure, data_frame: pd.DataFrame, countries: list[str]
+    fig: go.Figure,
+    trace: go.Figure,
+    data_frame: pd.DataFrame,
+    countries: list[str],
 ) -> None:
     """Add confidence intervals to a plotly trace"""
     line_color = ",".join([str(n) for n in hex_to_rgb(trace.line.color)])
@@ -68,7 +74,11 @@ def add_ci(
 
 
 def line_with_ci_subplots(
-    data_frame: pd.DataFrame, admins: list[str], col_num: int, unit: str, title: str
+    data_frame: pd.DataFrame,
+    admins: list[str],
+    col_num: int,
+    unit: str,
+    title: str,
 ) -> go.Figure:
     """\
     Facet line plot on countries/administrative entinties.
@@ -127,15 +137,15 @@ def line_with_ci_subplots(
     return fig
 
 
-def _surface_satellite_yearly_data(
+def _ghg_surface_satellite_yearly_data(
     data_variable: str,
     countries: list[str],
     years: list[str],
     months: list[str],
     var_name: str = "flux_foss",
 ) -> xr.DataArray | xr.Dataset:
-    """Generate a yearly mean plot with CI for a quantity from the CAMS Global Inversion dataset"""
     # pylint: disable=too-many-arguments
+    # pylint: disable=invalid-name
     # Download surface data file
     surface_data = InversionOptimisedGreenhouseGas(
         data_variables=data_variable,
@@ -179,7 +189,7 @@ def _surface_satellite_yearly_data(
     return da_converted_agg
 
 
-def surface_satellite_yearly_plot(
+def ghg_surface_satellite_yearly_plot(
     data_variable: str,
     countries: list[str],
     years: list[str],
@@ -188,10 +198,10 @@ def surface_satellite_yearly_plot(
     col_num: int = 2,
     var_name: str = "flux_foss",
 ) -> go.Figure:
-    """Generate a yearly mean plot with CI for a quantity from the CAMS Global Inversion dataset"""
+    """Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset"""
     # pylint: disable=too-many-arguments
-    # Download surface data file
-    da_converted_agg = _surface_satellite_yearly_data(
+    # pylint: disable=invalid-name
+    da_converted_agg = _ghg_surface_satellite_yearly_data(
         data_variable, countries, years, months, var_name
     )
     df_pandas = (
@@ -203,3 +213,96 @@ def surface_satellite_yearly_plot(
     return line_with_ci_subplots(
         df_pandas, countries, col_num, da_converted_agg.attrs["units"], title
     )
+
+
+def eac4_anomalies_plot(
+    data_variable: str,
+    var_name: str,
+    countries: list[str],
+    dates_range: str,
+    time_values: str,
+    title: str,
+    resampling: str = "1MS",
+) -> go.Figure:
+    """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
+
+    TODO: pass reference period as parameter. We are currently considering the
+    same date range for data as reference period."""
+    # pylint: disable=too-many-arguments
+    data = EAC4Instance(
+        data_variable,
+        "netcdf",
+        dates_range=dates_range,
+        time_values=time_values,
+    )
+    data.download()
+    df_down = xr.open_dataset(data.file_full_path)
+    df_down = df_down.rio.write_crs("EPSG:4326")
+    df_clipped = clip_and_concat_countries(df_down, countries).sel(admin=countries[0])
+    df_agg = (
+        df_clipped.mean(dim=["latitude", "longitude"])
+        .resample(time=resampling, restore_coord_dims=True)
+        .mean(dim="time")
+    )
+    reference_value = df_agg.mean(dim="time")
+    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    reference_value = df_converted.mean().values
+    df_anomalies = df_converted - reference_value
+    df_anomalies.attrs = df_converted.attrs
+    fig = px.line(y=df_anomalies.values, x=df_anomalies.coords["time"], markers="o")
+    fig.update_xaxes(title="Month")
+    fig.update_yaxes(title=df_anomalies.attrs["units"])
+    fig.update_layout(
+        title={
+            "text": title,
+            "x": 0.45,
+            "y": 0.95,
+            "automargin": True,
+            "yref": "container",
+            "font": {"size": 19},
+        }
+    )
+    return fig
+
+
+def eac4_hovmoeller_latitude_plot(
+    data_variable: str,
+    var_name: str,
+    dates_range: str,
+    time_values: str,
+    title: str,
+    resampling: str = "1MS",
+) -> go.Figure:
+    """Generate a Hovmoeller plot (latitude vs. months) for a quantity from the Global Reanalysis EAC4 dataset.
+
+    TODO: discretize colorbar"""
+    # pylint: disable=too-many-arguments
+    data = EAC4Instance(
+        data_variable,
+        "netcdf",
+        dates_range=dates_range,
+        time_values=time_values,
+    )
+    data.download()
+    df_down = xr.open_dataset(data.file_full_path)
+    df_down = df_down.rio.write_crs("EPSG:4326")
+    df_agg = (
+        df_down.resample(time=resampling, restore_coord_dims=True)
+        .mean(dim="time")
+        .mean(dim="longitude")
+    )
+    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    fig = px.imshow(df_converted.T, color_continuous_scale="Jet", origin="lower")
+    fig.update_xaxes(title="Month")
+    fig.update_yaxes(title="Latitude [degrees]")
+    fig.update_layout(
+        title={
+            "text": f"{title} [{df_converted.attrs['units']}]",
+            "x": 0.45,
+            "y": 0.95,
+            "automargin": True,
+            "yref": "container",
+            "font": {"size": 19},
+        }
+    )
+    return fig
