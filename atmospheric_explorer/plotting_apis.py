@@ -227,7 +227,8 @@ def eac4_anomalies_plot(
     """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
 
     TODO: pass reference period as parameter. We are currently considering the
-    same date range for data as reference period."""
+    same date range for data as reference period.
+    TODO: add facet plot functionality """
     # pylint: disable=too-many-arguments
     data = EAC4Instance(
         data_variable,
