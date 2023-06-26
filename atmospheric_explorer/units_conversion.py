@@ -18,7 +18,7 @@ import xarray as xr
 from .exceptions import OperationNotAllowed
 from .loggers import get_logger
 
-logger = get_logger("main")
+logger = get_logger("atmexp")
 
 
 class OperationParser:

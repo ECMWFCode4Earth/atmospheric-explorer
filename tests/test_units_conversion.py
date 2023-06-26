@@ -1,5 +1,8 @@
 # pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
+# pylint: disable=protected-access
+# pylint: disable=unused-argument
 import numpy as np
 import pytest
 import xarray as xr

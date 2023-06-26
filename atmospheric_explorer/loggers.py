@@ -18,13 +18,14 @@ class LoggersMeta(type):
     _logs_root_dir = os.path.join(get_local_folder(), "logs")
     _logging_config = {
         "version": 1,
+        "disable_existing_loggers": False,
         "loggers": {
-            "root": {"handlers": ["console"], "level": "ERROR"},
-            "main": {
+            "root": {"handlers": logging.root.handlers, "level": "WARNING"},
+            "atmexp": {
                 "handlers": ["console", "rotatingfile"],
                 "level": "DEBUG",
                 "propagate": 0,
-                "qualname": "main",
+                "qualname": "atmexp",
             },
         },
         "handlers": {
@@ -38,7 +39,7 @@ class LoggersMeta(type):
             },
         },
         "formatters": {
-            "simple": {"format": "%(levelname)s|%(module)s: %(message)s"},
+            "simple": {"format": "%(asctime)s %(levelname)s %(message)s"},
             "verbose": {
                 "format": "%(asctime)s|%(levelname)s|%(module)s|%(process)d|%(thread)d: %(message)s"  # noqa: E501
             },
