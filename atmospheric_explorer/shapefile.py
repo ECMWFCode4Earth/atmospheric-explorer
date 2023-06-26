@@ -24,6 +24,7 @@ class ShapefilesDownloader:
     This class manages the download, extraction and saving on disk of
     shapefiles. Shapefiles will be downloaded as zip files and then extracted into a folder.
     Shapefiles are downloaded from Natural Earth Data.
+    By default, the class download a 10m resolution "admin" shapefile for all countries in the world.
 
     Attributes:
         shapefiles_content (bytes): downloaded shapefile
