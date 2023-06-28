@@ -14,6 +14,7 @@ from atmospheric_explorer.cams_interfaces import (
 )
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
+    shifting_long_EAC4, #verificare
     confidence_interval,
 )
 from atmospheric_explorer.units_conversion import convert_units_array
@@ -296,6 +297,57 @@ def eac4_hovmoeller_latitude_plot(
     fig = px.imshow(df_converted.T, color_continuous_scale="Jet", origin="lower")
     fig.update_xaxes(title="Month")
     fig.update_yaxes(title="Latitude [degrees]")
+    fig.update_layout(
+        title={
+            "text": f"{title} [{df_converted.attrs['units']}]",
+            "x": 0.45,
+            "y": 0.95,
+            "automargin": True,
+            "yref": "container",
+            "font": {"size": 19},
+        }
+    )
+    return fig
+
+
+
+#Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
+def eac4_hovmoeller_levels_plot(
+    data_variable: str,
+    var_name: str,
+    dates_range: str,
+    time_values: str,
+    pressure_level: list[str], #non metto i model level
+    countries:list[str],
+    title: str,
+    resampling: str = "1MS", #non se se vogliamo mantenere mese come time step fissato
+) -> go.Figure:
+     
+    data = EAC4Instance(
+        data_variable,
+        "netcdf",
+        pressure_level=pressure_level,
+        dates_range=dates_range,
+        time_values=time_values,
+    )
+    data.download()
+
+    df_down = xr.open_dataset(data.file_full_path)
+    df_down = df_down.rio.write_crs("EPSG:4326")
+    df_shift= shifting_long_EAC4(df_down)
+    df_clipped = clip_and_concat_countries(df_shift, countries).sel(admin=countries[0])
+    df_agg = (
+    df_clipped.resample(time=resampling, restore_coord_dims=True)
+    .mean(dim="time")
+    .mean(dim="longitude")
+    .mean(dim='latitude')
+    .sortby("level")
+    )
+    reference_value = df_agg.mean(dim="time")
+    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    fig = px.imshow(df_converted.T, color_continuous_scale="RdBu_r", origin="lower")
+    fig.update_xaxes(title="Month")  #non so se fissiamo month
+    fig.update_yaxes(type='log', autorange='reversed', title="Levels[hPa]")
     fig.update_layout(
         title={
             "text": f"{title} [{df_converted.attrs['units']}]",
