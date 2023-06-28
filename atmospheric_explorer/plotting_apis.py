@@ -1,8 +1,9 @@
 """\
 APIs for generating dynamic and static plots
 """
-from math import ceil
+from math import ceil, log10
 
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -12,13 +13,53 @@ from atmospheric_explorer.cams_interfaces import (
     EAC4Instance,
     InversionOptimisedGreenhouseGas,
 )
+from atmospheric_explorer.data_transformations import shifting_long  # verificare
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
-    shifting_long_EAC4, #verificare
     confidence_interval,
 )
 from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
+
+
+def sequential_colorscale_bar(
+    values: list[float] | list[int], colors: list[str]
+) -> tuple[list, dict]:
+    """Compute a sequential colorscale and colorbar form a list of values and a list of colors"""
+    vals = np.array(values)
+    vals.sort()
+    separators = np.linspace(vals.min(), vals.max(), len(colors) + 1)
+    separators_scaled = np.linspace(0, 1, len(colors) + 1)
+    color_scale_custom = []
+    for i, color in enumerate(colors):
+        color_scale_custom.append([separators_scaled[i], color])
+        color_scale_custom.append([separators_scaled[i + 1], color])
+    tickvals = [
+        np.mean(separators[k : k + 2]) for k in range(len(separators) - 1)
+    ]  # position of tick text
+    if separators.max() < (len(separators) - 1):
+        n_decimals = int(
+            round(1 - log10(separators.max() / (len(separators) - 1)), 0)
+        )  # number of decimals needed to distinguish color levels
+        ticktext = (
+            [f"<{separators[1]:.{n_decimals}f}"]
+            + [
+                f"{separators[k]:.{n_decimals}f}-{separators[k+1]:.{n_decimals}f}"
+                for k in range(1, len(separators) - 2)
+            ]
+            + [f">{separators[-2]:.{n_decimals}f}"]
+        )
+    else:
+        ticktext = (
+            [f"<{separators[1]:.0f}"]
+            + [
+                f"{separators[k]:.0f}-{separators[k+1]:.0f}"
+                for k in range(1, len(separators) - 2)
+            ]
+            + [f">{separators[-2]:.0f}"]
+        )
+    colorbar_custom = {"thickness": 25, "tickvals": tickvals, "ticktext": ticktext}
+    return color_scale_custom, colorbar_custom
 
 
 def add_ci(
@@ -229,7 +270,7 @@ def eac4_anomalies_plot(
 
     TODO: pass reference period as parameter. We are currently considering the
     same date range for data as reference period.
-    TODO: add facet plot functionality """
+    TODO: add facet plot functionality"""
     # pylint: disable=too-many-arguments
     data = EAC4Instance(
         data_variable,
@@ -286,8 +327,9 @@ def eac4_hovmoeller_latitude_plot(
         time_values=time_values,
     )
     data.download()
-    df_down = xr.open_dataset(data.file_full_path)
+    df_down = data.read_dataset()
     df_down = df_down.rio.write_crs("EPSG:4326")
+    df_down = shifting_long(df_down)
     df_agg = (
         df_down.resample(time=resampling, restore_coord_dims=True)
         .mean(dim="time")
@@ -310,19 +352,22 @@ def eac4_hovmoeller_latitude_plot(
     return fig
 
 
-
-#Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
+# Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
 def eac4_hovmoeller_levels_plot(
     data_variable: str,
     var_name: str,
     dates_range: str,
     time_values: str,
-    pressure_level: list[str], #non metto i model level
-    countries:list[str],
+    pressure_level: list[str],  # non metto i model level
+    countries: list[str],
     title: str,
-    resampling: str = "1MS", #non se se vogliamo mantenere mese come time step fissato
+    resampling: str = "1MS",
+    base_colorscale: list[str] = px.colors.sequential.RdBu_r,
 ) -> go.Figure:
-     
+    """Hoevmoeller plot of EAC4 multilevel variables, time vs pressure level"""
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-locals
+    # pylint: disable=dangerous-default-value
     data = EAC4Instance(
         data_variable,
         "netcdf",
@@ -331,23 +376,29 @@ def eac4_hovmoeller_levels_plot(
         time_values=time_values,
     )
     data.download()
-
-    df_down = xr.open_dataset(data.file_full_path)
+    df_down = data.read_dataset()
     df_down = df_down.rio.write_crs("EPSG:4326")
-    df_shift= shifting_long_EAC4(df_down)
-    df_clipped = clip_and_concat_countries(df_shift, countries).sel(admin=countries[0])
+    df_down = shifting_long(df_down)
+    df_clipped = clip_and_concat_countries(df_down, countries).sel(admin=countries[0])
     df_agg = (
-    df_clipped.resample(time=resampling, restore_coord_dims=True)
-    .mean(dim="time")
-    .mean(dim="longitude")
-    .mean(dim='latitude')
-    .sortby("level")
+        df_clipped.resample(time=resampling, restore_coord_dims=True)
+        .mean(dim="time")
+        .mean(dim="longitude")
+        .mean(dim="latitude")
+        .sortby("level")
     )
-    reference_value = df_agg.mean(dim="time")
     df_converted = convert_units_array(df_agg[var_name], data_variable)
-    fig = px.imshow(df_converted.T, color_continuous_scale="RdBu_r", origin="lower")
-    fig.update_xaxes(title="Month")  #non so se fissiamo month
-    fig.update_yaxes(type='log', autorange='reversed', title="Levels[hPa]")
+    df_converted = df_converted.assign_coords(
+        {"level": [str(c) for c in df_converted.coords["level"].values]}
+    )
+    colorscale, colorbar = sequential_colorscale_bar(
+        df_converted.values.flatten(), base_colorscale
+    )
+    fig = px.imshow(df_converted.T, origin="lower")
+    fig.update_xaxes(
+        title="Month"
+    )  # TODO Change this based on resampling # pylint: disable=fixme
+    fig.update_yaxes(autorange="reversed", title="Levels[hPa]")
     fig.update_layout(
         title={
             "text": f"{title} [{df_converted.attrs['units']}]",
@@ -356,6 +407,7 @@ def eac4_hovmoeller_levels_plot(
             "automargin": True,
             "yref": "container",
             "font": {"size": 19},
-        }
+        },
+        coloraxis={"colorscale": colorscale, "colorbar": colorbar},
     )
     return fig

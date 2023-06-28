@@ -70,5 +70,9 @@ def _(array: xr.DataArray, dim: str) -> xr.DataArray:
         coords=[*[array.coords[d] for d in keep_dims], ["lower", "mean", "upper"]],
     )
 
-def shifting_long_EAC4(ds=xr.Dataset):
-    return ds.assign_coords(longitude=(((ds.longitude + 180) % 360) - 180)).sortby('longitude')
+
+def shifting_long(data_set=xr.Dataset) -> xr.Dataset:
+    """Shifts longitude to range -180+180"""
+    return data_set.assign_coords(
+        longitude=((data_set.longitude + 180) % 360) - 180
+    ).sortby("longitude")
