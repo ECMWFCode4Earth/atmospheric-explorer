@@ -1,6 +1,10 @@
 """\
 APIs for generating dynamic and static plots
 """
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from enum import Enum
 from math import ceil
 
 import pandas as pd
@@ -12,9 +16,9 @@ from atmospheric_explorer.cams_interfaces import (
     EAC4Instance,
     InversionOptimisedGreenhouseGas,
 )
+from atmospheric_explorer.data_transformations import shifting_long_EAC4  # verificare
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
-    shifting_long_EAC4, #verificare
     confidence_interval,
 )
 from atmospheric_explorer.units_conversion import convert_units_array
@@ -229,7 +233,7 @@ def eac4_anomalies_plot(
 
     TODO: pass reference period as parameter. We are currently considering the
     same date range for data as reference period.
-    TODO: add facet plot functionality """
+    TODO: add facet plot functionality"""
     # pylint: disable=too-many-arguments
     data = EAC4Instance(
         data_variable,
@@ -310,19 +314,18 @@ def eac4_hovmoeller_latitude_plot(
     return fig
 
 
-
-#Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
 def eac4_hovmoeller_levels_plot(
     data_variable: str,
     var_name: str,
     dates_range: str,
     time_values: str,
-    pressure_level: list[str], #non metto i model level
-    countries:list[str],
+    pressure_level: list[str],  # non metto i model level
+    countries: list[str],
     title: str,
-    resampling: str = "1MS", #non se se vogliamo mantenere mese come time step fissato
+    resampling: str = "1MS",  # non se se vogliamo mantenere mese come time step fissato
 ) -> go.Figure:
-     
+    """Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset."""
+    # pylint: disable=too-many-arguments
     data = EAC4Instance(
         data_variable,
         "netcdf",
@@ -334,20 +337,19 @@ def eac4_hovmoeller_levels_plot(
 
     df_down = xr.open_dataset(data.file_full_path)
     df_down = df_down.rio.write_crs("EPSG:4326")
-    df_shift= shifting_long_EAC4(df_down)
+    df_shift = shifting_long_EAC4(df_down)
     df_clipped = clip_and_concat_countries(df_shift, countries).sel(admin=countries[0])
     df_agg = (
-    df_clipped.resample(time=resampling, restore_coord_dims=True)
-    .mean(dim="time")
-    .mean(dim="longitude")
-    .mean(dim='latitude')
-    .sortby("level")
+        df_clipped.resample(time=resampling, restore_coord_dims=True)
+        .mean(dim="time")
+        .mean(dim="longitude")
+        .mean(dim="latitude")
+        .sortby("level")
     )
-    reference_value = df_agg.mean(dim="time")
     df_converted = convert_units_array(df_agg[var_name], data_variable)
     fig = px.imshow(df_converted.T, color_continuous_scale="RdBu_r", origin="lower")
-    fig.update_xaxes(title="Month")  #non so se fissiamo month
-    fig.update_yaxes(type='log', autorange='reversed', title="Levels[hPa]")
+    fig.update_xaxes(title="Month")  # non so se fissiamo month
+    fig.update_yaxes(type="log", autorange="reversed", title="Levels[hPa]")
     fig.update_layout(
         title={
             "text": f"{title} [{df_converted.attrs['units']}]",
@@ -359,3 +361,59 @@ def eac4_hovmoeller_levels_plot(
         }
     )
     return fig
+
+
+PlotType = Enum("PlotType", ["time_series", "hovmoeller"])
+
+
+class PlottingInterface(ABC):
+    """Generic interface for all plotting APIs"""
+
+    _plot_type: PlotType
+
+    def __init__(
+        self: PlottingInterface,
+        _data_variable: str,
+        _var_name: str,
+        _time_period: str,
+    ):
+        self.data_variable = _data_variable
+        self.var_name = _var_name
+        self.time_period = _time_period
+
+    @property
+    def data_variable(self: PlottingInterface) -> str:
+        """Data variable name"""
+        return self._data_variable
+
+    @data_variable.setter
+    def data_variable(
+        self: PlottingInterface,
+        data_variable_input: str,
+    ) -> None:
+        self._data_variable = data_variable_input
+
+    @abstractmethod
+    def plot(self: PlottingInterface):
+        """Returns a plot"""
+        raise NotImplementedError("Method not implemented")
+
+
+class TimeSeriesPlotInstance(PlottingInterface):
+    """Time series plot object"""
+
+    _plot_type: PlotType = PlotType.time_series
+
+    # def __init__(
+    #     self: PlottingInterface,
+    #     data_variable: str,
+    #     var_name: str,
+    #     time_period: str,
+    # ):
+    #     super().__init__(data_variable, var_name, time_period)
+
+    def plot(
+        self: TimeSeriesPlotInstance,
+    ) -> go.Figure:
+        fig = px.line()
+        return fig
