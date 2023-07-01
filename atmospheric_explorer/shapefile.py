@@ -175,11 +175,17 @@ class ShapefilesDownloader:
         logger.debug("Reading %s as dataframe", self.shapefile_full_path)
         return gpd.read_file(self.shapefile_full_path)
 
-    def get_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
+    def get_as_dataframe(
+        self: ShapefilesDownloader, columns: list[str] | None = None
+    ) -> gpd.GeoDataFrame:
         """Return shapefile as geopandas dataframe, also downloads shapefile if needed"""
         if not os.path.exists(self.shapefile_full_path):
             logger.info("Shapefile not found, downloading it from Natural Earth Data")
             self.download()
         else:
             logger.info("Found shapefile %s, reading it", self.shapefile_full_path)
-        return self._read_as_dataframe()
+        return (
+            self._read_as_dataframe()[columns]
+            if columns is not None
+            else self._read_as_dataframe()
+        )  # type: ignore
