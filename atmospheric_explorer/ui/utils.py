@@ -3,37 +3,59 @@ Module with utils for the UI
 """
 import folium
 import folium.features
+import geopandas as gpd
 import streamlit as st
 from streamlit_folium import st_folium
 
 from atmospheric_explorer.shapefile import ShapefilesDownloader
 
 
-@st.cache_data
-def get_shapefile():
+@st.cache_data(show_spinner="Fetching shapefile...")
+def shapefile_dataframe() -> gpd.GeoDataFrame:
     """Get and cache the shapefile"""
-    return ShapefilesDownloader().get_as_dataframe()
+    return ShapefilesDownloader().get_as_dataframe(columns=["ADMIN", "geometry"])
 
 
-def build_folium_map():
-    """Build folium map in Streamlit with a layer of polygons on countries"""
-    shapefile = get_shapefile()
-    folium_map = folium.Map()
-    folium.GeoJson(shapefile, name="geojson").add_to(folium_map)
+def world_polygon() -> folium.GeoJson:
+    """Return a folium GeoJson object that adds colored polygons over all countries"""
+    return folium.GeoJson(shapefile_dataframe(), name="world_polygon")
+
+
+def selected_state_style(_) -> dict:
+    """This function is needed because streamlit can't cache lambdas"""
+    return {"fillColor": "green", "color": "green"}
+
+
+def selected_state_fgroup(selected_state: str | None) -> folium.FeatureGroup:
+    """Return a folium feature group that adds a colored polygon over the selected state"""
+    shapefile = shapefile_dataframe()
+    selected_country_polygon = shapefile[shapefile["ADMIN"] == selected_state][
+        "geometry"
+    ]
     countries_feature_group = folium.FeatureGroup(name="Countries")
-    selected_country_polygon = shapefile[
-        shapefile["ADMIN"] == st.session_state.get("selected_state")
-    ]["geometry"]
     countries_feature_group.add_child(
-        folium.features.GeoJson(
+        folium.GeoJson(
             data=selected_country_polygon,
-            style_function=lambda x: {"fillColor": "green", "color": "green"},
+            name="selected_state_polygon",
+            style_function=selected_state_style,
         )
     )
-    countries_feature_group.add_to(folium_map)
+    return countries_feature_group
+
+
+def build_folium_map(selected_state: str | None):
+    """Build folium map with a layer of polygons on countries"""
+    folium_map = folium.Map()
+    world_polygon().add_to(folium_map)
+    selected_state_fgroup(selected_state).add_to(folium_map)
+    return folium_map
+
+
+def show_folium_map():
+    """Show folium map in Streamlit"""
+    folium_map = build_folium_map(st.session_state.get("selected_state"))
     out_event = st_folium(
         folium_map,
-        feature_group_to_add=countries_feature_group,
         key="folium_map",
         center=st.session_state.get("last_object_clicked"),
         returned_objects=["last_active_drawing", "last_object_clicked"],

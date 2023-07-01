@@ -3,11 +3,7 @@ Module for building the UI
 """
 import streamlit as st
 
-from atmospheric_explorer.ui.utils import (
-    build_folium_map,
-    build_sidebar,
-    update_session,
-)
+from atmospheric_explorer.ui.utils import build_sidebar, show_folium_map, update_session
 
 st.set_page_config(
     page_title="Atmospheric Explorer", page_icon=":earth_africa:", layout="wide"
@@ -32,7 +28,7 @@ st.session_state["end_date"] = end_date_col.date_input(
 PROGRESS_BAR.progress(0.7, "Building sidebar")
 build_sidebar()
 PROGRESS_BAR.progress(0.8, "Building map")
-out_event = build_folium_map()
+out_event = show_folium_map()
 update_session(out_event)
 PROGRESS_BAR.progress(1.0, "Done")
 PROGRESS_BAR.empty()
