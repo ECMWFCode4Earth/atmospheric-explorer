@@ -1,17 +1,23 @@
 """\
 Module with utils for the UI
 """
+import time
+
 import folium
 import folium.features
 import streamlit as st
-from folium.plugins import Draw
 from streamlit_folium import st_folium
 
+from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.ui.utils import shapefile_dataframe
 
+logger = get_logger("atmexp")
 
+
+@st.cache_data(show_spinner="Fetching world polygon...")
 def world_polygon() -> folium.GeoJson:
     """Return a folium GeoJson object that adds colored polygons over all countries"""
+    logger.info("Fetch world polygon")
     return folium.GeoJson(shapefile_dataframe(), name="world_polygon")
 
 
@@ -20,8 +26,10 @@ def selected_state_style(_) -> dict:
     return {"fillColor": "green", "color": "green"}
 
 
+@st.cache_data(show_spinner="Fetching selected state polygon...")
 def selected_state_fgroup(selected_state: str | None) -> folium.FeatureGroup:
     """Return a folium feature group that adds a colored polygon over the selected state"""
+    logger.info("Fetch %s polygon", selected_state)
     shapefile = shapefile_dataframe()
     selected_country_polygon = shapefile[shapefile["ADMIN"] == selected_state][
         "geometry"
@@ -37,10 +45,11 @@ def selected_state_fgroup(selected_state: str | None) -> folium.FeatureGroup:
     return countries_feature_group
 
 
+@st.cache_resource(show_spinner="Fetching map...")
 def build_folium_map(selected_state: str | None):
     """Build folium map with a layer of polygons on countries"""
+    logger.info("Build folium map")
     folium_map = folium.Map()
-    Draw().add_to(folium_map)
     world_polygon().add_to(folium_map)
     selected_state_fgroup(selected_state).add_to(folium_map)
     return folium_map
@@ -48,6 +57,8 @@ def build_folium_map(selected_state: str | None):
 
 def show_folium_map():
     """Show folium map in Streamlit"""
+    start_time = time.time()
+    logger.info("Show folium map")
     folium_map = build_folium_map(st.session_state.get("selected_state"))
     out_event = st_folium(
         folium_map,
@@ -57,6 +68,7 @@ def show_folium_map():
         height=700,
         width="100%",
     )
+    st.write(f"Runtime: {time.time() - start_time:.2f}")
     return out_event
 
 
