@@ -14,6 +14,7 @@ from itertools import count
 from typing import Any
 
 import cdsapi
+import xarray as xr
 
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
@@ -30,7 +31,7 @@ class CAMSDataInterface(ABC):
         data_variables (str | list[str]): data varaibles to be downloaded from CAMS, depend on the dataset
         file_format (str): format for the downloaded data, e.g. 'netcdf', 'grib', 'zip' etc.
         filename (str | None): file where to save the data. If not provided will be built using file_format and
-            with a dinamically generated name
+            with a dynamically generated name
     """
 
     _dataset_name: str | None = None
@@ -112,6 +113,11 @@ class CAMSDataInterface(ABC):
     @abstractmethod
     def includes(self: CAMSDataInterface, other: CAMSDataInterface):
         """Determines if another object is already included in self"""
+        raise NotImplementedError("Method not implemented")
+
+    @abstractmethod
+    def read_dataset(self: CAMSDataInterface):
+        """Returns the files as an xarray.Dataset"""
         raise NotImplementedError("Method not implemented")
 
 
@@ -294,6 +300,18 @@ class EAC4Instance(CAMSDataInterface):
             and self._includes_model_level(other._model_level)
         )
 
+    def read_dataset(
+        self: EAC4Instance, var_name: str | list[str] | None = None
+    ) -> xr.Dataset:
+        """Returns data as an xarray.Dataset"""
+        if isinstance(var_name, str):
+            var_name = [var_name]
+        return (
+            xr.open_dataset(self.file_full_path)[var_name]
+            if var_name is not None
+            else xr.open_dataset(self.file_full_path)
+        )
+
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     # pylint: disable=line-too-long
@@ -452,3 +470,56 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             and self._includes_month(other._month)
             and (self.version == other.version)
         )
+
+    def _read_dataset_no_time_coord(
+        self: InversionOptimisedGreenhouseGas, var_name: list[str] | None = None
+    ):
+        """\
+        Returns data as an xarray.Dataset.
+
+        This function reads multi-file datasets where each file corresponds to a time variable,
+        but the file themselves have no time variable inside. It adds a time variable for each file
+        and concat all files into a dataset.
+        """
+        files = sorted(glob(self.file_full_path))
+        date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
+        data_frame = (
+            xr.open_dataset(files[0])[var_name]
+            if var_name is not None
+            else xr.open_dataset(files[0])
+        )
+        data_frame = data_frame.expand_dims({"time": [date_index]})
+        for file in files[1:]:
+            # Merge remaining files
+            # ! This loop replaces xr.open_mfdataset(surface_data.file_full_path) that does not work
+            # (because time coordinate is not included in dataframe)
+            date_index = datetime.strptime(file.split("_")[-1].split(".")[0], "%Y%m")
+            temp = (
+                xr.open_dataset(file)[var_name]
+                if var_name is not None
+                else xr.open_dataset(file)
+            )
+            temp = temp.expand_dims({"time": [date_index]})
+            data_frame = xr.combine_by_coords([data_frame, temp])
+        data_frame = data_frame.expand_dims(
+            {
+                "input_observations": [self.input_observations],
+                "time_aggregation": [self.time_aggregation],
+            }
+        )
+        if isinstance(data_frame, xr.DataArray):
+            data_frame = data_frame.to_dataset()
+        return data_frame
+
+    def read_dataset(
+        self: InversionOptimisedGreenhouseGas, var_name: str | list[str] | None = None
+    ) -> xr.Dataset:
+        """Returns data as an xarray.Dataset"""
+        # Create dataframe with first file
+        if isinstance(var_name, str):
+            var_name = [var_name]
+        if self.data_variables != "methane":
+            # Only methane has the time coordinate, for the others
+            # we need to add it in order to concat all files
+            return self._read_dataset_no_time_coord()
+        return xr.open_mfdataset(self.file_full_path)

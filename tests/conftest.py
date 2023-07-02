@@ -21,6 +21,8 @@ class CAMSDataInterfaceTesting(CAMSDataInterface):
         """Mock function needed to instantiate CAMSDataInterface"""
         return True
 
+    def read_dataset(self: CAMSDataInterface):
+        pass
 
 @pytest.fixture
 def mock_get_timeout(monkeypatch):
