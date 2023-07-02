@@ -18,7 +18,7 @@ def clip_and_concat_countries(
     """Clips data_frame keeping only countries specified. Countries must be a list of country names"""
     # Download shapefile
     sh_downloader = ShapefilesDownloader(resolution="10m", instance="countries")
-    sh_downloader.download_shapefile()
+    sh_downloader.download()
     sh_dataframe = gpd.read_file(sh_downloader.shapefile_full_path, crs="EPSG:4326")
     # all_touched=True questo parametro include tutti i pixel toccati dal poligono definito
     # se False include solo i pixel il cui centro è incluso nel poligono

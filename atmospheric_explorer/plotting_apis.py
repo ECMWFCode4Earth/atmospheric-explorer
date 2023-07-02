@@ -4,6 +4,7 @@ APIs for generating dynamic and static plots
 from __future__ import annotations
 
 from math import ceil, log10
+from textwrap import dedent
 
 import numpy as np
 import pandas as pd
@@ -20,8 +21,11 @@ from atmospheric_explorer.data_transformations import (
     confidence_interval,
     shifting_long,
 )
+from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
+
+logger = get_logger("atmexp")
 
 
 def sequential_colorscale_bar(
@@ -72,13 +76,17 @@ def add_ci(
 ) -> None:
     """Add confidence intervals to a plotly trace"""
     line_color = ",".join([str(n) for n in hex_to_rgb(trace.line.color)])
-    admin = list(filter(lambda c: c in trace.hovertemplate, countries))[0]
-    admin_index = countries.index(admin)
-    admin_row = ceil((len(countries) - admin_index) / 2)
-    admin_col = admin_index % 2 + 1
-    df_admin = data_frame[data_frame["admin"] == admin]
-    times = df_admin.index.tolist()
-    y1_lower = df_admin["lower"].to_list()
+    if len(countries) > 1:
+        country = list(filter(lambda c: c in trace.hovertemplate, countries))[0]
+    else:
+        country = countries[0]
+    country_index = countries.index(country)
+    total_rows = ceil(len(countries) / 2)
+    country_row = total_rows - country_index // 2
+    country_col = country_index % 2 + 1
+    df_country = data_frame[data_frame["admin"] == country]
+    times = df_country.index.tolist()
+    y1_lower = df_country["lower"].to_list()
     fig.add_trace(
         go.Scatter(
             x=times,
@@ -93,10 +101,10 @@ def add_ci(
             hovertemplate="Lower: %{y}<extra></extra>",
             hoverlabel={"bgcolor": f"rgba({line_color}, 0.2)"},
         ),
-        row=admin_row,
-        col=admin_col,
+        row=country_row,
+        col=country_col,
     )
-    y1_upper = df_admin["upper"].to_list()
+    y1_upper = df_country["upper"].to_list()
     fig.add_trace(
         go.Scatter(
             x=times,
@@ -112,14 +120,14 @@ def add_ci(
             hovertemplate="Upper: %{y}<extra></extra>",
             hoverlabel={"bgcolor": f"rgba({line_color}, 0.2)"},
         ),
-        row=admin_row,
-        col=admin_col,
+        row=country_row,
+        col=country_col,
     )
 
 
 def line_with_ci_subplots(
     data_frame: pd.DataFrame,
-    admins: list[str],
+    countries: list[str],
     col_num: int,
     unit: str,
     title: str,
@@ -131,7 +139,7 @@ def line_with_ci_subplots(
     Parameters:
         data_frame (pd.DataFrame): pandas dataframe with (at least) columns
                                     'admin','input_observations','mean','lower','upper'
-        admins (list[str]): list of countries/administrative entities that must be considered in the facet plot
+        countries (list[str]): list of countries/administrative entities that must be considered in the facet plot
         col_num (int): number of maximum columns in the facet plot
         unit (str): unit of measure
         title (str): plot title
@@ -143,9 +151,9 @@ def line_with_ci_subplots(
         facet_col="admin",
         facet_col_wrap=col_num,
         facet_col_spacing=0.04,
-        facet_row_spacing=0.1,
+        facet_row_spacing=0.15 if len(countries) > 3 else 0.2,
         category_orders={
-            "admin": admins,
+            "admin": countries,
             "input_observations": ["surface", "satellite"],
         },
         color_discrete_sequence=px.colors.qualitative.D3,
@@ -155,7 +163,7 @@ def line_with_ci_subplots(
             fig,
             tr,
             data_frame[data_frame["input_observations"] == tr.legendgroup],
-            admins,
+            countries,
         )
     )
     fig.for_each_annotation(
@@ -164,6 +172,10 @@ def line_with_ci_subplots(
     fig.update_yaxes(title=unit, col=1)
     fig.update_yaxes(showticklabels=True, matches=None)
     fig.update_xaxes(showticklabels=True, matches=None)
+    total_rows = ceil(len(countries) / 2)
+    if len(countries) % 2 != 0:
+        fig.update_xaxes(title="Year", col=2, row=total_rows)
+    base_height = 220 if len(countries) >= 3 else 300
     fig.update_layout(
         title={
             "text": title,
@@ -172,12 +184,14 @@ def line_with_ci_subplots(
             "xref": "paper",
             "font": {"size": 19},
         },
-        height=110 * len(admins),
+        height=base_height * total_rows,
         hovermode="closest",
     )
     fig.update_traces(mode="lines+markers")
-    fig.update_traces(selector=-13, showlegend=True)
-    fig.update_traces(selector=-1, showlegend=True)
+    fig.update_traces(
+        selector=-2 * len(countries) - 1, showlegend=True
+    )  # legend for ci
+    fig.update_traces(selector=-1, showlegend=True)  # legend for ci
     return fig
 
 
@@ -244,6 +258,19 @@ def ghg_surface_satellite_yearly_plot(
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset"""
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
+    logger.debug(
+        dedent(
+            f"""\
+    ghg_surface_satellite_yearly_plot called with arguments
+    data_variable: {data_variable}
+    countries: {countries}
+    years: {years}
+    months: {months}
+    title: {title}
+    var_name: {var_name}
+    """
+        )
+    )
     da_converted_agg = _ghg_surface_satellite_yearly_data(
         data_variable, countries, years, months, var_name
     )
@@ -274,6 +301,20 @@ def eac4_anomalies_plot(
     same date range for data as reference period.
     TODO: add facet plot functionality"""
     # pylint: disable=too-many-arguments
+    logger.debug(
+        dedent(
+            f"""\
+    eac4_anomalies_plot called with arguments
+    data_variable: {data_variable}
+    var_name: {var_name}
+    countries: {countries}
+    dates_range: {dates_range}
+    time_values: {time_values}
+    title: {title}
+    resampling: {resampling}
+    """
+        )
+    )
     data = EAC4Instance(
         data_variable,
         "netcdf",
@@ -322,6 +363,19 @@ def eac4_hovmoeller_latitude_plot(
 
     TODO: discretize colorbar"""
     # pylint: disable=too-many-arguments
+    logger.debug(
+        dedent(
+            f"""\
+    eac4_hovmoeller_latitude_plot called with arguments
+    data_variable: {data_variable}
+    var_name: {var_name}
+    dates_range: {dates_range}
+    time_values: {time_values}
+    title: {title}
+    resampling: {resampling}
+    """
+        )
+    )
     data = EAC4Instance(
         data_variable,
         "netcdf",
@@ -370,6 +424,22 @@ def eac4_hovmoeller_levels_plot(
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
     # pylint: disable=dangerous-default-value
+    logger.debug(
+        dedent(
+            f"""\
+    eac4_hovmoeller_levels_plot called with arguments
+    data_variable: {data_variable}
+    var_name: {var_name}
+    dates_range: {dates_range}
+    time_values: {time_values}
+    pressure_level: {pressure_level}
+    countries: {countries}
+    title: {title}
+    resampling: {resampling}
+    base_colorscale: {base_colorscale}
+    """
+        )
+    )
     data = EAC4Instance(
         data_variable,
         "netcdf",
