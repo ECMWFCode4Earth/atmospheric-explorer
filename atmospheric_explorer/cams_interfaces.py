@@ -19,7 +19,7 @@ import xarray as xr
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
 
-logger = get_logger("main")
+logger = get_logger("atmexp")
 
 
 class CAMSDataInterface(ABC):

@@ -2,6 +2,7 @@
 # pylint: disable=missing-class-docstring
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
+# pylint: disable=unused-argument
 
 from atmospheric_explorer.cams_interfaces import (
     CAMSDataInterface,
