@@ -60,7 +60,7 @@ def show_folium_map():
         center=st.session_state.get("last_object_clicked"),
         returned_objects=["last_active_drawing", "last_object_clicked"],
         height=700,
-        width=1500,
+        width="100%",
     )
     return out_event
 
@@ -73,7 +73,7 @@ def get_admin(out):
         return out["last_active_drawing"]["id"]
 
 
-def update_session(out):
+def update_session_after_click(out):
     """Update session after folium map click event"""
     if out["last_active_drawing"] is not None:
         admin = get_admin(out)
