@@ -2,28 +2,28 @@
 Module for building the UI
 """
 
+import os
 from datetime import datetime
 
 import pandas as pd
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.plotting_apis import (
-    eac4_anomalies_plot,
+from atmospheric_explorer.plotting_apis import (  # eac4_anomalies_plot,
     ghg_surface_satellite_yearly_plot,
 )
-from atmospheric_explorer.ui.utils import (
-    build_sidebar,
+from atmospheric_explorer.ui.interactive_map import (
     show_folium_map,
-    update_session_after_click,
+    update_session_map_click,
 )
+from atmospheric_explorer.ui.utils import build_sidebar, local_css
 
 logger = get_logger("atmexp")
 st.set_page_config(
     page_title="Atmospheric Explorer", page_icon=":earth_africa:", layout="wide"
 )
 
-
+local_css(os.path.join(os.path.dirname(__file__), "style.css"))
 logger.info("Starting streamlit app")
 PROGRESS_BAR = st.progress(0, "Starting streamlit app")
 st.title("Atmospheric Explorer")
@@ -52,7 +52,7 @@ build_sidebar()
 logger.info("Building map")
 PROGRESS_BAR.progress(0.5, "Building map")
 out_event = show_folium_map()
-update_session_after_click(out_event)
+update_session_map_click(out_event)
 with st.expander("Plots"):
     logger.info("Building plots")
     PROGRESS_BAR.progress(0.6, "Building plots")
@@ -80,22 +80,25 @@ with st.expander("Plots"):
                 months,
                 "Fossil CO2 flux",
                 "flux_foss",
-            )
+            ),
+            use_container_width=True,
         )
-        logger.debug("Building second plot")
-        col2.plotly_chart(
-            eac4_anomalies_plot(
-                "total_column_nitrogen_dioxide",
-                "tcno2",
-                countries,
-                dates_range,
-                "00:00",
-                "Total column NO2",
-            )
-        )
-    # PROGRESS_BAR.progress(0.8, "Building plots")
+        # logger.debug("Building second plot")
+        # col2.plotly_chart(
+        #     eac4_anomalies_plot(
+        #         "total_column_nitrogen_dioxide",
+        #         "tcno2",
+        #         countries,
+        #         dates_range,
+        #         "00:00",
+        #         "Total column NO2",
+        #     ),
+        #     use_container_width=True
+        # )
     # with st.container():
+    #     PROGRESS_BAR.progress(0.8, "Building plots")
     #     col3, col4 = st.columns(2)
+    #     logger.debug("Building first plot")
     #     col3.plotly_chart(
     #         ghg_surface_satellite_yearly_plot(
     #             "carbon_dioxide",
@@ -104,8 +107,10 @@ with st.expander("Plots"):
     #             months,
     #             "Fossil CO2 flux",
     #             "flux_foss",
-    #         )
+    #         ),
+    #         use_container_width=True
     #     )
+    #     logger.debug("Building second plot")
     #     col4.plotly_chart(
     #         eac4_anomalies_plot(
     #             "total_column_nitrogen_dioxide",
@@ -114,7 +119,9 @@ with st.expander("Plots"):
     #             dates_range,
     #             "00:00",
     #             "Total column NO2",
-    #         )
+    #         ),
+    #         use_container_width=True
     #     )
+    PROGRESS_BAR.progress(0.9, "Finished building plots")
 PROGRESS_BAR.progress(1.0, "Done")
 PROGRESS_BAR.empty()
