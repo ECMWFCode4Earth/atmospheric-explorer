@@ -23,6 +23,8 @@ def build_sidebar():
     """Build sidebar"""
     with st.sidebar:
         st.write(f"Selected country: {st.session_state.get('selected_state')}")
+        start_date = st.session_state.get("start_date")
+        end_date = st.session_state.get("end_date")
         st.write(
-            f"Dates: {st.session_state.get('start_date')}/{st.session_state.get('end_date')}"
+            f"Dates: {start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
         )
