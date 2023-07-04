@@ -231,11 +231,13 @@ def _ghg_surface_satellite_yearly_data(
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
     # Clip countries
-    df_total = clip_and_concat_countries(df_total, countries)
+    df_clipped = clip_and_concat_countries(df_total, countries)
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
+    df_final = df_clipped.sortby("time").mean(dim=["longitude", "latitude"])
     # Convert units
-    da_converted = convert_units_array(df_total[var_name], data_variable)
+    da_converted = df_final[var_name]
+    # STILL MISSING: Convert units per month to units per year/aggregation level?
+    da_converted.attrs["units"] = df_total[var_name].units
     da_converted_agg = (
         da_converted.resample(time="YS")
         .map(confidence_interval, dim="time")
@@ -358,11 +360,13 @@ def eac4_hovmoeller_latitude_plot(
     time_values: str,
     title: str,
     resampling: str = "1MS",
+    base_colorscale: list[str] = px.colors.sequential.Turbo,
 ) -> go.Figure:
     """Generate a Hovmoeller plot (latitude vs. months) for a quantity from the Global Reanalysis EAC4 dataset.
 
     TODO: discretize colorbar"""
     # pylint: disable=too-many-arguments
+    # pylint: disable=dangerous-default-value
     logger.debug(
         dedent(
             f"""\
@@ -373,6 +377,7 @@ def eac4_hovmoeller_latitude_plot(
     time_values: {time_values}
     title: {title}
     resampling: {resampling}
+    base_colorscale: {base_colorscale}
     """
         )
     )
@@ -392,7 +397,10 @@ def eac4_hovmoeller_latitude_plot(
         .mean(dim="longitude")
     )
     df_converted = convert_units_array(df_agg[var_name], data_variable)
-    fig = px.imshow(df_converted.T, color_continuous_scale="Jet", origin="lower")
+    colorscale, colorbar = sequential_colorscale_bar(
+        df_converted.values.flatten(), base_colorscale
+    )
+    fig = px.imshow(df_converted.T, origin="lower")
     fig.update_xaxes(title="Month")
     fig.update_yaxes(title="Latitude [degrees]")
     fig.update_layout(
@@ -403,7 +411,8 @@ def eac4_hovmoeller_latitude_plot(
             "automargin": True,
             "yref": "container",
             "font": {"size": 19},
-        }
+        },
+        coloraxis={"colorscale": colorscale, "colorbar": colorbar},
     )
     return fig
 
