@@ -20,11 +20,6 @@ progress_bar = st.progress(0.0, "Starting app")
 st.title("Atmospheric Explorer")
 st.subheader("Geographical selection")
 logger.info("Checking session state")
-progress_bar.progress(0.1, "Checking session state")
-if "last_object_clicked" not in st.session_state:
-    st.session_state["last_object_clicked"] = [42, 13]
-if "selected_countries" not in st.session_state:
-    st.session_state["selected_countries"] = ["Italy"]
 progress_bar.progress(0.3, "Building selectors")
 with st.form("selection"):
     st.session_state["selected_countries"] = st.multiselect(

@@ -46,7 +46,11 @@ with st.form("filters"):
     )
 
     match st.radio(
-        "Vertical axis", ["Latitude", "Pressure Level", "Model Level"], index=0
+        "Vertical axis",
+        ["Latitude", "Pressure Level", "Model Level"],
+        index=0,
+        horizontal=True,
+        help="Select one of the levels and click the form button to show the level selection widget",
     ):
         case "Latitude":
             st.session_state["hovm_yaxis"] = "Latitude"
@@ -82,7 +86,7 @@ with st.form("filters"):
                         "950",
                         "1000",
                     ],
-                    st.session_state["hovm_levels"],
+                    [],
                 ),
                 key=int,
             )
@@ -92,7 +96,7 @@ with st.form("filters"):
                 st.multiselect(
                     "Model Level",
                     [str(m_level) for m_level in range(1, 61, 1)],
-                    st.session_state["hovm_levels"],
+                    [],
                 ),
                 key=int,
             )

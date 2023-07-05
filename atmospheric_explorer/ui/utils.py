@@ -24,6 +24,10 @@ def page_init():
         page_title="Atmospheric Explorer", page_icon=":earth_africa:", layout="wide"
     )
     local_css(Path(__file__).resolve().parent.joinpath("style.css"))
+    if "last_object_clicked" not in st.session_state:
+        st.session_state["last_object_clicked"] = [42, 13]
+    if "selected_countries" not in st.session_state:
+        st.session_state["selected_countries"] = ["Italy"]
 
 
 @st.cache_data(show_spinner="Fetching shapefile...")
