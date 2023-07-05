@@ -36,7 +36,9 @@ def clip_and_concat_countries(
             all_touched=True,
         )
         df_clipped = df_clipped.expand_dims({"admin": [country]})
-        df_clipped_concat = xr.concat([df_clipped_concat, df_clipped], dim="admin")
+        df_clipped_concat = xr.concat(
+            [df_clipped_concat, df_clipped], dim="admin", combine_attrs="override"
+        )
     return df_clipped_concat
 
 

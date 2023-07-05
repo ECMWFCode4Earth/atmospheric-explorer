@@ -501,7 +501,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
                 else xr.open_dataset(file)
             )
             temp = temp.expand_dims({"time": [date_index]})
-            data_frame = xr.combine_by_coords([data_frame, temp])
+            data_frame = xr.combine_by_coords(
+                [data_frame, temp], combine_attrs="override"
+            )
         data_frame = data_frame.expand_dims(
             {
                 "input_observations": [self.input_observations],
