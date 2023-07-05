@@ -2,7 +2,6 @@
 Module for building the UI
 """
 # pylint: disable=invalid-name
-from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
@@ -32,10 +31,6 @@ if "last_object_clicked" not in st.session_state:
     st.session_state["last_object_clicked"] = [42, 13]
 if "selected_countries" not in st.session_state:
     st.session_state["selected_countries"] = ["Italy"]
-if "start_date" not in st.session_state:
-    st.session_state["start_date"] = datetime(2020, 1, 1)
-if "end_date" not in st.session_state:
-    st.session_state["end_date"] = datetime(2022, 1, 1)
 logger.info("Building sidebar")
 progress_bar.progress(0.2, "Building side bar")
 build_sidebar()

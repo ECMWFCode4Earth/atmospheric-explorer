@@ -5,7 +5,6 @@ Module for building the UI
 from pathlib import Path
 from textwrap import dedent
 
-import pandas as pd
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
@@ -18,34 +17,43 @@ st.set_page_config(
 )
 local_css(Path(__file__).resolve().parents[1].joinpath("style.css"))
 
+if "start_year" not in st.session_state:
+    st.session_state["start_year"] = 2020
+if "end_year" not in st.session_state:
+    st.session_state["end_year"] = 2022
+if "months" not in st.session_state:
+    st.session_state["months"] = ["01"]
+
 with st.form("filters"):
     logger.info("Adding filters")
-    start_date_col, end_date_col, _ = st.columns([1, 1, 3])
-    st.session_state["start_date"] = start_date_col.date_input(
-        "Start date", value=st.session_state["start_date"]
+    start_year_col, end_year_col, _ = st.columns([1, 1, 3])
+    st.session_state["start_year"] = start_year_col.number_input(
+        "Start year", value=st.session_state["start_year"], step=1
     )
-    st.session_state["end_date"] = end_date_col.date_input(
-        "End date", value=st.session_state["end_date"]
+    st.session_state["end_year"] = end_year_col.number_input(
+        "End year", value=st.session_state["end_year"], step=1
+    )
+    st.session_state["months"] = sorted(
+        st.multiselect(
+            "Months", [f"{m:02}" for m in range(1, 13)], st.session_state["months"]
+        )
     )
     submitted = st.form_submit_button("Generate plot")
 
 
 logger.info("Building sidebar")
-build_sidebar(dates=True)
+build_sidebar()
 if submitted:
-    start_date = st.session_state.get("start_date")
-    end_date = st.session_state.get("end_date")
-    dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
+    years = [
+        str(y)
+        for y in range(st.session_state["start_year"], st.session_state["end_year"] + 1)
+    ]
+    months = st.session_state["months"]
     countries = (
         st.session_state.get("selected_countries")
         if isinstance(st.session_state.get("selected_countries"), list)
         else [st.session_state.get("selected_countries")]
     )
-    years = [y.strftime("%Y") for y in pd.date_range(start_date, end_date, freq="YS")]
-    months = sorted(
-        list({m.strftime("%m") for m in pd.date_range(start_date, end_date, freq="MS")})
-    )
-
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
