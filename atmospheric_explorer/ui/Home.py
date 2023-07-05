@@ -7,7 +7,7 @@ from pathlib import Path
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map import (
+from atmospheric_explorer.ui.interactive_map.interactive_map import (
     show_folium_map,
     update_session_map_click,
 )

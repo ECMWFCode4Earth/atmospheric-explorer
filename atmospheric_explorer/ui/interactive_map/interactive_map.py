@@ -8,7 +8,9 @@ from folium.plugins import Draw
 from streamlit_folium import st_folium
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.selections import countries_selection
+from atmospheric_explorer.ui.interactive_map.country_selection import (
+    countries_selection,
+)
 from atmospheric_explorer.ui.utils import shapefile_dataframe
 
 logger = get_logger("atmexp")
