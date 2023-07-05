@@ -2,20 +2,16 @@
 Module for building the UI
 """
 # pylint: disable=invalid-name
-from pathlib import Path
 from textwrap import dedent
 
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.plotting_apis import ghg_surface_satellite_yearly_plot
-from atmospheric_explorer.ui.utils import build_sidebar, local_css
+from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
-st.set_page_config(
-    page_title="Atmospheric Explorer", page_icon=":earth_africa:", layout="wide"
-)
-local_css(Path(__file__).resolve().parents[1].joinpath("style.css"))
+page_init()
 
 if "start_year" not in st.session_state:
     st.session_state["start_year"] = 2020
@@ -40,8 +36,6 @@ with st.form("filters"):
     )
     submitted = st.form_submit_button("Generate plot")
 
-
-logger.info("Building sidebar")
 build_sidebar()
 if submitted:
     years = [
@@ -49,11 +43,7 @@ if submitted:
         for y in range(st.session_state["start_year"], st.session_state["end_year"] + 1)
     ]
     months = st.session_state["months"]
-    countries = (
-        st.session_state.get("selected_countries")
-        if isinstance(st.session_state.get("selected_countries"), list)
-        else [st.session_state.get("selected_countries")]
-    )
+    countries = st.session_state["selected_countries"]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
