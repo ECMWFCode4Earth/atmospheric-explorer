@@ -21,3 +21,13 @@ At the moment we only have one logger called `main`, if you want to use it just 
 from .loggers import get_logger
 logger = get_logger("main")
 ```
+
+# How to run the Streamlit application
+
+To run the streamlit application, install the package with
+
+```pip install -e .```
+
+and run in the terminal the command
+
+```atmospheric-explorer```
