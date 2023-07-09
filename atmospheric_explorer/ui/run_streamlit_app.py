@@ -1,5 +1,5 @@
 """\
-Module for building the UI
+Module for building the UI and running the app
 """
 from pathlib import Path
 

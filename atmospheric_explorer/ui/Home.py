@@ -1,5 +1,5 @@
 """\
-Module for building the UI
+Main UI page
 """
 # pylint: disable=invalid-name
 

@@ -1,5 +1,5 @@
 """\
-Module with utils for the UI
+Module to build the interactive folium map to select countries from.
 """
 import folium
 import folium.features
