@@ -12,36 +12,40 @@ from atmospheric_explorer.plotting_apis import (
     eac4_hovmoeller_latitude_plot,
     eac4_hovmoeller_levels_plot,
 )
+from atmospheric_explorer.ui.session_state import (
+    GeneralSessionStateKeys,
+    HovmSessionStateKeys,
+)
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
 page_init()
 
-if "hovm_start_date" not in st.session_state:
-    st.session_state["hovm_start_date"] = datetime(2022, 1, 1)
-if "hovm_end_date" not in st.session_state:
-    st.session_state["hovm_end_date"] = datetime(2022, 12, 31)
-if "hovm_times" not in st.session_state:
-    st.session_state["hovm_times"] = ["00:00"]
-if "hovm_yaxis" not in st.session_state:
-    st.session_state["hovm_yaxis"] = "Latitude"
-if "hovm_levels" not in st.session_state:
-    st.session_state["hovm_levels"] = []
+if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
+    st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
+if HovmSessionStateKeys.HOVM_END_DATE not in st.session_state:
+    st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 12, 31)
+if HovmSessionStateKeys.HOVM_TIMES not in st.session_state:
+    st.session_state[HovmSessionStateKeys.HOVM_TIMES] = ["00:00"]
+if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
+    st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
+if HovmSessionStateKeys.HOVM_LEVELS not in st.session_state:
+    st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = []
 
 with st.form("filters"):
     logger.info("Adding filters")
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
-    st.session_state["hovm_start_date"] = start_date_col.date_input(
-        "Start date", value=st.session_state["hovm_start_date"]
+    st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = start_date_col.date_input(
+        "Start date", value=st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
     )
-    st.session_state["hovm_end_date"] = end_date_col.date_input(
-        "End date", value=st.session_state["hovm_end_date"]
+    st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = end_date_col.date_input(
+        "End date", value=st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
     )
-    st.session_state["hovm_times"] = sorted(
+    st.session_state[HovmSessionStateKeys.HOVM_TIMES] = sorted(
         st.multiselect(
             "Times",
             [f"{h:02}:00" for h in range(0, 24, 3)],
-            st.session_state["hovm_times"],
+            st.session_state[HovmSessionStateKeys.HOVM_TIMES],
         )
     )
 
@@ -53,10 +57,10 @@ with st.form("filters"):
         help="Select one of the levels and click the form button to show the level selection widget",
     ):
         case "Latitude":
-            st.session_state["hovm_yaxis"] = "Latitude"
+            st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
         case "Pressure Level":
-            st.session_state["hovm_yaxis"] = "Pressure Level"
-            st.session_state["hovm_levels"] = sorted(
+            st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Pressure Level"
+            st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = sorted(
                 st.multiselect(
                     "Pressure Level",
                     [
@@ -91,8 +95,8 @@ with st.form("filters"):
                 key=int,
             )
         case "Model Level":
-            st.session_state["hovm_yaxis"] = "Model Level"
-            st.session_state["hovm_levels"] = sorted(
+            st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Model Level"
+            st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = sorted(
                 st.multiselect(
                     "Model Level",
                     [str(m_level) for m_level in range(1, 61, 1)],
@@ -104,12 +108,12 @@ with st.form("filters"):
 
 build_sidebar()
 if submitted:
-    start_date = st.session_state["hovm_start_date"]
-    end_date = st.session_state["hovm_end_date"]
+    start_date = st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
+    end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
-    time_values = st.session_state["hovm_times"]
-    levels = st.session_state["hovm_levels"]
-    countries = st.session_state["selected_countries"]
+    time_values = st.session_state[HovmSessionStateKeys.HOVM_TIMES]
+    levels = st.session_state[HovmSessionStateKeys.HOVM_LEVELS]
+    countries = st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
@@ -124,7 +128,7 @@ if submitted:
                 """
                 )
             )
-            match st.session_state["hovm_yaxis"]:
+            match st.session_state[HovmSessionStateKeys.HOVM_YAXIS]:
                 case "Latitude":
                     st.plotly_chart(
                         eac4_hovmoeller_latitude_plot(
@@ -137,14 +141,14 @@ if submitted:
                         use_container_width=True,
                     )
                 case "Pressure Level":
-                    if st.session_state["hovm_levels"]:
+                    if st.session_state[HovmSessionStateKeys.HOVM_LEVELS]:
                         st.plotly_chart(
                             eac4_hovmoeller_levels_plot(
                                 "carbon_monoxide",
                                 "co",
                                 dates_range,
                                 time_values,
-                                st.session_state["hovm_levels"],
+                                st.session_state[HovmSessionStateKeys.HOVM_LEVELS],
                                 countries,
                                 "CO",
                             ),

@@ -10,6 +10,7 @@ from atmospheric_explorer.ui.interactive_map.interactive_map import (
     show_folium_map,
     update_session_map_click,
 )
+from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 from atmospheric_explorer.ui.utils import build_sidebar, page_init, shapefile_dataframe
 
 logger = get_logger("atmexp")
@@ -22,10 +23,10 @@ st.subheader("Geographical selection")
 logger.info("Checking session state")
 progress_bar.progress(0.3, "Building selectors")
 with st.form("selection"):
-    st.session_state["selected_countries"] = st.multiselect(
+    st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES] = st.multiselect(
         "Countries",
         options=shapefile_dataframe()["ADMIN"].to_list(),
-        default=st.session_state.get("selected_countries"),
+        default=st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES),
     )
     st.form_submit_button("Update countries")
 progress_bar.progress(0.2, "Building side bar")

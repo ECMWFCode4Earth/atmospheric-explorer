@@ -11,6 +11,7 @@ from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.ui.interactive_map.country_selection import (
     countries_selection,
 )
+from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 from atmospheric_explorer.ui.utils import shapefile_dataframe
 
 logger = get_logger("atmexp")
@@ -83,11 +84,13 @@ def build_folium_map(selected_countries: list[str] | None):
 def show_folium_map():
     """Show folium map in Streamlit"""
     logger.info("Show folium map")
-    folium_map = build_folium_map(st.session_state.get("selected_countries"))
+    folium_map = build_folium_map(
+        st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES)
+    )
     out_event = st_folium(
         folium_map,
         key="folium_map",
-        center=st.session_state.get("last_object_clicked"),
+        center=st.session_state.get(GeneralSessionStateKeys.LAST_OBJECT_CLICKED),
         returned_objects=["last_active_drawing", "last_object_clicked"],
         height=800,
         width="100%",
@@ -98,13 +101,22 @@ def show_folium_map():
 
 def update_session_map_click(out_event):
     """Update session after folium map click event"""
-    if out_event.get("last_object_clicked") != st.session_state["last_object_clicked"]:
-        st.session_state["last_object_clicked"] = out_event["last_object_clicked"]
+    if (
+        out_event.get("last_object_clicked")
+        != st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED]
+    ):
+        st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED] = out_event[
+            "last_object_clicked"
+        ]
     if out_event.get("last_active_drawing") is not None:
         selected_countries = countries_selection(out_event)
-        prev_selection = set(st.session_state["selected_countries"])
+        prev_selection = set(
+            st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
+        )
         if selected_countries.isdisjoint(
             prev_selection
         ) or selected_countries.issuperset(prev_selection):
-            st.session_state["selected_countries"] = sorted(list(selected_countries))
+            st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES] = sorted(
+                list(selected_countries)
+            )
             st.experimental_rerun()
