@@ -43,6 +43,7 @@ repos:
         entry: pytest tests/
         language: system
         always_run: true
+        pass_filenames: false
         types_or: [python, pyi]
         verbose: true
 -   repo: https://github.com/charliermarsh/ruff-pre-commit

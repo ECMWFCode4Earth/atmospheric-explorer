@@ -3,7 +3,6 @@ Data transformations needed for the plotting api
 """
 from functools import singledispatch
 
-import geopandas as gpd
 import numpy as np
 import statsmodels.stats.api as sms
 import xarray as xr
@@ -18,8 +17,7 @@ def clip_and_concat_countries(
     """Clips data_frame keeping only countries specified. Countries must be a list of country names"""
     # Download shapefile
     sh_downloader = ShapefilesDownloader(resolution="10m", instance="countries")
-    sh_downloader.download()
-    sh_dataframe = gpd.read_file(sh_downloader.shapefile_full_path, crs="EPSG:4326")
+    sh_dataframe = sh_downloader.get_as_dataframe()
     # all_touched=True questo parametro include tutti i pixel toccati dal poligono definito
     # se False include solo i pixel il cui centro è incluso nel poligono
     # approvato all_touched=True
@@ -38,7 +36,9 @@ def clip_and_concat_countries(
             all_touched=True,
         )
         df_clipped = df_clipped.expand_dims({"admin": [country]})
-        df_clipped_concat = xr.concat([df_clipped_concat, df_clipped], dim="admin")
+        df_clipped_concat = xr.concat(
+            [df_clipped_concat, df_clipped], dim="admin", combine_attrs="override"
+        )
     return df_clipped_concat
 
 

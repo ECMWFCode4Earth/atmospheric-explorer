@@ -34,6 +34,9 @@ include = ["atmospheric_explorer*"]
 exclude = ["tests*"]
 namespaces = false
 
+[project.scripts]
+atmospheric-explorer = "atmospheric_explorer.ui.run_streamlit_app:run_streamlit_app"
+
 [build-system]
 requires = ["setuptools>=64.0", "setuptools-scm", "wheel"]
 build-backend = "setuptools.build_meta"
