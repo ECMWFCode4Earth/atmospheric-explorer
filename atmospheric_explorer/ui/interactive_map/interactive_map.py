@@ -34,7 +34,7 @@ def world_polygon() -> folium.GeoJson:
         shapefile_dataframe(),
         name="world_polygon",
         highlight_function=_country_hover_style,
-        zoom_on_click=True,
+        zoom_on_click=False,
         tooltip=folium.features.GeoJsonTooltip(fields=["ADMIN"], aliases=[""]),
     )
 
