@@ -33,7 +33,7 @@ def page_init():
 @st.cache_data(show_spinner="Fetching shapefile...")
 def shapefile_dataframe() -> gpd.GeoDataFrame:
     """Get and cache the shapefile"""
-    return ShapefilesDownloader().get_as_dataframe(columns=["ADMIN", "geometry"])
+    return ShapefilesDownloader().get_as_dataframe()[["ADMIN", "geometry"]]
 
 
 def build_sidebar(dates=False):
