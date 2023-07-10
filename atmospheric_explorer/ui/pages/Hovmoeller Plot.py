@@ -1,5 +1,5 @@
 """\
-Module for building the UI
+Module for creating Hovmoeller plots through UI
 """
 # pylint: disable=invalid-name
 from datetime import datetime

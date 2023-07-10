@@ -1,5 +1,5 @@
 """\
-Module for building the UI
+Module for creating GHG plots through UI
 """
 # pylint: disable=invalid-name
 from textwrap import dedent
