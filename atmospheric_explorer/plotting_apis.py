@@ -362,9 +362,7 @@ def eac4_hovmoeller_latitude_plot(
     resampling: str = "1MS",
     base_colorscale: list[str] = px.colors.sequential.Turbo,
 ) -> go.Figure:
-    """Generate a Hovmoeller plot (latitude vs. months) for a quantity from the Global Reanalysis EAC4 dataset.
-
-    TODO: discretize colorbar"""
+    """Generate a Hovmoeller plot (latitude vs. months) for a quantity from the Global Reanalysis EAC4 dataset."""
     # pylint: disable=too-many-arguments
     # pylint: disable=dangerous-default-value
     logger.debug(
