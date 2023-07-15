@@ -15,8 +15,8 @@ import os
 
 import xarray as xr
 
-from .exceptions import OperationNotAllowed
-from .loggers import get_logger
+from ..exceptions import OperationNotAllowed
+from ..loggers import get_logger
 
 logger = get_logger("atmexp")
 

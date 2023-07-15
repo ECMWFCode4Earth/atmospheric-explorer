@@ -1,0 +1,930 @@
+10m_u_component_of_wind:
+  conversion_factor: 1
+  original_units: m s**-1
+  convert_units: m s**-1
+  cams_variables: u10
+  long_names: 10 metre U wind component
+10m_v_component_of_wind:
+  conversion_factor: 1
+  original_units: m s**-1
+  convert_units: m s**-1
+  cams_variables: v10
+  long_names: 10 metre V wind component
+2m_dewpoint_temperature:
+  conversion_factor: 1
+  original_units: K
+  convert_units: K
+  cams_variables: d2m
+  long_names: 2 metre dewpoint temperature
+2m_temperature:
+  conversion_factor: 1
+  original_units: K
+  convert_units: K
+  cams_variables: t2m
+  long_names: 2 metre temperature
+black_carbon_aerosol_optical_depth_550nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: bcaod550
+  long_names: Black Carbon Aerosol Optical Depth at 550nm
+dust_aerosol_optical_depth_550nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: duaod550
+  long_names: Dust Aerosol Optical Depth at 550nm
+land_sea_mask:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: lsm
+  long_names: Land-sea mask
+mean_sea_level_pressure:
+  conversion_factor: 1
+  original_units: Pa
+  convert_units: Pa
+  cams_variables: msl
+  long_names: Mean sea level pressure
+organic_matter_aerosol_optical_depth_550nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: omaod550
+  long_names: Organic Matter Aerosol Optical Depth at 550nm
+particulate_matter_10um:
+  conversion_factor: 1
+  original_units: kg m**-3
+  convert_units: kg m**-3
+  cams_variables: pm10
+  long_names: Particulate matter d <= 10 um
+particulate_matter_1um:
+  conversion_factor: 1
+  original_units: kg m**-3
+  convert_units: kg m**-3
+  cams_variables: pm1
+  long_names: Particulate matter d <= 1 um
+particulate_matter_2.5um:
+  conversion_factor: 1
+  original_units: kg m**-3
+  convert_units: kg m**-3
+  cams_variables: pm2p5
+  long_names: Particulate matter d <= 2.5 um
+sea_salt_aerosol_optical_depth_550nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: ssaod550
+  long_names: Sea Salt Aerosol Optical Depth at 550nm
+sulphate_aerosol_optical_depth_550nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: suaod550
+  long_names: Sulphate Aerosol Optical Depth at 550nm
+surface_geopotential:
+  conversion_factor: 1
+  original_units: m**2 s**-2
+  convert_units: m**2 s**-2
+  cams_variables: z
+  long_names: Geopotential
+surface_pressure:
+  conversion_factor: 1
+  original_units: Pa
+  convert_units: Pa
+  cams_variables: sp
+  long_names: Surface pressure
+total_aerosol_optical_depth_1240nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: aod1240
+  long_names: Total Aerosol Optical Depth at 1240nm
+total_aerosol_optical_depth_469nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: aod469
+  long_names: Total Aerosol Optical Depth at 469nm
+total_aerosol_optical_depth_550nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: aod550
+  long_names: Total Aerosol Optical Depth at 550nm
+total_aerosol_optical_depth_670nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: aod670
+  long_names: Total Aerosol Optical Depth at 670nm
+total_aerosol_optical_depth_865nm:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: aod865
+  long_names: Total Aerosol Optical Depth at 865nm
+total_column_carbon_monoxide:
+  conversion_factor: 6.0221415e23*1e-18/(1e4*28.01e-3)
+  original_units: kg m**-2
+  convert_units: 10^18 molecules / cm2
+  cams_variables: tcco
+  long_names: Total column Carbon monoxide
+total_column_ethane:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_c2h6
+  long_names: Total column  ethane
+total_column_formaldehyde:
+  conversion_factor: 2004008
+  original_units: kg m**-2
+  convert_units: 10^15 molecules / cm2
+  cams_variables: tchcho
+  long_names: Total column Formaldehyde
+total_column_hydrogen_peroxide:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_h2o2
+  long_names: Total column hydrogen peroxide
+total_column_hydroxyl_radical:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_oh
+  long_names: Total column hydroxyl radical
+total_column_isoprene:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_c5h8
+  long_names: Total column  isoprene
+total_column_methane:
+  conversion_factor: 28.97 / 16.044 * 1e9
+  original_units: kg m**-2
+  convert_units: ppbv
+  cams_variables: tc_ch4
+  long_names: Total column methane
+total_column_nitric_acid:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_hno3
+  long_names: Total column nitric acid
+total_column_nitrogen_dioxide:
+  conversion_factor: 6.0221415e23*1e-15/(1e4*46.01e-3)
+  original_units: kg m**-2
+  convert_units: 10^15 molecules / cm2
+  cams_variables: tcno2
+  long_names: Total column Nitrogen dioxide
+total_column_nitrogen_monoxide:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_no
+  long_names: Total column nitrogen monoxide
+total_column_ozone:
+  conversion_factor: 46698
+  original_units: kg m**-2
+  convert_units: DU
+  cams_variables: gtco3
+  long_names: GEMS Total column ozone
+total_column_peroxyacetyl_nitrate:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_pan
+  long_names: Total column  peroxyacetyl nitrate
+total_column_propane:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_c3h8
+  long_names: Total column propane
+total_column_sulphur_dioxide:
+  conversion_factor: 939931.55923209002
+  original_units: kg m**-2
+  convert_units: 10^15 molecules / cm2
+  cams_variables: tcso2
+  long_names: Total column Sulphur dioxide
+total_column_water_vapour:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tcwv
+  long_names: Total column vertically-integrated water vapour
+carbon_monoxide:
+  conversion_factor: 28.97 / 28.011 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: co
+  long_names: Carbon monoxide mass mixing ratio
+dust_aerosol_0.03-0.55um_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr04
+  long_names: Dust Aerosol (0.03 - 0.55 um) Mixing Ratio
+dust_aerosol_0.55-0.9um_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr05
+  long_names: Dust Aerosol (0.55 - 0.9 um) Mixing Ratio
+dust_aerosol_0.9-20um_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr06
+  long_names: Dust Aerosol (0.9 - 20 um) Mixing Ratio
+ethane:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c2h6
+  long_names: Ethane
+formaldehyde:
+  conversion_factor: 28.97 / 30.03 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: hcho
+  long_names: Formaldehyde
+hydrogen_peroxide:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: h2o2
+  long_names: Hydrogen peroxide
+hydrophilic_black_carbon_aerosol_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr09
+  long_names: Hydrophilic Black Carbon Aerosol Mixing Ratio
+hydrophilic_organic_matter_aerosol_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr07
+  long_names: Hydrophilic Organic Matter Aerosol Mixing Ratio
+hydrophobic_black_carbon_aerosol_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr10
+  long_names: Hydrophobic Black Carbon Aerosol Mixing Ratio
+hydrophobic_organic_matter_aerosol_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr08
+  long_names: Hydrophobic Organic Matter Aerosol Mixing Ratio
+hydroxyl_radical:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: oh
+  long_names: Hydroxyl radical
+isoprene:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c5h8
+  long_names: Isoprene
+nitric_acid:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: hno3
+  long_names: Nitric acid
+nitrogen_dioxide:
+  conversion_factor: 28.97 / 46.0055 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: no2
+  long_names: Nitrogen dioxide mass mixing ratio
+nitrogen_monoxide:
+  conversion_factor: 28.97 / 30.01 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: 'no'
+  long_names: Nitrogen monoxide mass mixing ratio
+ozone:
+  conversion_factor: 28.97 / 47.998 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: go3
+  long_names: Ozone mass mixing ratio (full chemistry scheme)
+peroxyacetyl_nitrate:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: pan
+  long_names: Peroxyacetyl nitrate
+propane:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c3h8
+  long_names: Propane
+sea_salt_aerosol_0.03-0.5um_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr01
+  long_names: Sea Salt Aerosol (0.03 - 0.5 um) Mixing Ratio
+sea_salt_aerosol_0.5-5um_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr02
+  long_names: Sea Salt Aerosol (0.5 - 5 um) Mixing Ratio
+sea_salt_aerosol_5-20um_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr03
+  long_names: Sea Salt Aerosol (5 - 20 um) Mixing Ratio
+specific_humidity:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: q
+  long_names: Specific humidity
+sulphate_aerosol_mixing_ratio:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aermr11
+  long_names: Sulphate Aerosol Mixing Ratio
+sulphur_dioxide:
+  conversion_factor: 28.97 / 64.066 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: so2
+  long_names: Sulphur dioxide mass mixing ratio
+temperature:
+  conversion_factor: 1
+  original_units: K
+  convert_units: K
+  cams_variables: t
+  long_names: Temperature
+high_cloud_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: hcc
+  long_names: High cloud cover
+high_vegetation_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: cvh
+  long_names: High vegetation cover
+lake_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: cl
+  long_names: Lake cover
+leaf_area_index_high_vegetation:
+  conversion_factor: 1
+  original_units: m**2 m**-2
+  convert_units: m**2 m**-2
+  cams_variables: lai_hv
+  long_names: Leaf area index, high vegetation
+leaf_area_index_low_vegetation:
+  conversion_factor: 1
+  original_units: m**2 m**-2
+  convert_units: m**2 m**-2
+  cams_variables: lai_lv
+  long_names: Leaf area index, low vegetation
+lifting_threshold_speed:
+  conversion_factor: 1
+  original_units: m s**-1
+  convert_units: m s**-1
+  cams_variables: aerlts
+  long_names: Lifting threshold speed
+low_cloud_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: lcc
+  long_names: Low cloud cover
+low_vegetation_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: cvl
+  long_names: Low vegetation cover
+mean_altitude_of_maximum_injection:
+  conversion_factor: 1
+  original_units: m
+  convert_units: m
+  cams_variables: mami
+  long_names: Mean height of maximum injection
+medium_cloud_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: mcc
+  long_names: Medium cloud cover
+near_ir_albedo_for_diffuse_radiation:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: alnid
+  long_names: Near IR albedo for diffuse radiation
+near_ir_albedo_for_direct_radiation:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: alnip
+  long_names: Near IR albedo for direct radiation
+sea_ice_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: siconc
+  long_names: Sea ice area fraction
+sea_surface_temperature:
+  conversion_factor: 1
+  original_units: K
+  convert_units: K
+  cams_variables: sst
+  long_names: Sea surface temperature
+skin_reservoir_content:
+  conversion_factor: 1
+  original_units: m of water equivalent
+  convert_units: m of water equivalent
+  cams_variables: src
+  long_names: Skin reservoir content
+skin_temperature:
+  conversion_factor: 1
+  original_units: K
+  convert_units: K
+  cams_variables: skt
+  long_names: Skin temperature
+snow_albedo:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: asn
+  long_names: Snow albedo
+snow_depth:
+  conversion_factor: 1
+  original_units: m of water equivalent
+  convert_units: m of water equivalent
+  cams_variables: sd
+  long_names: Snow depth
+soil_clay_content:
+  conversion_factor: 1
+  original_units: '%'
+  convert_units: '%'
+  cams_variables: aerscc
+  long_names: Soil clay content
+soil_type:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: slt
+  long_names: Soil type
+surface_roughness:
+  conversion_factor: 1
+  original_units: m
+  convert_units: m
+  cams_variables: sr
+  long_names: Surface roughness
+total_cloud_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: tcc
+  long_names: Total cloud cover
+total_column_acetone:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_ch3coch3
+  long_names: Total column acetone
+total_column_aldehydes:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_ald2
+  long_names: Total column aldehydes
+total_column_ethanol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_c2h5oh
+  long_names: Total column ethanol
+total_column_ethene:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_c2h4
+  long_names: Total column ethene
+total_column_formic_acid:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_hcooh
+  long_names: Total column formic acid
+total_column_methanol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_ch3oh
+  long_names: Total column methanol
+total_column_methyl_peroxide:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_ch3ooh
+  long_names: Total column methyl peroxide
+total_column_olefins:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_ole
+  long_names: Total column olefins
+total_column_organic_nitrates:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_onit
+  long_names: Total column organic nitrates
+total_column_paraffins:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tc_par
+  long_names: Total column paraffins
+total_column_water:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: tcw
+  long_names: Total column water
+type_of_high_vegetation:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: tvh
+  long_names: Type of high vegetation
+type_of_low_vegetation:
+  conversion_factor: 1
+  original_units: '~'
+  convert_units: '~'
+  cams_variables: tvl
+  long_names: Type of low vegetation
+uv_visible_albedo_for_diffuse_radiation:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: aluvd
+  long_names: UV visible albedo for diffuse radiation
+uv_visible_albedo_for_direct_radiation:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: aluvp
+  long_names: UV visible albedo for direct radiation
+vertically_integrated_mass_of_dust_aerosol_0.03-0.55um:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssdus
+  long_names: Vertically integrated mass of dust aerosol (0.03 - 0.55 um)
+vertically_integrated_mass_of_dust_aerosol_0.55-9um:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssdum
+  long_names: Vertically integrated mass of dust aerosol (0.55 - 9 um)
+vertically_integrated_mass_of_dust_aerosol_9-20um:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssdul
+  long_names: Vertically integrated mass of dust aerosol (9 - 20 um)
+vertically_integrated_mass_of_hydrophilic_black_carbon_aerosol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssbchphil
+  long_names: Vertically integrated mass of hydrophilic black carbon aerosol
+vertically_integrated_mass_of_hydrophilic_organic_matter_aerosol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssomhphil
+  long_names: Vertically integrated mass of hydrophilic organic matter aerosol
+vertically_integrated_mass_of_hydrophobic_black_carbon_aerosol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssbchphob
+  long_names: Vertically integrated mass of hydrophobic black carbon aerosol
+vertically_integrated_mass_of_hydrophobic_organic_matter_aerosol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssomhphob
+  long_names: Vertically integrated mass of hydrophobic organic matter aerosol
+vertically_integrated_mass_of_sea_salt_aerosol_0.03-0.5um:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermsssss
+  long_names: Vertically integrated mass of sea salt aerosol (0.03 - 0.5 um)
+vertically_integrated_mass_of_sea_salt_aerosol_0.5-5um:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssssm
+  long_names: Vertically integrated mass of sea salt aerosol (0.5 - 5 um)
+vertically_integrated_mass_of_sea_salt_aerosol_5-20um:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermssssl
+  long_names: Vertically integrated mass of sea salt aerosol (5 - 20 um)
+vertically_integrated_mass_of_sulphate_aerosol:
+  conversion_factor: 1
+  original_units: kg m**-2
+  convert_units: kg m**-2
+  cams_variables: aermsssu
+  long_names: Vertically integrated mass of sulphate aerosol
+acetone:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ch3coch3
+  long_names: Acetone
+acetone_product:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: aco2
+  long_names: Acetone product
+aldehydes:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ald2
+  long_names: Aldehydes
+amine:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: nh2
+  long_names: Amine
+ammonia:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: nh3
+  long_names: Ammonia mass mixing ratio
+ammonium:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: nh4
+  long_names: Ammonium
+dimethyl_sulfide:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: dms
+  long_names: Dimethyl sulfide
+dinitrogen_pentoxide:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: n2o5
+  long_names: Dinitrogen pentoxide
+ethanol:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c2h5oh
+  long_names: Ethanol
+ethene:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c2h4
+  long_names: Ethene
+formic_acid:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: hcooh
+  long_names: Formic acid
+fraction_of_cloud_cover:
+  conversion_factor: 1
+  original_units: (0 - 1)
+  convert_units: (0 - 1)
+  cams_variables: cc
+  long_names: Fraction of cloud cover
+geopotential:
+  conversion_factor: 1
+  original_units: m**2 s**-2
+  convert_units: m**2 s**-2
+  cams_variables: z
+  long_names: Geopotential
+hydroperoxy_radical:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ho2
+  long_names: Hydroperoxy radical
+lead:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: pb
+  long_names: Lead
+methacrolein_mvk:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ispd
+  long_names: Methacrolein MVK
+methacrylic_acid:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: mcooh
+  long_names: Methacrylic acid
+methane_chemistry:
+  conversion_factor: 28.97 / 16.044 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: ch4_c
+  long_names: Methane (chemistry)
+methane_sulfonic_acid:
+  conversion_factor: 28.97 / 16.044 * 1e9
+  original_units: kg kg**-1
+  convert_units: ppbv
+  cams_variables: msa
+  long_names: Methane sulfonic acid
+methanol:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ch3oh
+  long_names: Methanol
+methyl_glyoxal:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ch3cocho
+  long_names: Methyl glyoxal
+methyl_peroxide:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ch3ooh
+  long_names: Methyl peroxide
+methylperoxy_radical:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ch3o2
+  long_names: Methylperoxy radical
+nitrate:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: no3_a
+  long_names: Nitrate
+nitrate_radical:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: no3
+  long_names: Nitrate radical
+olefins:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ole
+  long_names: Olefins
+organic_ethers:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ror
+  long_names: Organic ethers
+organic_nitrates:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: onit
+  long_names: Organic nitrates
+paraffins:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: par
+  long_names: Paraffins
+pernitric_acid:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ho2no2
+  long_names: Pernitric acid
+peroxides:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: rooh
+  long_names: Peroxides
+peroxy_acetyl_radical:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c2o3
+  long_names: Peroxy acetyl radical
+propene:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c3h6
+  long_names: Propene
+radon:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ra
+  long_names: Radon
+specific_cloud_ice_water_content:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: ciwc
+  long_names: Specific cloud ice water content
+specific_cloud_liquid_water_content:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: clwc
+  long_names: Specific cloud liquid water content
+specific_rain_water_content:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: crwc
+  long_names: Specific rain water content
+specific_snow_water_content:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: cswc
+  long_names: Specific snow water content
+stratospheric_ozone_tracer:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: o3s
+  long_names: Stratospheric ozone
+terpenes:
+  conversion_factor: 1
+  original_units: kg kg**-1
+  convert_units: kg kg**-1
+  cams_variables: c10h16
+  long_names: Terpenes
+u_component_of_wind:
+  conversion_factor: 1
+  original_units: m s**-1
+  convert_units: m s**-1
+  cams_variables: u
+  long_names: U component of wind
+v_component_of_wind:
+  conversion_factor: 1
+  original_units: m s**-1
+  convert_units: m s**-1
+  cams_variables: v
+  long_names: V component of wind
+vertical_velocity:
+  conversion_factor: 1
+  original_units: Pa s**-1
+  convert_units: Pa s**-1
+  cams_variables: w
+  long_names: Vertical velocity
+potential_vorticity:
+  conversion_factor: 1
+  original_units: K m**2 kg**-1 s**-1
+  convert_units: K m**2 kg**-1 s**-1
+  cams_variables: pv
+  long_names: Potential vorticity
+relative_humidity:
+  conversion_factor: 1
+  original_units: '%'
+  convert_units: '%'
+  cams_variables: r
+  long_names: Relative humidity

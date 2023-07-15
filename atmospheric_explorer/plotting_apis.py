@@ -12,17 +12,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interfaces import (
+from atmospheric_explorer.cams_interface.cams_interfaces import (
     EAC4Instance,
     InversionOptimisedGreenhouseGas,
 )
+from atmospheric_explorer.cams_interface.units_conversion import convert_units_array
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
     confidence_interval,
     shifting_long,
 )
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
 
 logger = get_logger("atmexp")

@@ -7,12 +7,12 @@ import numpy as np
 import pytest
 import xarray as xr
 
-from atmospheric_explorer.exceptions import OperationNotAllowed
-from atmospheric_explorer.units_conversion import (
+from atmospheric_explorer.cams_interface.units_conversion import (
     OperationParser,
     convert_units_array,
     get_constants,
 )
+from atmospheric_explorer.exceptions import OperationNotAllowed
 
 
 def test_arithmetic_eval():
