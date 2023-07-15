@@ -472,8 +472,8 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         )
 
     def _read_dataset_no_time_coord(
-        self: InversionOptimisedGreenhouseGas, var_name: list[str] | None = None
-    ):
+        self: InversionOptimisedGreenhouseGas,
+    ) -> xr.Dataset:
         """\
         Returns data as an xarray.Dataset.
 
@@ -484,23 +484,14 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         # Create dataset from first file
         files = sorted(glob(self.file_full_path))
         date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
-        data_frame = (
-            xr.open_dataset(files[0])[var_name]
-            if var_name is not None
-            else xr.open_dataset(files[0])
-        )
+        data_frame = xr.open_dataset(files[0])
         data_frame = data_frame.expand_dims({"time": [date_index]})
         for file in files[1:]:
             # Merge remaining files
             # ! This loop replaces xr.open_mfdataset(surface_data.file_full_path) that does not work
             # (because time coordinate is not included in dataframe)
             date_index = datetime.strptime(file.split("_")[-1].split(".")[0], "%Y%m")
-            temp = (
-                xr.open_dataset(file)[var_name]
-                if var_name is not None
-                else xr.open_dataset(file)
-            )
-            temp = temp.expand_dims({"time": [date_index]})
+            temp = xr.open_dataset(file).expand_dims({"time": [date_index]})
             data_frame = xr.combine_by_coords(
                 [data_frame, temp], combine_attrs="override"
             )
@@ -514,15 +505,12 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             data_frame = data_frame.to_dataset()
         return data_frame
 
-    def read_dataset(
-        self: InversionOptimisedGreenhouseGas, var_name: str | list[str] | None = None
-    ) -> xr.Dataset:
+    def read_dataset(self: InversionOptimisedGreenhouseGas) -> xr.Dataset:
         """Returns data as an xarray.Dataset"""
         # Create dataframe with first file
-        if isinstance(var_name, str):
-            var_name = [var_name]
-        if self.data_variables != "methane":
-            # Only methane has the time coordinate, for the others
-            # we need to add it in order to concat all files
+        try:
+            logger.debug("Reading files using xarray.open_mfdataset")
+            return xr.open_mfdataset(self.file_full_path)
+        except ValueError:
+            logger.debug("Reading files iteratively")
             return self._read_dataset_no_time_coord()
-        return xr.open_mfdataset(self.file_full_path)
