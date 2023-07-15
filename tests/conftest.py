@@ -11,6 +11,7 @@ from __future__ import annotations
 import pytest
 import requests.exceptions
 
+
 @pytest.fixture
 def mock_get_timeout(monkeypatch):
     def mock_get(*args, **kwargs):

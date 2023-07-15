@@ -4,8 +4,9 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 
-from atmospheric_explorer.cams_interface import CAMSDataInterface
 from conftest import CAMSDataInterfaceTesting
+
+from atmospheric_explorer.cams_interface import CAMSDataInterface
 
 
 def test__init():
