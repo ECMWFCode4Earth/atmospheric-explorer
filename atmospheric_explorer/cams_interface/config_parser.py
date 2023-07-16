@@ -9,11 +9,11 @@ https://refactoring.guru/design-patterns/singleton/python/example#example-0
 from __future__ import annotations
 
 import ast
-import configparser
 import operator
 import os
+from functools import singledispatchmethod
 
-import xarray as xr
+import yaml
 
 from ..exceptions import OperationNotAllowed
 from ..loggers import get_logger
@@ -37,10 +37,11 @@ class OperationParser:
         ast.Mod: operator.mod,
     }
 
-    def arithmetic_eval(self: OperationParser, operation_str: str):
-        """Parse an arithmetic operation."""
-        logger.debug("Parsing %s", operation_str)
-        node = ast.parse(operation_str, mode="eval")
+    @singledispatchmethod
+    def arithmetic_eval(self, operation: str) -> str:
+        """Parse an arithmetic operation passed as a string."""
+        logger.debug("Parsing %s", operation)
+        node = ast.parse(operation, mode="eval")
 
         def _eval(node):
             if isinstance(node, ast.Expression):
@@ -66,32 +67,42 @@ class OperationParser:
 
         return _eval(node.body)
 
+    @arithmetic_eval.register
+    def _(self, operation: int | float) -> int | float:
+        """Parse a number, i.e. returns it unchanged."""
+        logger.debug("Returning %.2f unparsed", operation)
+        return operation
 
-class ConstantsMeta(type):
-    # pylint: disable=too-few-public-methods
+    @arithmetic_eval.register
+    def _(self, operation: list) -> list:
+        """Parse a list of operations."""
+        logger.debug("Parsing %s", operation)
+        return [self.arithmetic_eval(op) for op in operation]
+
+
+class ConfigMeta(type):
     """\
     This meta class is needed to implement a singleton pattern so that
-    constants are loaded only once.
+    the config files are loaded only once.
     """
+
+    # pylint: disable=too-few-public-methods
     _instances = {}
+    _parser = OperationParser()
+
+    def __new__(mcs, *args, **kwargs):
+        return super().__new__(mcs, *args)
 
     def __init__(cls, *args, **kwargs):
-        filepath = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "constants.cfg"
-        )
-        cls.constants = configparser.ConfigParser()
-        cls.constants.read(filepath)
-        logger.info("Loaded constants from file constants.cfg")
-        parser = OperationParser()
+        filename = kwargs["filename"]
+        filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
+        with open(filepath, "r", encoding="utf-8") as file:
+            cls.config = yaml.safe_load(file)
+        logger.info("Loaded config from file %s", filename)
         # Convert formulas inside configuration to floats
         logger.info("Evaluating arithmetic formulas in config")
-        for section in cls.constants.sections():
-            cls.constants.set(
-                section,
-                "factor",
-                str(parser.arithmetic_eval(cls.constants[section]["factor"])),
-            )
-        logger.info("Finished loading constants from file")
+        cls._parse_factors(cls.config)
+        logger.info("Finished loading config from file")
         super().__init__(*args, **kwargs)
 
     def __call__(cls, *args, **kwargs):
@@ -100,32 +111,12 @@ class ConstantsMeta(type):
             cls._instances[cls] = instance
         return cls._instances[cls]
 
-
-class Constants(metaclass=ConstantsMeta):
-    # pylint: disable=too-few-public-methods
-    """\
-    This class is needed to implement a singleton pattern so that
-    constants are loaded only once.
-    """
-
     @classmethod
-    def get_constants(cls):
-        """Function to get the actual constants object."""
-        return cls().constants
-
-
-def get_constants():
-    """Get the actual constants object from the singleton class."""
-    return Constants.get_constants()
-
-
-def convert_units_array(array: xr.DataArray, quantity: str) -> xr.DataArray:
-    """\
-    Converts an xarray.DataArray from its original units
-    to the units specified in the constants.cfg file.
-    """
-    const = get_constants()
-    res = array * const.getfloat(quantity, "factor")
-    res.attrs = array.attrs
-    res.attrs["units"] = const[quantity]["unit"]
-    return res
+    def _parse_factors(mcs, data_dict: dict):
+        if "conversion_factor" in data_dict.keys():
+            data_dict["conversion_factor"] = mcs._parser.arithmetic_eval(
+                data_dict["conversion_factor"]
+            )
+        else:
+            for k in data_dict.keys():
+                mcs._parse_factors(data_dict[k])

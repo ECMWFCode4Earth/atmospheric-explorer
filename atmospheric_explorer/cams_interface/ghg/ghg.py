@@ -218,5 +218,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             logger.debug("Reading files using xarray.open_mfdataset")
             return xr.open_mfdataset(self.file_full_path)
         except ValueError:
-            logger.debug("Reading files iteratively")
+            logger.debug(
+                "Reading with xarray.open_mfdataset failed, switching to reading files iteratively"
+            )
             return self._read_dataset_no_time_coord()

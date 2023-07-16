@@ -12,11 +12,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interface.cams_interfaces import (
-    EAC4Instance,
-    InversionOptimisedGreenhouseGas,
-)
-from atmospheric_explorer.cams_interface.units_conversion import convert_units_array
+from atmospheric_explorer.cams_interface.eac4 import EAC4Config, EAC4Instance
+from atmospheric_explorer.cams_interface.ghg import InversionOptimisedGreenhouseGas
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
     confidence_interval,
@@ -226,8 +223,8 @@ def _ghg_surface_satellite_yearly_data(
     )
     satellite_data.download()
     # Read data as dataset
-    df_surface = surface_data.read_dataset(var_name=var_name)
-    df_satellite = satellite_data.read_dataset(var_name=var_name)
+    df_surface = surface_data.read_dataset()
+    df_satellite = satellite_data.read_dataset()
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
     # Clip countries
@@ -333,7 +330,7 @@ def eac4_anomalies_plot(
         .mean(dim="time")
     )
     reference_value = df_agg.mean(dim="time")
-    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    df_converted = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
     reference_value = df_converted.mean().values
     df_anomalies = df_converted - reference_value
     df_anomalies.attrs = df_converted.attrs
@@ -394,7 +391,7 @@ def eac4_hovmoeller_latitude_plot(
         .mean(dim="time")
         .mean(dim="longitude")
     )
-    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    df_converted = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
     colorscale, colorbar = sequential_colorscale_bar(
         df_converted.values.flatten(), base_colorscale
     )
@@ -466,7 +463,7 @@ def eac4_hovmoeller_levels_plot(
         .mean(dim="latitude")
         .sortby("level")
     )
-    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    df_converted = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
     df_converted = df_converted.assign_coords(
         {"level": [str(c) for c in df_converted.coords["level"].values]}
     )
