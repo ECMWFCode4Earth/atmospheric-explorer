@@ -226,8 +226,8 @@ def _ghg_surface_satellite_yearly_data(
     )
     satellite_data.download()
     # Read data as dataset
-    df_surface = surface_data.read_dataset(var_name=var_name)
-    df_satellite = satellite_data.read_dataset(var_name=var_name)
+    df_surface = surface_data.read_dataset()
+    df_satellite = satellite_data.read_dataset()
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
     # Clip countries
