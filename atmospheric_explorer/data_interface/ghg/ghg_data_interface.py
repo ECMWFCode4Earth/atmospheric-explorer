@@ -13,12 +13,11 @@ from glob import glob
 import xarray as xr
 
 from atmospheric_explorer.cams_interface import CAMSDataInterface
+from atmospheric_explorer.cams_interface.cache import Base, cache_engine
+from atmospheric_explorer.cams_interface.ghg.ghg_cache import GHGCacheTable
 from atmospheric_explorer.cams_interface.ghg.ghg_parameters import GHGParameters
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
-
-from atmospheric_explorer.cams_interface.ghg.ghg_cache import GHGCacheTable
-from atmospheric_explorer.cams_interface.cache import Base, cache_engine
 
 logger = get_logger("atmexp")
 
@@ -63,19 +62,21 @@ class GHGDataInterface(CAMSDataInterface):
     ):
         super().__init__()
         self.parameters = GHGParameters(
-            data_variables = data_variables,
-            file_format = file_format,
-            quantity = quantity,
-            input_observations = input_observations,
-            time_aggregation = time_aggregation,
-            years = years,
-            months = months,
-            version = version
+            data_variables=data_variables,
+            file_format=file_format,
+            quantity=quantity,
+            input_observations=input_observations,
+            time_aggregation=time_aggregation,
+            years=years,
+            months=months,
+            version=version,
         )
         self._update_parameters()
         if self._diff_parameters is not None:
             self.file_format = self.parameters.file_format
-            self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
+            self.files_dirname = (
+                files_dir if files_dir is not None else f"data_{self._id}"
+            )
             self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
             self.file_full_path = self.files_dirname
             create_folder(self.files_dir_path)
@@ -108,7 +109,7 @@ class GHGDataInterface(CAMSDataInterface):
                 months={r.month for r in rows},
             )
         return None
-    
+
     def file_ext(self: GHGDataInterface) -> str:
         """Extension of the saved file"""
         match (self.file_format):
@@ -166,8 +167,7 @@ class GHGDataInterface(CAMSDataInterface):
         return files
 
     def _read_dataset_no_time_coord(
-        self: GHGDataInterface,
-        files: set[str]
+        self: GHGDataInterface, files: set[str]
     ) -> xr.Dataset:
         """\
         Returns data as an xarray.Dataset.
@@ -191,10 +191,12 @@ class GHGDataInterface(CAMSDataInterface):
             data_frame = xr.combine_by_coords(
                 [data_frame, temp], combine_attrs="override"
             )
-        data_frame = data_frame.expand_dims({
+        data_frame = data_frame.expand_dims(
+            {
                 "input_observations": [self.parameters.input_observations],
                 "time_aggregation": [self.parameters.time_aggregation],
-        })
+            }
+        )
         if isinstance(data_frame, xr.DataArray):
             data_frame = data_frame.to_dataset()
         return data_frame
@@ -217,25 +219,25 @@ if __name__ == "__main__":
     Base.metadata.drop_all(cache_engine)
     Base.metadata.create_all(cache_engine)
     d1 = GHGDataInterface(
-        version='latest',
-        file_format='zip',
-        data_variables='nitrous_oxide',
-        quantity='surface_flux',
-        input_observations='surface',
-        time_aggregation='monthly_mean',
-        years=['2000', '2001'],
-        months=['1', '2']
+        version="latest",
+        file_format="zip",
+        data_variables="nitrous_oxide",
+        quantity="surface_flux",
+        input_observations="surface",
+        time_aggregation="monthly_mean",
+        years=["2000", "2001"],
+        months=["1", "2"],
     )
     d1._download()
     d2 = GHGDataInterface(
-        version='latest',
-        file_format='zip',
-        data_variables='nitrous_oxide',
-        quantity='surface_flux',
-        input_observations='surface',
-        time_aggregation='monthly_mean',
-        years=['2000', '2001'],
-        months=['1', '2']
+        version="latest",
+        file_format="zip",
+        data_variables="nitrous_oxide",
+        quantity="surface_flux",
+        input_observations="surface",
+        time_aggregation="monthly_mean",
+        years=["2000", "2001"],
+        months=["1", "2"],
     )
     d2._download()
     print(d2.read_dataset())

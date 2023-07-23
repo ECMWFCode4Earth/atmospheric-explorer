@@ -10,7 +10,7 @@ from datetime import datetime
 
 import xarray as xr
 
-from atmospheric_explorer.cams_interface import CAMSDataInterface
+from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
 

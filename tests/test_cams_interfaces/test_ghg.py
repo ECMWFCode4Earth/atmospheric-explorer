@@ -3,7 +3,7 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
-from atmospheric_explorer.cams_interface.ghg import InversionOptimisedGreenhouseGas
+from atmospheric_explorer.data_interface.ghg import InversionOptimisedGreenhouseGas
 
 
 def test__init():

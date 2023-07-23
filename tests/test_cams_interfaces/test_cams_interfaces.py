@@ -6,7 +6,7 @@
 
 from conftest import CAMSDataInterfaceTesting
 
-from atmospheric_explorer.cams_interface import CAMSDataInterface
+from atmospheric_explorer.data_interface import CAMSDataInterface
 
 
 def test__init():

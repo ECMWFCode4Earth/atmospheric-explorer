@@ -12,8 +12,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interface.eac4 import EAC4Config, EAC4Instance
-from atmospheric_explorer.cams_interface.ghg import InversionOptimisedGreenhouseGas
+from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
+from atmospheric_explorer.data_interface.ghg import InversionOptimisedGreenhouseGas
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_countries,
     confidence_interval,

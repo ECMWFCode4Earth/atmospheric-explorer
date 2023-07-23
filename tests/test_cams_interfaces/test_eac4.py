@@ -4,7 +4,7 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 
-from atmospheric_explorer.cams_interface.eac4 import EAC4Instance
+from atmospheric_explorer.data_interface.eac4 import EAC4Instance
 
 
 def test__init():

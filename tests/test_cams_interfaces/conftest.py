@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 import requests.exceptions
 
-from atmospheric_explorer.cams_interface import CAMSDataInterface
+from atmospheric_explorer.data_interface import CAMSDataInterface
 
 
 class CAMSDataInterfaceTesting(CAMSDataInterface):

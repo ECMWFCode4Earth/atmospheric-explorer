@@ -5,7 +5,7 @@
 # pylint: disable=unused-argument
 import pytest
 
-from atmospheric_explorer.cams_interface.config_parser import OperationParser
+from atmospheric_explorer.data_interface.config_parser import OperationParser
 from atmospheric_explorer.exceptions import OperationNotAllowed
 
 

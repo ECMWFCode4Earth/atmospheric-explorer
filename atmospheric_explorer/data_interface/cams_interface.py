@@ -49,7 +49,9 @@ class CAMSDataInterface(ABC):
         create_folder(self._data_folder)
         logger.info("Created folder %s", self._data_folder)
 
-    def _download(self: CAMSDataInterface, parameters: CAMSParameters, file_fullpath: str) -> None:
+    def _download(
+        self: CAMSDataInterface, parameters: CAMSParameters, file_fullpath: str
+    ) -> None:
         """\
         Download the dataset and saves it to file specified in filename.
         Uses cdsapi to interact with CAMS ADS.
