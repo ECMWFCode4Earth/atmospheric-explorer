@@ -12,10 +12,10 @@ from glob import glob
 
 import xarray as xr
 
-from atmospheric_explorer.cams_interface import CAMSDataInterface
-from atmospheric_explorer.cams_interface.cache import Base, cache_engine
-from atmospheric_explorer.cams_interface.ghg.ghg_cache import GHGCacheTable
-from atmospheric_explorer.cams_interface.ghg.ghg_parameters import GHGParameters
+from atmospheric_explorer.data_interface import CAMSDataInterface
+from atmospheric_explorer.data_interface.cache import Base, cache_engine
+from atmospheric_explorer.data_interface.ghg.ghg_cache import GHGCacheTable
+from atmospheric_explorer.data_interface.ghg.ghg_parameters import GHGParameters
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
 
@@ -73,6 +73,7 @@ class GHGDataInterface(CAMSDataInterface):
         )
         self._update_parameters()
         if self._diff_parameters is not None:
+            logger.info("The parameter specified are not fully cached, creating variables to manage files")
             self.file_format = self.parameters.file_format
             self.files_dirname = (
                 files_dir if files_dir is not None else f"data_{self._id}"
@@ -80,7 +81,9 @@ class GHGDataInterface(CAMSDataInterface):
             self.files_dir_path = os.path.join(self._data_folder, self.files_dirname)
             self.file_full_path = self.files_dirname
             create_folder(self.files_dir_path)
-            logger.info("Created folder %s", self.files_dir_path)
+            logger.debug("Created folder %s", self.files_dir_path)
+        else:
+            logger.info("The parameter specified are fully cached")
 
     @property
     def file_full_path(self: GHGDataInterface) -> str:
@@ -98,6 +101,7 @@ class GHGDataInterface(CAMSDataInterface):
     def _get_cached_parameters(params: GHGParameters) -> GHGParameters | None:
         """Return cached parameters with the same key variables as the ones in params."""
         rows = GHGCacheTable.get_rows(params)
+        logger.debug("Cached parameters: %s", rows)
         if rows:
             return GHGParameters(
                 data_variables=rows[0].data_variables,
@@ -121,8 +125,10 @@ class GHGDataInterface(CAMSDataInterface):
     def _update_parameters(self: GHGDataInterface) -> None:
         self._cached_parameters = self._get_cached_parameters(self.parameters)
         if self._cached_parameters is not None:
+            logger.info("Some data points are already cached, updating parameters")
             self._diff_parameters = self._cached_parameters.difference(self.parameters)
         else:
+            logger.info("No data points are cached, updating parameters")
             self._diff_parameters = self.parameters
 
     def _extracts_zip(self: GHGDataInterface) -> None:
@@ -133,18 +139,18 @@ class GHGDataInterface(CAMSDataInterface):
             ext = zip_ref.filelist[0].filename.split(".")[-1]
             self.file_format = "netcdf" if ext == "nc" else ext
             zip_ref.extractall(self.files_dir_path)
-            logger.info(
+            logger.debug(
                 "Extracted file %s to folder %s",
                 self.file_full_path,
                 self.files_dir_path,
             )
         self.file_full_path = "*"
-        logger.info("Updated file_full_path to wildcard path %s", self.file_full_path)
+        logger.debug("Updated file_full_path to wildcard path %s", self.file_full_path)
         # Remove zip file
         os.remove(zip_filename)
-        logger.info("Removed %s", zip_filename)
+        logger.debug("Removed %s", zip_filename)
 
-    def _download(self: GHGDataInterface) -> None:
+    def download(self: GHGDataInterface) -> None:
         """\
         Download the dataset and saves it to file specified in filename.
         Uses cdsapi to interact with CAMS ADS.
@@ -153,17 +159,21 @@ class GHGDataInterface(CAMSDataInterface):
         """
         # Download only remaining parameters
         if self._diff_parameters is not None:
+            logger.info("Downloading non-cached parameters: %s", self._diff_parameters)
             super()._download(self._diff_parameters, self.file_full_path)
             # This dataset downloads zipfiles with possibly multiple netcdf files inside
             # We must extract it
             self._extracts_zip()
             GHGCacheTable.cache(self._diff_parameters, self.file_full_path)
             self._update_parameters()
+        else:
+            logger.info("The parameters specified are already cached, skipping download.")
 
     def _get_all_files(self: GHGDataInterface) -> set[str]:
         files = set()
         for file in GHGCacheTable.get_files([self.parameters]):
             files.update(set(glob(file)))
+        logger.debug("Fetching all files associated with parameters: %s", files)
         return files
 
     def _read_dataset_no_time_coord(
@@ -178,6 +188,7 @@ class GHGDataInterface(CAMSDataInterface):
         """
         # Create dataset from first file
         files = sorted(list(files))
+        logger.debug("Reading files as xarray.Dataset: %s", files)
         date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
         data_frame = xr.open_dataset(files[0])
         data_frame = data_frame.expand_dims({"time": [date_index]})

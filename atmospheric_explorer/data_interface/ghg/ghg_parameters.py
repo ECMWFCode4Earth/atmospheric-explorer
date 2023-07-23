@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from itertools import product
 from typing import Generator
 
-from atmospheric_explorer.cams_interface.cams_interface import CAMSParameters
+from atmospheric_explorer.data_interface.cams_interface import CAMSParameters
 from atmospheric_explorer.loggers import get_logger
 
 logger = get_logger("atmexp")

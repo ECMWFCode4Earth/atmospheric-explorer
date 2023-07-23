@@ -19,6 +19,7 @@ logger = get_logger("atmexp")
 
 
 class GHGCacheTable(Base):
+    """Table used to cache GHG calls and retrieve file paths related to each data point."""
     __tablename__ = "ghg_cache_table"
     data_variables = mapped_column(String(30), primary_key=True)
     file_format = mapped_column(String(10), primary_key=True)
@@ -47,6 +48,7 @@ class GHGCacheTable(Base):
 
     @classmethod
     def get_rows(cls, parameters: GHGParameters | None = None) -> list[dict]:
+        """Get rows from the table. If a parameter instance is passed, all rows with the same variables are returned."""
         with Session(cache_engine) as session:
             if parameters is not None:
                 return [
@@ -69,7 +71,7 @@ class GHGCacheTable(Base):
 
     @classmethod
     def cache(cls, parameters: GHGParameters, files_path: str | None = None) -> None:
-        """Caches a parameters object using upsert."""
+        """Caches a parameters object using an upsert on key variables."""
         upsert_stmt = sqlite_upsert(cls).values(
             [
                 {
@@ -131,6 +133,7 @@ class GHGCacheTable(Base):
 
     @classmethod
     def drop(cls):
+        """Drop table"""
         with Session(cache_engine) as session:
             session.execute(delete(cls))
             session.commit()

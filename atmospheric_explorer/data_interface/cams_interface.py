@@ -64,3 +64,8 @@ class CAMSDataInterface(ABC):
     def read_dataset(self: CAMSDataInterface):
         """Returns the files as an xarray.Dataset"""
         raise NotImplementedError("Method not implemented")
+
+    @abstractmethod
+    def download(self: CAMSDataInterface):
+        """Returns the files as an xarray.Dataset"""
+        raise NotImplementedError("Method not implemented")
