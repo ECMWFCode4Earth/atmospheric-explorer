@@ -132,6 +132,31 @@ class GHGCacheTable(Base):
             ).all()
 
     @classmethod
+    def delete_rows(cls, parameters: list[GHGParameters]):
+        years = set()
+        months = set()
+        for p in parameters:
+            years.update(p._years)
+            months.update(p._months)
+        with Session(cache_engine) as session:
+            session.execute(
+                delete(cls)
+                .where(
+                    cls.data_variables.in_({p.data_variables for p in parameters}),
+                    cls.file_format.in_({p.file_format for p in parameters}),
+                    cls.quantity.in_({p.quantity for p in parameters}),
+                    cls.input_observations.in_(
+                        {p.input_observations for p in parameters}
+                    ),
+                    cls.time_aggregation.in_({p.time_aggregation for p in parameters}),
+                    cls.version.in_({p.version for p in parameters}),
+                    cls.year.in_(years),
+                    cls.month.in_(months),
+                )
+            )
+            session.commit()
+
+    @classmethod
     def drop(cls):
         """Drop table"""
         with Session(cache_engine) as session:

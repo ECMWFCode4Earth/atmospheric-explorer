@@ -55,7 +55,7 @@ class GHGParameters(CAMSParameters):
     def months(self: GHGParameters, months: str | set[str] | list[str]) -> None:
         self._months = self._convert_to_intset(months)
 
-    def __eq__(self, other: GHGParameters) -> bool:
+    def _key_var_eq(self, other: GHGParameters) -> bool:
         return (
             other.data_variables == self.data_variables
             and other.file_format == self.file_format
@@ -63,8 +63,20 @@ class GHGParameters(CAMSParameters):
             and other.input_observations == self.input_observations
             and other.time_aggregation == self.time_aggregation
             and other.version == self.version
+        )
+
+    def __eq__(self, other: GHGParameters) -> bool:
+        return (
+            self._key_var_eq(other)
             and other._years == self._years
             and other._months == self._months
+        )
+
+    def is_eq_superset(self, other: GHGParameters) -> bool:
+        return (self == other) or (
+            self._key_var_eq(other)
+            and self._years.issuperset(other._years)
+            and self._months.issuperset(other._months)
         )
 
     def years_months(self: GHGParameters) -> Generator[None, None, tuple[int, int]]:
@@ -101,7 +113,7 @@ class GHGParameters(CAMSParameters):
             other_ym = set(other.years_months())
             ym_diff = other_ym - other_ym.intersection(self_ym)
             if ym_diff:
-                logger.debug("Parameters different years and months")
+                logger.debug("Parameters have different years and months, returning an inclusive parameter set")
                 return GHGParameters(
                     data_variables=self.data_variables,
                     file_format=self.file_format,

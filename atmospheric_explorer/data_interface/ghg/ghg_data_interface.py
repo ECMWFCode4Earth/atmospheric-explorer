@@ -13,11 +13,12 @@ from glob import glob
 import xarray as xr
 
 from atmospheric_explorer.data_interface import CAMSDataInterface
-from atmospheric_explorer.data_interface.cache import Base, cache_engine
+from atmospheric_explorer.data_interface.cache import Base, cache_engine, CachingStatus
 from atmospheric_explorer.data_interface.ghg.ghg_cache import GHGCacheTable
 from atmospheric_explorer.data_interface.ghg.ghg_parameters import GHGParameters
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
+import shutil
 
 logger = get_logger("atmexp")
 
@@ -71,6 +72,7 @@ class GHGDataInterface(CAMSDataInterface):
             months=months,
             version=version,
         )
+        self._cache_status = CachingStatus.UNCACHED
         self._update_parameters()
         if self._diff_parameters is not None:
             logger.info("The parameter specified are not fully cached, creating variables to manage files")
@@ -122,13 +124,29 @@ class GHGDataInterface(CAMSDataInterface):
             case _:
                 return self.file_format
 
+    def _clear_data(self: GHGDataInterface):
+        if self._diff_parameters.is_eq_superset(self.parameters):
+            files = GHGCacheTable.get_files([self._diff_parameters])
+            for file in files:
+                dir = os.path.dirname(file)
+                if os.path.exists(dir):
+                    shutil.rmtree(dir)
+            GHGCacheTable.delete_rows([self._diff_parameters])
+
     def _update_parameters(self: GHGDataInterface) -> None:
         self._cached_parameters = self._get_cached_parameters(self.parameters)
         if self._cached_parameters is not None:
             logger.info("Some data points are already cached, updating parameters")
             self._diff_parameters = self._cached_parameters.difference(self.parameters)
+            if self._diff_parameters is None:
+                self._cache_status = CachingStatus.FULLY_CACHED
+            elif self._diff_parameters.is_eq_superset(self.parameters):
+                self._cache_status = CachingStatus.UNCACHED
+            else:
+                self._cache_status = CachingStatus.PARTIALLY_CACHED
         else:
             logger.info("No data points are cached, updating parameters")
+            self._cache_status = CachingStatus.UNCACHED
             self._diff_parameters = self.parameters
 
     def _extracts_zip(self: GHGDataInterface) -> None:
@@ -164,6 +182,7 @@ class GHGDataInterface(CAMSDataInterface):
             # This dataset downloads zipfiles with possibly multiple netcdf files inside
             # We must extract it
             self._extracts_zip()
+            self._clear_data()
             GHGCacheTable.cache(self._diff_parameters, self.file_full_path)
             self._update_parameters()
         else:
@@ -239,7 +258,8 @@ if __name__ == "__main__":
         years=["2000", "2001"],
         months=["1", "2"],
     )
-    d1._download()
+    d1.download()
+    print(GHGCacheTable.get_rows())
     d2 = GHGDataInterface(
         version="latest",
         file_format="zip",
@@ -247,8 +267,8 @@ if __name__ == "__main__":
         quantity="surface_flux",
         input_observations="surface",
         time_aggregation="monthly_mean",
-        years=["2000", "2001"],
-        months=["1", "2"],
+        years=["2000", "2001", "2002"],
+        months=["1", "2", "3"],
     )
-    d2._download()
-    print(d2.read_dataset())
+    d2.download()
+    print(GHGCacheTable.get_rows())
