@@ -73,6 +73,7 @@ class GHGParameters(CAMSParameters):
         )
 
     def is_eq_superset(self, other: GHGParameters) -> bool:
+        """True if self is equal or a superset of other."""
         return (self == other) or (
             self._key_var_eq(other)
             and self._years.issuperset(other._years)
@@ -98,14 +99,7 @@ class GHGParameters(CAMSParameters):
 
     def difference(self, other: GHGParameters) -> GHGParameters | None:
         """Return a GHGParameters instance with all non-overlapping parameters."""
-        if (
-            other.data_variables == self.data_variables
-            and other.file_format == self.file_format
-            and other.quantity == self.quantity
-            and other.input_observations == self.input_observations
-            and other.time_aggregation == self.time_aggregation
-            and other.version == self.version
-        ):
+        if self._key_var_eq(other):
             logger.debug(
                 "Parameters have the same key variables, moving to compute year and month difference"
             )
