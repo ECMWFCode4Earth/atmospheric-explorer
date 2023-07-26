@@ -325,7 +325,7 @@ def eac4_anomalies_plot(
     )
     data.download()
     df_down = xr.open_dataset(data.file_full_path)
-    df_down=shifting_long(df_down)
+    df_down = shifting_long(df_down)
     df_down = df_down.rio.write_crs("EPSG:4326")
     df_clipped = clip_and_concat_countries(df_down, countries).sel(admin=countries[0])
     df_agg = (
