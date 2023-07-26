@@ -300,17 +300,9 @@ class EAC4Instance(CAMSDataInterface):
             and self._includes_model_level(other._model_level)
         )
 
-    def read_dataset(
-        self: EAC4Instance, var_name: str | list[str] | None = None
-    ) -> xr.Dataset:
+    def read_dataset(self: EAC4Instance) -> xr.Dataset:
         """Returns data as an xarray.Dataset"""
-        if isinstance(var_name, str):
-            var_name = [var_name]
-        return (
-            xr.open_dataset(self.file_full_path)[var_name]
-            if var_name is not None
-            else xr.open_dataset(self.file_full_path)
-        )
+        return xr.open_dataset(self.file_full_path)
 
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
