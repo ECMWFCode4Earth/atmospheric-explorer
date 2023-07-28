@@ -206,7 +206,7 @@ def _ghg_surface_satellite_yearly_data(
     # pylint: disable=invalid-name
     # Download surface data file
     surface_data = InversionOptimisedGreenhouseGas(
-        data_variables=data_variable,
+        data_variable=data_variable,
         file_format="zip",
         quantity="surface_flux",
         input_observations="surface",
@@ -216,7 +216,7 @@ def _ghg_surface_satellite_yearly_data(
     )
     surface_data.download()
     satellite_data = InversionOptimisedGreenhouseGas(
-        data_variables=data_variable,
+        data_variable=data_variable,
         file_format="zip",
         quantity="surface_flux",
         input_observations="satellite",
@@ -415,7 +415,6 @@ def eac4_hovmoeller_latitude_plot(
     return fig
 
 
-# Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
 def eac4_hovmoeller_levels_plot(
     data_variable: str,
     var_name: str,
@@ -427,7 +426,7 @@ def eac4_hovmoeller_levels_plot(
     resampling: str = "1MS",
     base_colorscale: list[str] = px.colors.sequential.RdBu_r,
 ) -> go.Figure:
-    """Hoevmoeller plot of EAC4 multilevel variables, time vs pressure level"""
+    """Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset."""
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
     # pylint: disable=dangerous-default-value
