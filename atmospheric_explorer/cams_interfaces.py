@@ -334,7 +334,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def __init__(
         self: InversionOptimisedGreenhouseGas,
-        data_variables: str | set[str] | list[str],
+        data_variable: str | set[str] | list[str],
         file_format: str,
         quantity: str,
         input_observations: str,
@@ -344,7 +344,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         files_dir: str | None = None,
         version: str = "latest",
     ):
-        super().__init__(data_variables, file_format)
+        super().__init__(data_variable, file_format)
         self.quantity = quantity
         self.input_observations = input_observations
         self.time_aggregation = time_aggregation
