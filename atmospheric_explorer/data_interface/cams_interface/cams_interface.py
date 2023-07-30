@@ -18,12 +18,6 @@ from atmospheric_explorer.utils import create_folder, get_local_folder
 logger = get_logger("atmexp")
 
 
-class CAMSParameters(ABC):
-    @abstractmethod
-    def build_call_body(self: CAMSParameters):
-        raise NotImplementedError("Method not implemented")
-
-
 class CAMSDataInterface(ABC):
     # pylint: disable=too-many-instance-attributes
     """\

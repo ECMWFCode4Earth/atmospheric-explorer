@@ -12,7 +12,7 @@ from glob import glob
 
 import xarray as xr
 
-from atmospheric_explorer.data_interface import CAMSDataInterface
+from atmospheric_explorer.data_interface.cams_interface.cams_interface import CAMSDataInterface
 from atmospheric_explorer.data_interface.cache import Base, cache_engine, CachingStatus
 from atmospheric_explorer.data_interface.ghg.ghg_cache import GHGCacheTable
 from atmospheric_explorer.data_interface.ghg.ghg_parameters import GHGParameters
