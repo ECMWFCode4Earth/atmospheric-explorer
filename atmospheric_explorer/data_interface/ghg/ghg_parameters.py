@@ -55,7 +55,7 @@ class GHGParameters(CAMSParameters):
     def months(self: GHGParameters, months: str | set[str] | list[str]) -> None:
         self._months = self._convert_to_intset(months)
 
-    def _key_var_eq(self, other: GHGParameters) -> bool:
+    def _point_var_eq(self, other: GHGParameters) -> bool:
         return (
             other.data_variables == self.data_variables
             and other.file_format == self.file_format
@@ -67,7 +67,7 @@ class GHGParameters(CAMSParameters):
 
     def __eq__(self, other: GHGParameters) -> bool:
         return (
-            self._key_var_eq(other)
+            self._point_var_eq(other)
             and other._years == self._years
             and other._months == self._months
         )
@@ -75,7 +75,7 @@ class GHGParameters(CAMSParameters):
     def is_eq_superset(self, other: GHGParameters) -> bool:
         """True if self is equal or a superset of other."""
         return (self == other) or (
-            self._key_var_eq(other)
+            self._point_var_eq(other)
             and self._years.issuperset(other._years)
             and self._months.issuperset(other._months)
         )
@@ -97,15 +97,19 @@ class GHGParameters(CAMSParameters):
             "version": self.version,
         }
 
+    def _ym_difference(self, other: GHGParameters) -> set:
+        """Return the list with all remaining year-month tuples."""
+        self_ym = set(self.years_months())
+        other_ym = set(other.years_months())
+        return other_ym - other_ym.intersection(self_ym)
+
     def difference(self, other: GHGParameters) -> GHGParameters | None:
         """Return a GHGParameters instance with all non-overlapping parameters."""
-        if self._key_var_eq(other):
+        if self._point_var_eq(other):
             logger.debug(
                 "Parameters have the same key variables, moving to compute year and month difference"
             )
-            self_ym = set(self.years_months())
-            other_ym = set(other.years_months())
-            ym_diff = other_ym - other_ym.intersection(self_ym)
+            ym_diff = self._ym_difference(other)
             if ym_diff:
                 logger.debug("Parameters have different years and months, returning an inclusive parameter set")
                 return GHGParameters(
