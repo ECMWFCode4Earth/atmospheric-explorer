@@ -9,6 +9,7 @@ import os
 from abc import ABC, abstractmethod
 from glob import glob
 from itertools import count
+from typing import Any
 
 import cdsapi
 
@@ -44,7 +45,7 @@ class CAMSDataInterface(ABC):
         logger.info("Created folder %s", self._data_folder)
 
     def _download(
-        self: CAMSDataInterface, parameters: CAMSParameters, file_fullpath: str
+        self: CAMSDataInterface, parameters: Any, file_fullpath: str
     ) -> None:
         """\
         Download the dataset and saves it to file specified in filename.

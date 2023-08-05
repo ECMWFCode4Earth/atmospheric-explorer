@@ -55,14 +55,14 @@ class GHGCacheTable(Base):
                     row._mapping[cls]
                     for row in session.execute(
                         select(cls).where(
-                            cls.data_variables == parameters.data_variables,
-                            cls.file_format == parameters.file_format,
-                            cls.quantity == parameters.quantity,
-                            cls.input_observations == parameters.input_observations,
-                            cls.time_aggregation == parameters.time_aggregation,
-                            cls.version == parameters.version,
-                            cls.year.in_(parameters._years),
-                            cls.month.in_(parameters._months),
+                            cls.data_variables == parameters.data_variables.value,
+                            cls.file_format == parameters.file_format.value,
+                            cls.quantity == parameters.quantity.value,
+                            cls.input_observations == parameters.input_observations.value,
+                            cls.time_aggregation == parameters.time_aggregation.value,
+                            cls.version == parameters.version.value,
+                            cls.year.in_(parameters.years.value),
+                            cls.month.in_(parameters.months.value),
                         )
                     ).all()
                 ]
@@ -75,14 +75,14 @@ class GHGCacheTable(Base):
         upsert_stmt = sqlite_upsert(cls).values(
             [
                 {
-                    "data_variables": parameters.data_variables,
-                    "file_format": parameters.file_format,
-                    "quantity": parameters.quantity,
-                    "input_observations": parameters.input_observations,
-                    "time_aggregation": parameters.time_aggregation,
+                    "data_variables": parameters.data_variables.value,
+                    "file_format": parameters.file_format.value,
+                    "quantity": parameters.quantity.value,
+                    "input_observations": parameters.input_observations.value,
+                    "time_aggregation": parameters.time_aggregation.value,
                     "year": y,
                     "month": m,
-                    "version": parameters.version,
+                    "version": parameters.version.value,
                     "files_path": files_path,
                 }
                 for y, m in parameters.years_months()
@@ -111,21 +111,21 @@ class GHGCacheTable(Base):
         years = set()
         months = set()
         for p in parameters:
-            years.update(p._years)
-            months.update(p._months)
+            years.update(p.years.value)
+            months.update(p.months.value)
         with Session(cache_engine) as session:
             return session.scalars(
                 select(cls.files_path)
                 .distinct()
                 .where(
-                    cls.data_variables.in_({p.data_variables for p in parameters}),
-                    cls.file_format.in_({p.file_format for p in parameters}),
-                    cls.quantity.in_({p.quantity for p in parameters}),
+                    cls.data_variables.in_({p.data_variables.value for p in parameters}),
+                    cls.file_format.in_({p.file_format.value for p in parameters}),
+                    cls.quantity.in_({p.quantity.value for p in parameters}),
                     cls.input_observations.in_(
-                        {p.input_observations for p in parameters}
+                        {p.input_observations.value for p in parameters}
                     ),
-                    cls.time_aggregation.in_({p.time_aggregation for p in parameters}),
-                    cls.version.in_({p.version for p in parameters}),
+                    cls.time_aggregation.in_({p.time_aggregation.value for p in parameters}),
+                    cls.version.in_({p.version.value for p in parameters}),
                     cls.year.in_(years),
                     cls.month.in_(months),
                 )
@@ -136,8 +136,8 @@ class GHGCacheTable(Base):
         years = set()
         months = set()
         for p in parameters:
-            years.update(p._years)
-            months.update(p._months)
+            years.update(p.years.value)
+            months.update(p.months.value)
         with Session(cache_engine) as session:
             session.execute(
                 delete(cls)
