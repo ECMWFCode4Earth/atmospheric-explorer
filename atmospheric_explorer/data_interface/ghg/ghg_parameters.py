@@ -6,54 +6,48 @@ from typing import Generator
 
 from atmospheric_explorer.data_interface.cams_interface import CAMSParameters
 from atmospheric_explorer.loggers import get_logger
+from pydantic.dataclasses import dataclass as pydantic_dataclass
+from pydantic import computed_field, field_validator
 
 logger = get_logger("atmexp")
 
 
-@dataclass
+@pydantic_dataclass
 class GHGParameters(CAMSParameters):
     file_format: str
     data_variables: str
     quantity: str
     input_observations: str
     time_aggregation: str
-    years: str | set[str] | list[str]
-    _years: set[int] = field(init=False, repr=False)
-    months: str | set[str] | list[str]
-    _months: set[int] = field(init=False, repr=False)
+    years: set[int]
+    months: set[int]
     version: str = "latest"
 
-    @staticmethod
-    def _convert_to_intset(val: str | set[str] | list[str]) -> set[int]:
-        if isinstance(val, str):
-            val = [val]
-        return set([int(y) for y in val])
+    @field_validator('years', 'months', mode='before')
+    def _(cls: GHGParameters, value: str | set[str] | list[str]) -> set[int]:
+        if isinstance(value, str):
+            value = [value]
+        return {int(v) for v in value}
 
+    @computed_field
     @property
-    def years(self: GHGParameters) -> str | list[str]:
+    def years_api(self: GHGParameters) -> str | list[str]:
         """Years is internally represented as a set of ints, use this property to set/get its value"""
         return (
-            [str(y) for y in self._years]
-            if len(self._years) > 1
-            else str(next(iter(self._years)))
+            [str(y) for y in self.years]
+            if len(self.years) > 1
+            else str(next(iter(self.years)))
         )
 
-    @years.setter
-    def years(self: GHGParameters, years: str | set[str] | list[str]) -> None:
-        self._years = self._convert_to_intset(years)
-
+    @computed_field
     @property
-    def months(self: GHGParameters) -> str | list[str]:
+    def months_api(self: GHGParameters) -> str | list[str]:
         """Months is internally represented as a set of ints, use this property to set/get its value"""
         return (
-            [f"{m:02}" for m in self._months]
-            if len(self._months) > 1
-            else f"{next(iter(self._months)):02}"
+            [f"{m:02}" for m in self.months]
+            if len(self.months) > 1
+            else f"{next(iter(self.months)):02}"
         )
-
-    @months.setter
-    def months(self: GHGParameters, months: str | set[str] | list[str]) -> None:
-        self._months = self._convert_to_intset(months)
 
     def _point_var_eq(self, other: GHGParameters) -> bool:
         return (
@@ -68,21 +62,21 @@ class GHGParameters(CAMSParameters):
     def __eq__(self, other: GHGParameters) -> bool:
         return (
             self._point_var_eq(other)
-            and other._years == self._years
-            and other._months == self._months
+            and other.years == self.years
+            and other.months == self.months
         )
 
     def is_eq_superset(self, other: GHGParameters) -> bool:
         """True if self is equal or a superset of other."""
         return (self == other) or (
             self._point_var_eq(other)
-            and self._years.issuperset(other._years)
-            and self._months.issuperset(other._months)
+            and self.years.issuperset(other.years)
+            and self.months.issuperset(other.months)
         )
 
     def years_months(self: GHGParameters) -> Generator[None, None, tuple[int, int]]:
         """Return the full set of (year, month) tuples"""
-        return product(self._years, self._months)
+        return product(self.years, self.months)
 
     def build_call_body(self: GHGParameters) -> dict:
         """Build the CDSAPI call body"""
@@ -92,8 +86,8 @@ class GHGParameters(CAMSParameters):
             "quantity": self.quantity,
             "input_observations": self.input_observations,
             "time_aggregation": self.time_aggregation,
-            "year": self.years,
-            "month": self.months,
+            "year": self.years_api,
+            "month": self.months_api,
             "version": self.version,
         }
 

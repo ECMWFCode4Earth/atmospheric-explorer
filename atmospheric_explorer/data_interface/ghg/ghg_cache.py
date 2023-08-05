@@ -61,8 +61,8 @@ class GHGCacheTable(Base):
                             cls.input_observations == parameters.input_observations,
                             cls.time_aggregation == parameters.time_aggregation,
                             cls.version == parameters.version,
-                            cls.year.in_(parameters._years),
-                            cls.month.in_(parameters._months),
+                            cls.year.in_(parameters.years),
+                            cls.month.in_(parameters.months),
                         )
                     ).all()
                 ]
@@ -111,8 +111,8 @@ class GHGCacheTable(Base):
         years = set()
         months = set()
         for p in parameters:
-            years.update(p._years)
-            months.update(p._months)
+            years.update(p.years)
+            months.update(p.months)
         with Session(cache_engine) as session:
             return session.scalars(
                 select(cls.files_path)
@@ -136,8 +136,8 @@ class GHGCacheTable(Base):
         years = set()
         months = set()
         for p in parameters:
-            years.update(p._years)
-            months.update(p._months)
+            years.update(p.years)
+            months.update(p.months)
         with Session(cache_engine) as session:
             session.execute(
                 delete(cls)
