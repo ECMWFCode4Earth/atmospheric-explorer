@@ -137,7 +137,7 @@ class GHGDataInterface(CAMSDataInterface):
         self._cached_parameters = self._get_cached_parameters(self.parameters)
         if self._cached_parameters is not None:
             logger.info("Some data points are already cached, updating parameters")
-            self._diff_parameters = self._cached_parameters.difference(self.parameters)
+            self._diff_parameters = self.parameters.difference(self._cached_parameters)
             if self._diff_parameters is None:
                 self._cache_status = CachingStatus.FULLY_CACHED
             elif self._diff_parameters.is_eq_superset(self.parameters):

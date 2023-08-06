@@ -3,7 +3,7 @@ from __future__ import annotations
 from itertools import product
 from typing import Generator
 
-from atmospheric_explorer.data_interface.cams_interface.parameters_types import Parameter, SetParameter
+from atmospheric_explorer.data_interface.cams_interface.parameters_types import Parameter, IntSetParameter
 from atmospheric_explorer.data_interface.cams_interface.cams_parameters import CAMSParameters
 from atmospheric_explorer.loggers import get_logger
 from pydantic.dataclasses import dataclass as pydantic_dataclass
@@ -18,16 +18,16 @@ class GHGParameters(CAMSParameters):
     quantity: Parameter
     input_observations: Parameter
     time_aggregation: Parameter
-    years: SetParameter
-    months: SetParameter
+    years: IntSetParameter
+    months: IntSetParameter
     version: Parameter = Field(default_factory=lambda: Parameter("latest"))
 
     @field_validator('months', mode='before')
     def _(cls, v):
-        if isinstance(v, SetParameter):
-            return SetParameter(value=v.value, format_str="0>2")
+        if isinstance(v, IntSetParameter):
+            return IntSetParameter(value=v.value, format_str="0>2")
         else:
-            return SetParameter(value=v, format_str="0>2")
+            return IntSetParameter(value=v, format_str="0>2")
 
     def _point_var_eq(self, other: GHGParameters) -> bool:
         return (
@@ -75,7 +75,7 @@ class GHGParameters(CAMSParameters):
         """Return the list with all remaining year-month tuples."""
         self_ym = set(self.years_months())
         other_ym = set(other.years_months())
-        return other_ym - other_ym.intersection(self_ym)
+        return self_ym - self_ym.intersection(other_ym)
 
     def difference(self, other: GHGParameters) -> GHGParameters | None:
         """Return a GHGParameters instance with all non-overlapping parameters."""
@@ -92,8 +92,8 @@ class GHGParameters(CAMSParameters):
                     quantity=self.quantity,
                     input_observations=self.input_observations,
                     time_aggregation=self.time_aggregation,
-                    years=SetParameter({ym[0] for ym in ym_diff}),
-                    months=SetParameter({ym[1] for ym in ym_diff}),
+                    years=IntSetParameter({ym[0] for ym in ym_diff}),
+                    months=IntSetParameter({ym[1] for ym in ym_diff}),
                     version=self.version,
                 )
             else:
@@ -101,7 +101,7 @@ class GHGParameters(CAMSParameters):
                 return None
         else:
             logger.debug("Parameters have different key variables")
-            return other
+            return self
 
     @classmethod
     def from_base_types(
@@ -122,8 +122,8 @@ class GHGParameters(CAMSParameters):
                 quantity = Parameter(quantity),
                 input_observations = Parameter(input_observations),
                 time_aggregation = Parameter(time_aggregation),
-                years = SetParameter(years),
-                months = SetParameter(months)
+                years = IntSetParameter(years),
+                months = IntSetParameter(months)
             )
         else:
             return cls(
@@ -132,8 +132,8 @@ class GHGParameters(CAMSParameters):
                 quantity = Parameter(quantity),
                 input_observations = Parameter(input_observations),
                 time_aggregation = Parameter(time_aggregation),
-                years = SetParameter(years),
-                months = SetParameter(months),
+                years = IntSetParameter(years),
+                months = IntSetParameter(months),
                 version = Parameter(version)
             )
 
