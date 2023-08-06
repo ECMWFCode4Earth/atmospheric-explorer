@@ -62,7 +62,8 @@ class SetParameter:
         return iter(self.value)
     
     def merge(self, other: SetParameter) -> SetParameter:
-        val = self.value.update(other.value)
+        val = self.value
+        val.update(other.value)
         format_str = self.format_str or other.format_str
         if format_str is None:
             return SetParameter(value=val)
@@ -72,6 +73,9 @@ class SetParameter:
 @pydantic_dataclass
 class IntSetParameter(SetParameter):
     _base_type: type = int
+
+    def __repr__(self) -> str:
+        return f"{self.value_api}"
 
 
 @pydantic_dataclass
@@ -132,19 +136,14 @@ class BoxParameter:
         return math.isclose(shape.area, shape.minimum_rotated_rectangle.area)
 
     def difference(self, other: BoxParameter) -> BoxParameter | None:
-        if self.is_eq_superset(other):
-            return None
-        elif other.is_eq_superset(self) and self != other:
-            return other
+        s1 = self._as_shape()
+        s2 = other._as_shape()
+        s_diff = s1 - s2
+        if self.is_rect(s_diff):
+            bounds = s_diff.bounds
+            return BoxParameter(east=bounds[0], south=bounds[1], west=bounds[2], north=bounds[3])
         else:
-            s1 = self._as_shape()
-            s2 = other._as_shape()
-            s_diff = s2 - s1
-            if self.is_rect(s_diff):
-                bounds = s_diff.bounds
-                return BoxParameter(east=bounds[0], south=bounds[1], west=bounds[2], north=bounds[3])
-            else:
-                return other
+            return self
 
     def __repr__(self) -> str:
         return f"{self.value_api}"
@@ -200,18 +199,19 @@ class DateIntervalParameter:
         return (self == other) or self._includes(other)
 
     def difference(self, other: DateIntervalParameter) -> DateIntervalParameter | None:
-        if self._includes(other):
-            return None
-        elif other._includes(self):
-            return other
+        if self.start > other.end:
+            start = self.start
+            end = self.end
         else:
-            if other.start < self.start:
-                start = other.start
-                end = self.start
+            if self.end > other.end:
+                end = self.end
             else:
-                start = self.end
-                end = other.end
-            return DateIntervalParameter(start=start, end=end)
+                end = other.start
+            if self.start < other.start:
+                start = self.start
+            else:
+                start = other.end
+        return DateIntervalParameter(start=start, end=end)
 
     def __repr__(self) -> str:
         return f"{self.value_api}"
