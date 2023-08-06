@@ -12,16 +12,11 @@ from itertools import count
 
 import cdsapi
 
+from atmospheric_explorer.data_interface.cams_interface.cams_parameters import CAMSParameters
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder, get_local_folder
 
 logger = get_logger("atmexp")
-
-
-class CAMSParameters(ABC):
-    @abstractmethod
-    def build_call_body(self: CAMSParameters):
-        raise NotImplementedError("Method not implemented")
 
 
 class CAMSDataInterface(ABC):
