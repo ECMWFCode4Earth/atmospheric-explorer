@@ -62,7 +62,7 @@ class GHGDataInterface(CAMSDataInterface):
         version: str = "latest",
     ):
         super().__init__()
-        self.parameters = GHGParameters(
+        self.parameters = GHGParameters.from_base_types(
             data_variables=data_variables,
             file_format=file_format,
             quantity=quantity,
@@ -76,7 +76,7 @@ class GHGDataInterface(CAMSDataInterface):
         self._update_parameters()
         if self._diff_parameters is not None:
             logger.info("The parameter specified are not fully cached, creating variables to manage files")
-            self.file_format = self.parameters.file_format
+            self.file_format = self.parameters.file_format.value
             self.files_dirname = (
                 files_dir if files_dir is not None else f"data_{self._id}"
             )
@@ -105,7 +105,7 @@ class GHGDataInterface(CAMSDataInterface):
         rows = GHGCacheTable.get_rows(params)
         logger.debug("Cached parameters: %s", rows)
         if rows:
-            return GHGParameters(
+            return GHGParameters.from_base_types(
                 data_variables=rows[0].data_variables,
                 file_format=rows[0].file_format,
                 quantity=rows[0].quantity,
