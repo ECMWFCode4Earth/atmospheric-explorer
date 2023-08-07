@@ -48,11 +48,12 @@ class GHGDataInterface(CAMSDataInterface):
     _data_folder: str = os.path.join(
         get_local_folder(), "data", "global_greenhouse_gas_inversion"
     )
+    _file_format = "zip"
+    _file_ext = "zip"
 
     def __init__(
         self: GHGDataInterface,
         data_variables: str,
-        file_format: str,
         quantity: str,
         input_observations: str,
         time_aggregation: str,
@@ -64,7 +65,6 @@ class GHGDataInterface(CAMSDataInterface):
         super().__init__()
         self.parameters = GHGParameters.from_base_types(
             data_variables=data_variables,
-            file_format=file_format,
             quantity=quantity,
             input_observations=input_observations,
             time_aggregation=time_aggregation,
@@ -76,7 +76,6 @@ class GHGDataInterface(CAMSDataInterface):
         self._update_parameters()
         if self._diff_parameters is not None:
             logger.info("The parameter specified are not fully cached, creating variables to manage files")
-            self.file_format = self.parameters.file_format.value
             self.files_dirname = (
                 files_dir if files_dir is not None else f"data_{self._id}"
             )
@@ -96,7 +95,7 @@ class GHGDataInterface(CAMSDataInterface):
     def file_full_path(self: GHGDataInterface, filename: str) -> None:
         """Name of the saved file"""
         self._file_full_path = os.path.join(
-            self.files_dir_path, f"{filename}.{self.file_ext()}"
+            self.files_dir_path, f"{filename}.{self._file_ext}"
         )
 
     @staticmethod
@@ -107,7 +106,6 @@ class GHGDataInterface(CAMSDataInterface):
         if rows:
             return GHGParameters.from_base_types(
                 data_variables=rows[0].data_variables,
-                file_format=rows[0].file_format,
                 quantity=rows[0].quantity,
                 input_observations=rows[0].input_observations,
                 time_aggregation=rows[0].time_aggregation,
@@ -115,14 +113,6 @@ class GHGDataInterface(CAMSDataInterface):
                 months={r.month for r in rows},
             )
         return None
-
-    def file_ext(self: GHGDataInterface) -> str:
-        """Extension of the saved file"""
-        match (self.file_format):
-            case "netcdf":
-                return "nc"
-            case _:
-                return self.file_format
 
     def _clear_data(self: GHGDataInterface):
         if self._diff_parameters.is_eq_superset(self.parameters):
@@ -154,8 +144,8 @@ class GHGDataInterface(CAMSDataInterface):
         # We must extract it
         zip_filename = self.file_full_path
         with zipfile.ZipFile(zip_filename, "r") as zip_ref:
-            ext = zip_ref.filelist[0].filename.split(".")[-1]
-            self.file_format = "netcdf" if ext == "nc" else ext
+            self._file_format = "netcdf"
+            self._file_ext = "nc"
             zip_ref.extractall(self.files_dir_path)
             logger.debug(
                 "Extracted file %s to folder %s",
@@ -246,11 +236,14 @@ class GHGDataInterface(CAMSDataInterface):
 
 
 if __name__ == "__main__":
+    try:
+        shutil.rmtree(os.path.join(get_local_folder(),"data"))
+    except:
+        pass
     Base.metadata.drop_all(cache_engine)
     Base.metadata.create_all(cache_engine)
     d1 = GHGDataInterface(
         version="latest",
-        file_format="zip",
         data_variables="nitrous_oxide",
         quantity="surface_flux",
         input_observations="surface",
@@ -262,13 +255,23 @@ if __name__ == "__main__":
     print(GHGCacheTable.get_rows())
     d2 = GHGDataInterface(
         version="latest",
-        file_format="zip",
         data_variables="nitrous_oxide",
         quantity="surface_flux",
         input_observations="surface",
         time_aggregation="monthly_mean",
-        years=["2000", "2001", "2002"],
-        months=["1", "2", "3"],
+        years=["2000", "2001", "2002", "2005"],
+        months=["1", "2"],
     )
     d2.download()
+    print(GHGCacheTable.get_rows())
+    d3 = GHGDataInterface(
+        version="latest",
+        data_variables="nitrous_oxide",
+        quantity="surface_flux",
+        input_observations="surface",
+        time_aggregation="monthly_mean",
+        years=["2000", "2001", "2004"],
+        months=["1", "2", "3", "4"],
+    )
+    d3.download()
     print(GHGCacheTable.get_rows())

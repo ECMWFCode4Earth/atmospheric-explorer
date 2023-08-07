@@ -32,7 +32,6 @@ class GHGParameters(CAMSParameters):
     def _point_var_eq(self, other: GHGParameters) -> bool:
         return (
             other.data_variables == self.data_variables
-            and other.file_format == self.file_format
             and other.quantity == self.quantity
             and other.input_observations == self.input_observations
             and other.time_aggregation == self.time_aggregation
@@ -61,7 +60,6 @@ class GHGParameters(CAMSParameters):
     def build_call_body(self: GHGParameters) -> dict:
         """Build the CDSAPI call body"""
         return {
-            "format": self.file_format.value_api,
             "variable": self.data_variables.value_api,
             "quantity": self.quantity.value_api,
             "input_observations": self.input_observations.value_api,
@@ -88,7 +86,6 @@ class GHGParameters(CAMSParameters):
                 logger.debug("Parameters have different years and months, returning an inclusive parameter set")
                 return GHGParameters(
                     data_variables=self.data_variables,
-                    file_format=self.file_format,
                     quantity=self.quantity,
                     input_observations=self.input_observations,
                     time_aggregation=self.time_aggregation,
@@ -106,7 +103,6 @@ class GHGParameters(CAMSParameters):
     @classmethod
     def from_base_types(
         cls,
-        file_format: str,
         data_variables: str,
         quantity: str,
         input_observations: str,
@@ -117,7 +113,6 @@ class GHGParameters(CAMSParameters):
     ):
         if version is None:
             return cls(
-                file_format = Parameter(file_format),
                 data_variables = Parameter(data_variables),
                 quantity = Parameter(quantity),
                 input_observations = Parameter(input_observations),
@@ -127,7 +122,6 @@ class GHGParameters(CAMSParameters):
             )
         else:
             return cls(
-                file_format = Parameter(file_format),
                 data_variables = Parameter(data_variables),
                 quantity = Parameter(quantity),
                 input_observations = Parameter(input_observations),
@@ -140,7 +134,6 @@ class GHGParameters(CAMSParameters):
 
 if __name__ == "__main__":
     p1 = GHGParameters.from_base_types(
-        file_format="a",
         data_variables="b",
         quantity="c",
         input_observations="d",
@@ -149,7 +142,6 @@ if __name__ == "__main__":
         months=["1", "2"],
     )
     p2 = GHGParameters.from_base_types(
-        file_format="a",
         data_variables="b",
         quantity="c",
         input_observations="d",

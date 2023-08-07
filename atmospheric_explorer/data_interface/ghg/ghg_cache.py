@@ -22,7 +22,6 @@ class GHGCacheTable(Base):
     """Table used to cache GHG calls and retrieve file paths related to each data point."""
     __tablename__ = "ghg_cache_table"
     data_variables = mapped_column(String(30), primary_key=True)
-    file_format = mapped_column(String(10), primary_key=True)
     quantity = mapped_column(String(30), primary_key=True)
     input_observations = mapped_column(String(30), primary_key=True)
     time_aggregation = mapped_column(String(30), primary_key=True)
@@ -35,7 +34,6 @@ class GHGCacheTable(Base):
         return dedent(
             f"""
             'data_variables': {self.data_variables},
-            'file_format': {self.file_format},
             'quantity': {self.quantity},
             'input_observations': {self.input_observations},
             'time_aggregation': {self.time_aggregation},
@@ -56,7 +54,6 @@ class GHGCacheTable(Base):
                     for row in session.execute(
                         select(cls).where(
                             cls.data_variables == parameters.data_variables.value,
-                            cls.file_format == parameters.file_format.value,
                             cls.quantity == parameters.quantity.value,
                             cls.input_observations == parameters.input_observations.value,
                             cls.time_aggregation == parameters.time_aggregation.value,
@@ -76,7 +73,6 @@ class GHGCacheTable(Base):
             [
                 {
                     "data_variables": parameters.data_variables.value,
-                    "file_format": parameters.file_format.value,
                     "quantity": parameters.quantity.value,
                     "input_observations": parameters.input_observations.value,
                     "time_aggregation": parameters.time_aggregation.value,
@@ -91,7 +87,6 @@ class GHGCacheTable(Base):
         upsert_stmt = upsert_stmt.on_conflict_do_update(
             index_elements=[
                 cls.data_variables,
-                cls.file_format,
                 cls.quantity,
                 cls.input_observations,
                 cls.time_aggregation,
@@ -119,7 +114,6 @@ class GHGCacheTable(Base):
                 .distinct()
                 .where(
                     cls.data_variables.in_({p.data_variables.value for p in parameters}),
-                    cls.file_format.in_({p.file_format.value for p in parameters}),
                     cls.quantity.in_({p.quantity.value for p in parameters}),
                     cls.input_observations.in_(
                         {p.input_observations.value for p in parameters}
@@ -143,7 +137,6 @@ class GHGCacheTable(Base):
                 delete(cls)
                 .where(
                     cls.data_variables.in_({p.data_variables.value for p in parameters}),
-                    cls.file_format.in_({p.file_format.value for p in parameters}),
                     cls.quantity.in_({p.quantity.value for p in parameters}),
                     cls.input_observations.in_(
                         {p.input_observations.value for p in parameters}
@@ -169,7 +162,6 @@ if __name__ == "__main__":
     Base.metadata.create_all(cache_engine)
     p1 = GHGParameters(
         data_variables="a",
-        file_format="b",
         quantity="c",
         input_observations="d",
         time_aggregation="e",
@@ -178,7 +170,6 @@ if __name__ == "__main__":
     )
     p2 = GHGParameters(
         data_variables="a",
-        file_format="b",
         quantity="c",
         input_observations="d",
         time_aggregation="e",
@@ -187,7 +178,6 @@ if __name__ == "__main__":
     )
     p3 = GHGParameters(
         data_variables="a",
-        file_format="b",
         quantity="c",
         input_observations="d",
         time_aggregation="e",

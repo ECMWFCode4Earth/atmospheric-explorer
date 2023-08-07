@@ -10,7 +10,6 @@ logger = get_logger("atmexp")
 
 @pydantic_dataclass(kw_only=True)
 class CAMSParameters(ABC):
-    file_format: Parameter
 
     @abstractmethod
     def build_call_body(self: CAMSParameters) -> dict:
