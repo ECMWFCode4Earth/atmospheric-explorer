@@ -201,7 +201,6 @@ def _ghg_surface_satellite_yearly_data(
     years: list[str],
     months: list[str],
     var_name: str = "flux_foss",
-    var_area: str = "area",
 ) -> xr.DataArray | xr.Dataset:
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
@@ -231,6 +230,7 @@ def _ghg_surface_satellite_yearly_data(
     df_satellite = satellite_data.read_dataset()
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
+    area=sum(np.array(df_total.area[0]))
     # Clip countries
     df_total = clip_and_concat_countries(df_total, countries)
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
@@ -239,7 +239,7 @@ def _ghg_surface_satellite_yearly_data(
     da_converted = convert_units_array(df_total[var_name], data_variable)
 
     da_converted_agg = (
-        da_converted.resample(time="YS")*df_total[var_area]
+        da_converted.resample(time="YS")*area
         .map(confidence_interval, dim="time")
         .rename({"time": "Year"})
     )
