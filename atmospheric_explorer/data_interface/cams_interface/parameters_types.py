@@ -7,6 +7,7 @@ from typing import Any
 from datetime import datetime
 import shapely
 import math
+from pandas import date_range
 
 logger = get_logger("atmexp")
 
@@ -185,6 +186,11 @@ class DateIntervalParameter:
     @property
     def value_api(self) -> list[str]:
         return f"{self.start}/{self.end}"
+    
+    @computed_field
+    @property
+    def all_days(self) -> list[str]:
+        return date_range(self.start, self.end, freq='D')
 
     def __eq__(self, other: DateIntervalParameter):
         return self.start == other.start and self.end == other.end

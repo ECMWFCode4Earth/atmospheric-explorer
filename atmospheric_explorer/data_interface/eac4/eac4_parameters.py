@@ -13,7 +13,6 @@ class EAC4Parameters(CAMSParameters):
     data_variables: SetParameter
     dates_range: DateIntervalParameter
     time_values: SetParameter
-    area: BoxParameter | None = None
     pressure_level: IntSetParameter | None = None
     model_level: IntSetParameter | None = None
 
@@ -26,7 +25,6 @@ class EAC4Parameters(CAMSParameters):
             and other.data_variables == self.data_variables
             and other.dates_range == self.dates_range
             and other.time_values == self.time_values
-            and other.area == self.area
             and other.pressure_level == self.pressure_level
             and other.model_level == self.model_level
         )
@@ -38,7 +36,6 @@ class EAC4Parameters(CAMSParameters):
             and self.data_variables.is_eq_superset(other.data_variables)
             and self.dates_range.is_eq_superset(other.dates_range)
             and self.time_values.is_eq_superset(other.time_values)
-            and self.area.is_eq_superset(other.area)
             and self.pressure_level.is_eq_superset(other.pressure_level)
             and self.model_level.is_eq_superset(other.model_level)
         )
@@ -50,7 +47,6 @@ class EAC4Parameters(CAMSParameters):
             "variable": self.data_variables.value_api,
             "dates": self.dates_range.value_api,
             "times": self.time_values.value_api,
-            "area": self.area.value_api,
             "pressure_level": self.pressure_level.value_api,
             "model_level": self.model_level.value_api
         }
@@ -69,11 +65,6 @@ class EAC4Parameters(CAMSParameters):
         if other.time_values.is_eq_superset(self.time_values):
             return None
         return self.time_values.difference(other.time_values)
-
-    def _area_diff(self, other: EAC4Parameters) -> BoxParameter | None:
-        if other.area.is_eq_superset(self.area):
-            return None
-        return self.area.difference(other.area)
 
     def _pl_diff(self, other: EAC4Parameters) -> SetParameter | None:
         if other.pressure_level.is_eq_superset(self.pressure_level):
@@ -97,14 +88,13 @@ class EAC4Parameters(CAMSParameters):
                 dv_diff = self._data_diff(other)
                 dates_diff = self._dates_diff(other)
                 times_diff = self._times_diff(other)
-                area_diff = self._area_diff(other)
                 pl_diff = self._pl_diff(other)
                 ml_diff = self._ml_diff(other)
                 if dv_diff is not None:
                     logger.debug(
                         "Parameters have different data variables"
                     )
-                    if (dates_diff or times_diff or area_diff or pl_diff or ml_diff) is not None:
+                    if (dates_diff or times_diff or pl_diff or ml_diff) is not None:
                         logger.debug(
                             "Other parameters area different, downloading strict superset"
                         )
@@ -113,7 +103,6 @@ class EAC4Parameters(CAMSParameters):
                             file_format=self.file_format,
                             dates_range=self.dates_range.merge(other.dates_range),
                             time_values=self.time_values.merge(other.time_values),
-                            area=self.area.merge(other.area),
                             pressure_level=self.pressure_level.merge(other.pressure_level),
                             model_level=self.model_level.merge(other.model_level)
                         )
@@ -126,7 +115,6 @@ class EAC4Parameters(CAMSParameters):
                             file_format=self.file_format,
                             dates_range=self.dates_range,
                             time_values=self.time_values,
-                            area=self.area,
                             pressure_level=self.pressure_level,
                             model_level=self.model_level
                         )
@@ -137,7 +125,6 @@ class EAC4Parameters(CAMSParameters):
                         file_format=self.file_format,
                         dates_range=dates_diff if dates_diff is not None else self.dates_range,
                         time_values=times_diff if times_diff is not None else self.time_values,
-                        area=area_diff if area_diff is not None else self.area,
                         pressure_level=pl_diff if pl_diff is not None else self.pressure_level,
                         model_level=ml_diff if ml_diff is not None else self.model_level
                     )
@@ -152,7 +139,6 @@ class EAC4Parameters(CAMSParameters):
         file_format: str,
         dates_range: str,
         time_values: str | set[str] | list[str],
-        area: list[int] | None = None,
         pressure_level: str | set[str] | list[str] | None = None,
         model_level: str | set[str] | list[str] | None = None,
     ):
@@ -161,9 +147,8 @@ class EAC4Parameters(CAMSParameters):
             data_variables = SetParameter(data_variables),
             dates_range = DateIntervalParameter(dates_range),
             time_values = SetParameter(time_values),
-            area = BoxParameter(area) if area is not None else None,
-            pressure_level = IntSetParameter(pressure_level) if area is not None else None,
-            model_level = IntSetParameter(model_level) if area is not None else None
+            pressure_level = IntSetParameter(pressure_level) if pressure_level is not None else None,
+            model_level = IntSetParameter(model_level) if model_level is not None else None
         )
 
 
@@ -173,16 +158,14 @@ if __name__ == "__main__":
         data_variables="b",
         dates_range="2021-01-01/2021-02-01",
         time_values=["00:00"],
-        area=[10,10,0,0],
         pressure_level=["1", "2", "3", "4"],
         model_level=["1", "2"],
     )
     p2 = EAC4Parameters.from_base_types(
         file_format="a",
         data_variables="b",
-        dates_range="2021-01-01/2021-01-05",
+        dates_range="2021-01-01/2022-01-05",
         time_values=["00:00"],
-        area=[1,11,0,0],
         pressure_level=["1", "2", "3", "4"],
         model_level=["1", "2"],
     )
