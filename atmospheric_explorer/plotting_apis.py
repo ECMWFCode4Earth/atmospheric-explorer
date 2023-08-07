@@ -238,8 +238,10 @@ def _ghg_surface_satellite_yearly_data(
     # Convert units
     da_converted = convert_units_array(df_total[var_name], data_variable)
 
-    da_converted_agg = (
-        da_converted.resample(time="YS")*area
+    da_converted_agg =da_converted.resample(time="YS")*area
+
+    da_converted_agg =(
+        da_converted_agg
         .map(confidence_interval, dim="time")
         .rename({"time": "Year"})
     )
