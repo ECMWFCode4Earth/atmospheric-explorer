@@ -72,6 +72,8 @@ class GHGDataInterface(CAMSDataInterface):
             months=months,
             version=version,
         )
+        self._cached_parameters = None
+        self._diff_parameters = None
         self._cache_status = CachingStatus.UNCACHED
         self._update_parameters()
         if self._diff_parameters is not None:
