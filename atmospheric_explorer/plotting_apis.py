@@ -224,25 +224,23 @@ def _ghg_surface_satellite_yearly_data(
         year=years,
         month=months,
     )
-    satellite_data.download()   
+    satellite_data.download()
     # Read data as dataset
     df_surface = surface_data.read_dataset()
+    df_surface[var_name] = df_surface[var_name] * df_surface['area']
     df_satellite = satellite_data.read_dataset()
+    df_satellite[var_name] = df_satellite[var_name] * df_satellite['area']
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
-    area=sum(np.array(df_total.area[0]))
     # Clip countries
     df_total = clip_and_concat_countries(df_total, countries)
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
+    df_total = df_total.sortby("time").sum(dim=["longitude", "latitude"])
     # Convert units
     da_converted = convert_units_array(df_total[var_name], data_variable)
-
-    da_converted_agg =da_converted.resample(time="YS")*area
-
-    da_converted_agg =(
+    da_converted_agg = da_converted.resample(time="YS").map(confidence_interval, dim="time")
+    da_converted_agg = (
         da_converted_agg
-        .map(confidence_interval, dim="time")
         .rename({"time": "Year"})
     )
     da_converted_agg.name = var_name
