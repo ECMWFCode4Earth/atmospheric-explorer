@@ -20,10 +20,10 @@ logger = get_logger("atmexp")
 
 
 class EAC4CacheTable(Base):
-    """Table used to cache GHG calls and retrieve file paths related to each data point."""
+    """Table used to cache EAC4 calls and retrieve file paths related to each data point."""
     __tablename__ = "eac4_cache_table"
+    param_id = mapped_column(Integer, nullable=False, unique=False)
     data_variables = mapped_column(String(30), primary_key=True)
-    file_format = mapped_column(String(10), primary_key=True)
     day = mapped_column(Date, primary_key=True)
     time = mapped_column(String(5), primary_key=True)
     pressure_level = mapped_column(Integer, primary_key=True, default=-1)
@@ -33,8 +33,8 @@ class EAC4CacheTable(Base):
     def __repr__(self) -> str:
         return dedent(
             f"""
+            'param_id': {self.param_id},
             'data_variables': {self.data_variables},
-            'file_format': {self.file_format},
             'day': {self.day},
             'time': {self.time},
             'pressure_level': {self.pressure_level},
@@ -45,24 +45,13 @@ class EAC4CacheTable(Base):
 
     @classmethod
     def _filter_parameters(cls, stmt, parameters: list[EAC4Parameters]):
-        dv = set()
-        pl = set()
-        ml = set()
-        times = set()
-        dates = parameters[0].dates_range
-        for p in parameters:
-            dv.update(p.data_variables.value)
-            pl.update(p.pressure_level.value if p.pressure_level is not None else [-1])
-            ml.update(p.model_level.value if p.model_level is not None else [-1])
-            times.update(p.time_values.value)
-            dates = dates.merge(p.dates_range)
+        p = EAC4Parameters.merge(parameters)
         return stmt.where(
-            cls.file_format.in_({p.file_format.value for p in parameters}),
-            cls.data_variables.in_(dv),
-            cls.pressure_level.in_(pl),
-            cls.model_level.in_(ml),
-            cls.time.in_(times),
-            cls.day.between(dates.start, dates.end)
+            cls.data_variables.in_(p.data_variables.value),
+            cls.pressure_level.in_(p.pressure_level.value),
+            cls.model_level.in_(p.model_level.value),
+            cls.time.in_(p.time_values),
+            cls.day.between(p.dates_range.start, p.dates_range.end)
         )
 
     @classmethod
@@ -84,8 +73,8 @@ class EAC4CacheTable(Base):
         upsert_stmt = sqlite_upsert(cls).values(
             [
                 {
+                    "param_id": id(parameters),
                     "data_variables": dv,
-                    "file_format": parameters.file_format.value,
                     "day": day,
                     "time": time,
                     "pressure_level": pl,
@@ -105,13 +94,15 @@ class EAC4CacheTable(Base):
         upsert_stmt = upsert_stmt.on_conflict_do_update(
             index_elements=[
                 cls.data_variables,
-                cls.file_format,
                 cls.day,
                 cls.time,
                 cls.pressure_level,
                 cls.model_level
             ],
-            set_={"files_path": upsert_stmt.excluded.files_path},
+            set_={
+                "param_id": upsert_stmt.excluded.param_id,
+                "files_path": upsert_stmt.excluded.files_path
+            },
         )
         with Session(cache_engine) as session:
             session.execute(upsert_stmt)
@@ -144,13 +135,11 @@ if __name__ == "__main__":
     Base.metadata.create_all(cache_engine)
     p1 = EAC4Parameters.from_base_types(
         data_variables="a",
-        file_format="b",
         dates_range="2021-01-01/2021-01-05",
         time_values="00:00"
     )
     p2 = EAC4Parameters.from_base_types(
         data_variables="a",
-        file_format="b",
         dates_range="2021-01-04/2021-02-05",
         time_values="00:00"
     )

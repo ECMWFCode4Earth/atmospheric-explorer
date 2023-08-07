@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 logger = get_logger("atmexp")
 
 
-@pydantic_dataclass(kw_only=True)
 class CAMSParameters(ABC):
 
     @abstractmethod

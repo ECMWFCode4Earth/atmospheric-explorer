@@ -4,10 +4,9 @@ from atmospheric_explorer.loggers import get_logger
 from pydantic.dataclasses import dataclass as pydantic_dataclass
 from pydantic import computed_field, field_validator, model_validator
 from typing import Any
-from datetime import datetime
-import shapely
-import math
+from datetime import datetime, timedelta
 from pandas import date_range
+from itertools import pairwise, groupby, accumulate
 
 logger = get_logger("atmexp")
 
@@ -78,87 +77,6 @@ class IntSetParameter(SetParameter):
     def __repr__(self) -> str:
         return f"{self.value_api}"
 
-
-@pydantic_dataclass
-class BoxParameter:
-    north: int
-    west: int
-    south: int
-    east: int
-
-    @model_validator(mode='before')
-    @classmethod
-    def modify_input(cls, data: Any) -> Any:
-        kwargs = data.kwargs
-        if kwargs is None:
-            data = data.args[0]
-            data = {
-                "north": data[0],
-                "west": data[1],
-                "south": data[2],
-                "east": data[3]
-            }
-        return data
-
-    @model_validator(mode='after')
-    def check_bounds(self) -> DateIntervalParameter:
-        if self.north < self.south:
-            raise ValueError("North is lower than south!")
-        if self.west < self.east:
-            raise ValueError("West is lower than east!")
-        return self
-
-    @computed_field
-    @property
-    def value_api(self) -> list[str]:
-        return [self.north, self.west, self.south, self.east]
-
-    def _as_shape(self) -> shapely.Polygon:
-        return shapely.box(self.east, self.south, self.west, self.north)
-
-    def __eq__(self, other: BoxParameter):
-        return (
-            self.north == other.north
-            and self.south == other.south
-            and self.east == other.east
-            and self.west == other.west
-        )
-
-    def is_eq_superset(self, other: BoxParameter):
-        return (self == other) or (
-            self.north >= other.north
-            and self.south <= other.south
-            and self.east <= other.east
-            and self.west >= other.west
-        )
-
-    @staticmethod
-    def is_rect(shape: shapely.Polygon) -> bool:
-        return math.isclose(shape.area, shape.minimum_rotated_rectangle.area)
-
-    def difference(self, other: BoxParameter) -> BoxParameter | None:
-        s1 = self._as_shape()
-        s2 = other._as_shape()
-        s_diff = s1 - s2
-        if self.is_rect(s_diff):
-            bounds = s_diff.bounds
-            return BoxParameter(east=bounds[0], south=bounds[1], west=bounds[2], north=bounds[3])
-        else:
-            return self
-
-    def __repr__(self) -> str:
-        return f"{self.value_api}"
-
-    def __iter__(self):
-        return iter(self.value_api)
-    
-    def merge(self, other: BoxParameter) -> BoxParameter:
-        north = max(self.north, other.north)
-        south = min(self.south, other.south)
-        west = max(self.west, other.west)
-        east = min(self.east, other.east)
-        return BoxParameter(north=north, south=south, east=east, west=west)
-
 @pydantic_dataclass
 class DateIntervalParameter:
     start: datetime
@@ -226,8 +144,18 @@ class DateIntervalParameter:
         start = min(self.start, other.start)
         end = max(self.end, other.end)
         return DateIntervalParameter(start=start, end=end)
+    
+    @classmethod
+    def from_dates(cls, dates: list[datetime]) -> DateIntervalParameter | list[DateIntervalParameter]:
+        dates = sorted(dates)
+        diffs = [0] + [(y-x).days > 1 for x,y in pairwise(dates)]
+        diffs_groups = list(accumulate(diffs))
+        dates_groups = [[c for _, c in g] for _, g in groupby(zip(diffs_groups, dates), key=lambda x: x[0])]
+        dates_ranges = [(min(g), max(g)) for g in dates_groups]
+        return [cls(start=r[0], end=r[1]) for r in dates_ranges] if len(dates_ranges) > 1 else cls(start=dates_ranges[0][0], end=dates_ranges[0][1])
+
+
 
 if __name__ == '__main__':
-    y = IntSetParameter(["1", "2", "3"])
-    print(y)
-    
+    d = DateIntervalParameter.from_dates([datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3), datetime(2021, 1, 3), datetime(2021, 1, 4)])
+    print(d)
