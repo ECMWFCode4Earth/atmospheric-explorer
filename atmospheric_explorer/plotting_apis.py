@@ -17,13 +17,14 @@ from atmospheric_explorer.cams_interfaces import (
     InversionOptimisedGreenhouseGas,
 )
 from atmospheric_explorer.data_transformations import (
-    clip_and_concat_countries,
+    clip_and_concat_shapes,
     confidence_interval,
     shifting_long,
 )
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
+from shapely import Polygon, MultiPolygon
 
 logger = get_logger("atmexp")
 
@@ -72,21 +73,21 @@ def add_ci(
     fig: go.Figure,
     trace: go.Figure,
     data_frame: pd.DataFrame,
-    countries: list[str],
+    labels: list[str],
 ) -> None:
     """Add confidence intervals to a plotly trace"""
     line_color = ",".join([str(n) for n in hex_to_rgb(trace.line.color)])
-    if len(countries) > 1:
-        country = list(filter(lambda c: c in trace.hovertemplate, countries))[0]
+    if len(labels) > 1:
+        label = list(filter(lambda c: c in trace.hovertemplate, labels))[0]
     else:
-        country = countries[0]
-    country_index = countries.index(country)
-    total_rows = ceil(len(countries) / 2)
-    country_row = total_rows - country_index // 2
-    country_col = country_index % 2 + 1
-    df_country = data_frame[data_frame["admin"] == country]
-    times = df_country.index.tolist()
-    y1_lower = df_country["lower"].to_list()
+        label = labels[0]
+    label_index = labels.index(label)
+    total_rows = ceil(len(labels) / 2)
+    label_row = total_rows - label_index // 2
+    label_col = label_index % 2 + 1
+    df_label = data_frame[data_frame["_shape_label"] == label]
+    times = df_label.index.tolist()
+    y1_lower = df_label["lower"].to_list()
     fig.add_trace(
         go.Scatter(
             x=times,
@@ -101,10 +102,10 @@ def add_ci(
             hovertemplate="Lower: %{y}<extra></extra>",
             hoverlabel={"bgcolor": f"rgba({line_color}, 0.2)"},
         ),
-        row=country_row,
-        col=country_col,
+        row=label_row,
+        col=label_col,
     )
-    y1_upper = df_country["upper"].to_list()
+    y1_upper = df_label["upper"].to_list()
     fig.add_trace(
         go.Scatter(
             x=times,
@@ -120,17 +121,17 @@ def add_ci(
             hovertemplate="Upper: %{y}<extra></extra>",
             hoverlabel={"bgcolor": f"rgba({line_color}, 0.2)"},
         ),
-        row=country_row,
-        col=country_col,
+        row=label_row,
+        col=label_col,
     )
 
 
 def line_with_ci_subplots(
     data_frame: pd.DataFrame,
-    countries: list[str],
     col_num: int,
     unit: str,
     title: str,
+    labels: list[str]
 ) -> go.Figure:
     """\
     Facet line plot on countries/administrative entinties.
@@ -138,7 +139,7 @@ def line_with_ci_subplots(
 
     Parameters:
         data_frame (pd.DataFrame): pandas dataframe with (at least) columns
-                                    'admin','input_observations','mean','lower','upper'
+                                    '_shape_label','input_observations','mean','lower','upper'
         countries (list[str]): list of countries/administrative entities that must be considered in the facet plot
         col_num (int): number of maximum columns in the facet plot
         unit (str): unit of measure
@@ -148,12 +149,12 @@ def line_with_ci_subplots(
         data_frame=data_frame,
         y="mean",
         color="input_observations",
-        facet_col="admin",
+        facet_col="_shape_label",
         facet_col_wrap=col_num,
         facet_col_spacing=0.04,
-        facet_row_spacing=0.15 if len(countries) > 3 else 0.2,
+        facet_row_spacing=0.15 if len(labels) > 3 else 0.2,
         category_orders={
-            "admin": countries,
+            "_shape_label": labels,
             "input_observations": ["surface", "satellite"],
         },
         color_discrete_sequence=px.colors.qualitative.D3,
@@ -163,19 +164,19 @@ def line_with_ci_subplots(
             fig,
             tr,
             data_frame[data_frame["input_observations"] == tr.legendgroup],
-            countries,
+            labels,
         )
     )
     fig.for_each_annotation(
-        lambda a: a.update(text=a.text.split("admin=")[-1], font={"size": 14})
+        lambda a: a.update(text=a.text.split("_shape_label=")[-1], font={"size": 14})
     )
     fig.update_yaxes(title=unit, col=1)
     fig.update_yaxes(showticklabels=True, matches=None)
     fig.update_xaxes(showticklabels=True, matches=None)
-    total_rows = ceil(len(countries) / 2)
-    if len(countries) % 2 != 0:
+    total_rows = ceil(len(labels) / 2)
+    if len(labels) % 2 != 0:
         fig.update_xaxes(title="Year", col=2, row=total_rows)
-    base_height = 220 if len(countries) >= 3 else 300
+    base_height = 220 if len(labels) >= 3 else 300
     fig.update_layout(
         title={
             "text": title,
@@ -189,7 +190,7 @@ def line_with_ci_subplots(
     )
     fig.update_traces(mode="lines+markers")
     fig.update_traces(
-        selector=-2 * len(countries) - 1, showlegend=True
+        selector=-2 * len(labels) - 1, showlegend=True
     )  # legend for ci
     fig.update_traces(selector=-1, showlegend=True)  # legend for ci
     return fig
@@ -197,9 +198,9 @@ def line_with_ci_subplots(
 
 def _ghg_surface_satellite_yearly_data(
     data_variable: str,
-    countries: list[str],
     years: list[str],
     months: list[str],
+    shapes: dict[str, Polygon | MultiPolygon] = None,
     var_name: str = "flux_foss",
 ) -> xr.DataArray | xr.Dataset:
     # pylint: disable=too-many-arguments
@@ -231,9 +232,10 @@ def _ghg_surface_satellite_yearly_data(
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
     # Clip countries
-    df_clipped = clip_and_concat_countries(df_total, countries)
+    if shapes is not None:
+        df_total = clip_and_concat_shapes(df_total, shapes)
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_final = df_clipped.sortby("time").mean(dim=["longitude", "latitude"])
+    df_final = df_total.sortby("time").mean(dim=["longitude", "latitude"])
     # Convert units
     da_converted = df_final[var_name]
     # STILL MISSING: Convert units per month to units per year/aggregation level?
@@ -251,11 +253,11 @@ def _ghg_surface_satellite_yearly_data(
 
 def ghg_surface_satellite_yearly_plot(
     data_variable: str,
-    countries: list[str],
     years: list[str],
     months: list[str],
     title: str,
     var_name: str = "flux_foss",
+    shapes: dict[str, Polygon | MultiPolygon] = None
 ) -> go.Figure:
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset"""
     # pylint: disable=too-many-arguments
@@ -265,7 +267,7 @@ def ghg_surface_satellite_yearly_plot(
             f"""\
     ghg_surface_satellite_yearly_plot called with arguments
     data_variable: {data_variable}
-    countries: {countries}
+    shapes: {shapes}
     years: {years}
     months: {months}
     title: {title}
@@ -274,17 +276,17 @@ def ghg_surface_satellite_yearly_plot(
         )
     )
     da_converted_agg = _ghg_surface_satellite_yearly_data(
-        data_variable, countries, years, months, var_name
+        data_variable, years, months, shapes, var_name
     )
     df_pandas = (
         da_converted_agg.to_dataframe()
         .unstack("ci")
         .droplevel(axis=1, level=0)
-        .reset_index(["admin", "input_observations"])
+        .reset_index(["_shape_label", "input_observations"])
     )
-    col_num = 2 if len(countries) >= 2 else 1
+    col_num = 2 if len(shapes) >= 2 else 1
     return line_with_ci_subplots(
-        df_pandas, countries, col_num, da_converted_agg.attrs["units"], title
+        df_pandas, col_num, da_converted_agg.attrs["units"], title, list(shapes.keys())
     )
 
 

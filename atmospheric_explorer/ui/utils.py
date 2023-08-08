@@ -27,8 +27,8 @@ def page_init():
     local_css(Path(__file__).resolve().parent.joinpath("style.css"))
     if GeneralSessionStateKeys.LAST_OBJECT_CLICKED not in st.session_state:
         st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED] = [42, 13]
-    if GeneralSessionStateKeys.SELECTED_COUNTRIES not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES] = ["Italy"]
+    if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES] = []
 
 
 @st.cache_data(show_spinner="Fetching shapefile...")
@@ -41,14 +41,14 @@ def build_sidebar():
     """Build sidebar"""
     logger.info("Building sidebar")
     with st.sidebar:
-        if st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES) is not None:
-            countries = st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
-            if len(countries) > 3:
-                selected_countries_text = f"{len(countries)} countries"
+        if st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES) is not None:
+            shapes = set(st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].keys())
+            if len(shapes) > 3:
+                selected_shapes_text = f"{len(shapes)} shapes"
             else:
-                selected_countries_text = "<br>" + "<br>".join(
-                    st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES)
+                selected_shapes_text = "<br>" + "<br>".join(
+                    st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES)
                 )
             st.write(
-                f"Selected countries: {selected_countries_text}", unsafe_allow_html=True
+                f"Selected shapes: {selected_shapes_text}", unsafe_allow_html=True
             )

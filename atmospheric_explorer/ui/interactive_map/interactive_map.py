@@ -27,7 +27,7 @@ def _selected_countries_style(_) -> dict:
     return {"fillColor": "green", "color": "green"}
 
 
-@st.cache_data(show_spinner="Fetching world polygon...")
+# @st.cache_data(show_spinner="Fetching world polygon...")
 def world_polygon() -> folium.GeoJson:
     """Return a folium GeoJson object that adds colored polygons over all countries"""
     logger.info("Fetch world polygon")
@@ -40,7 +40,7 @@ def world_polygon() -> folium.GeoJson:
     )
 
 
-@st.cache_data(show_spinner="Fetching selected state polygon...")
+# @st.cache_data(show_spinner="Fetching selected state polygon...")
 def selected_countries_fgroup(
     selected_countries: list[str] | None,
 ) -> folium.FeatureGroup:
@@ -60,7 +60,7 @@ def selected_countries_fgroup(
     return countries_feature_group
 
 
-@st.cache_resource(show_spinner="Fetching map...")
+# @st.cache_resource(show_spinner="Fetching map...")
 def build_folium_map(selected_countries: list[str] | None):
     """Build folium map with a layer of polygons on countries"""
     logger.info("Build folium map")
@@ -76,8 +76,9 @@ def build_folium_map(selected_countries: list[str] | None):
     ).add_to(
         folium_map
     )  # draw toolbar
-    world_polygon().add_to(folium_map)
-    selected_countries_fgroup(selected_countries).add_to(folium_map)
+    if st.session_state['show_countries']:
+        world_polygon().add_to(folium_map)
+        selected_countries_fgroup(selected_countries).add_to(folium_map)
     return folium_map
 
 
@@ -109,14 +110,24 @@ def update_session_map_click(out_event):
             "last_object_clicked"
         ]
     if out_event.get("last_active_drawing") is not None:
-        selected_countries = countries_selection(out_event)
-        prev_selection = set(
-            st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
-        )
-        if selected_countries.isdisjoint(
-            prev_selection
-        ) or selected_countries.issuperset(prev_selection):
-            st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES] = sorted(
-                list(selected_countries)
+        if st.session_state['show_countries']:
+            selected_shapes = countries_selection(out_event)
+            sel_countries = set(selected_shapes.keys())
+            prev_selection = set(st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].keys())
+            if sel_countries.isdisjoint(
+                prev_selection
+            ) or sel_countries.issuperset(prev_selection):
+                st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES] = sorted(
+                    selected_shapes,
+                    lambda d: d.keys()
+                )
+                st.experimental_rerun()
+        else:
+            selected_shapes = {
+                "_shape": out_event.get("last_active_drawing")
+            }
+            st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES] = sorted(
+                list(selected_shapes)
             )
             st.experimental_rerun()
+

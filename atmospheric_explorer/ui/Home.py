@@ -28,7 +28,8 @@ with st.form("selection"):
         options=shapefile_dataframe()["ADMIN"].to_list(),
         default=st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES),
     )
-    st.form_submit_button("Update countries")
+    st.session_state['show_countries'] = st.checkbox(label="Show countries", value=True)
+    st.form_submit_button("Update map")
 progress_bar.progress(0.2, "Building side bar")
 build_sidebar()
 progress_bar.progress(0.4, "Building map")

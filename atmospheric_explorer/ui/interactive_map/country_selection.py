@@ -17,7 +17,7 @@ def get_admin(out_event) -> str | None:
     return None
 
 
-def countries_selection(out_event: dict) -> set[str]:
+def countries_selection(out_event: dict) -> dict:
     """\
     Select one or more countries based on the type of event returned by folium.
 
@@ -32,8 +32,12 @@ def countries_selection(out_event: dict) -> set[str]:
         polygon = shape(out_event["last_active_drawing"]["geometry"])
         admin = get_admin(out_event)
         if admin is not None:
-            return set(shapefile[shapefile["ADMIN"] == admin]["ADMIN"])
-        return set(
-            shapefile[~polygon.intersection(shapefile["geometry"]).is_empty]["ADMIN"]
-        )
-    return set()
+            return {
+                admin:shapefile[shapefile["ADMIN"] == admin].geometry.iloc[0]
+            }
+        sh_filtered = shapefile[~polygon.intersection(shapefile["geometry"]).is_empty]
+        return {
+            admin:sh_filtered[sh_filtered["ADMIN"] == admin].geometry.iloc[0]
+            for admin in sh_filtered["ADMIN"]
+        }
+    return dict()
