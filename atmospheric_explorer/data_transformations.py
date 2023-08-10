@@ -3,34 +3,33 @@ Data transformations needed for the plotting api
 """
 from functools import singledispatch
 
+import geopandas as gpd
 import numpy as np
 import statsmodels.stats.api as sms
 import xarray as xr
 from shapely.geometry import mapping
 
-from shapely import Polygon, MultiPolygon
-
 
 def clip_and_concat_shapes(
-    data_frame: xr.Dataset,
-    shapes_dict: dict[str, Polygon | MultiPolygon]
+    data_frame: xr.Dataset, shapes_df: gpd.GeoDataFrame
 ) -> xr.Dataset:
-    """Clips data_frame keeping only shapes specified. Shapes_dict must be a dict of labels and shapes."""
+    """Clips data_frame keeping only shapes specified. Shapes_df must be a GeoDataFrame."""
     # Download shapefile
 
     # all_touched=True questo parametro include tutti i pixel toccati dal poligono definito
     # se False include solo i pixel il cui centro è incluso nel poligono
     # approvato all_touched=True
-    df_clipped_concat = xr.Dataset(coords={"_shape_label":[]})
-    for labels, shapes in shapes_dict.items():
+    df_clipped_concat = xr.Dataset(coords={"label": []})
+    for _, row in shapes_df.iterrows():
+        labels, shapes = row
         df_clipped = data_frame.rio.clip(
             [mapping(shapes)],
             drop=True,
             all_touched=True,
         )
-        df_clipped = df_clipped.expand_dims({"_shape_label": [labels]})
+        df_clipped = df_clipped.expand_dims({"label": [labels]})
         df_clipped_concat = xr.concat(
-            [df_clipped_concat, df_clipped], dim="_shape_label", combine_attrs="override"
+            [df_clipped_concat, df_clipped], dim="label", combine_attrs="override"
         )
     return df_clipped_concat
 

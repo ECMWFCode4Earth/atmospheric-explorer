@@ -15,7 +15,7 @@ from atmospheric_explorer.ui.interactive_map.shape_selection import (
     shapefile_dataframe,
 )
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
-from atmospheric_explorer.ui.utils import page_init
+from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
 page_init()
@@ -45,7 +45,7 @@ with st.form("selection"):
         ] = ShapeSelection.from_countries_list(countries)
     st.form_submit_button("Update map")
 progress_bar.progress(0.2, "Building side bar")
-# build_sidebar()
+build_sidebar()
 progress_bar.progress(0.4, "Building map")
 out_event = show_folium_map()
 progress_bar.progress(0.9, "Updating session")

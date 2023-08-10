@@ -48,4 +48,9 @@ def build_sidebar():
                 selected_shapes_text = "<br>" + "<br>".join(
                     st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES).labels
                 )
-            st.write(f"Selected shapes: {selected_shapes_text}", unsafe_allow_html=True)
+            descr = (
+                f"Selected countries: {selected_shapes_text}"
+                if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]
+                else "Selected generic shape"
+            )
+            st.write(descr, unsafe_allow_html=True)

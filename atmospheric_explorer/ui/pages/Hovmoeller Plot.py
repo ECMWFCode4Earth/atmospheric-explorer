@@ -113,7 +113,7 @@ if submitted:
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
     time_values = st.session_state[HovmSessionStateKeys.HOVM_TIMES]
     levels = st.session_state[HovmSessionStateKeys.HOVM_LEVELS]
-    countries = st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
+    shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
@@ -121,7 +121,7 @@ if submitted:
                     f"""\
                 Building first plot with parameters
                 Variable: carbon_dioxide
-                Countries: {countries}
+                Countries: {shapes}
                 Dates range: {dates_range}
                 Times: {time_values}
                 Levels: {levels}
@@ -132,11 +132,11 @@ if submitted:
                 case "Latitude":
                     st.plotly_chart(
                         eac4_hovmoeller_latitude_plot(
-                            "total_column_ozone",
-                            "gtco3",
-                            dates_range,
-                            time_values,
-                            "Total columns O3",
+                            data_variable="total_column_ozone",
+                            var_name="gtco3",
+                            dates_range=dates_range,
+                            time_values=time_values,
+                            title="Total columns O3",
                         ),
                         use_container_width=True,
                     )
@@ -144,13 +144,15 @@ if submitted:
                     if st.session_state[HovmSessionStateKeys.HOVM_LEVELS]:
                         st.plotly_chart(
                             eac4_hovmoeller_levels_plot(
-                                "carbon_monoxide",
-                                "co",
-                                dates_range,
-                                time_values,
-                                st.session_state[HovmSessionStateKeys.HOVM_LEVELS],
-                                countries,
-                                "CO",
+                                data_variable="carbon_monoxide",
+                                var_name="co",
+                                dates_range=dates_range,
+                                time_values=time_values,
+                                pressure_level=st.session_state[
+                                    HovmSessionStateKeys.HOVM_LEVELS
+                                ],
+                                title="CO",
+                                shapes=shapes.dataframe,
                             ),
                             use_container_width=True,
                         )

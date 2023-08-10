@@ -40,12 +40,9 @@ def world_polygon() -> folium.GeoJson:
     )
 
 
-@st.cache_data(show_spinner="Fetching selected state polygon...")
+# @st.cache_data(show_spinner="Fetching selected state polygon...")
 def selected_shapes_fgroup() -> folium.FeatureGroup:
     """Return a folium feature group that adds a colored polygon over the selected state"""
-    # logger.info("Fetch %s polygon", selected_countries)
-    # shapefile = shapefile_dataframe()
-    # selected_countries_polygons = shapefile[shapefile["label"].isin(selected_countries)]
     countries_feature_group = folium.FeatureGroup(name="Countries")
     countries_feature_group.add_child(
         folium.GeoJson(
@@ -58,13 +55,12 @@ def selected_shapes_fgroup() -> folium.FeatureGroup:
     return countries_feature_group
 
 
-@st.cache_resource(show_spinner="Fetching map...")
+# @st.cache_resource(show_spinner="Fetching map...")
 def build_folium_map():
     """Build folium map with a layer of polygons on countries"""
     logger.info("Build folium map")
     folium_map = folium.Map()
     Draw(
-        export=True,
         draw_options={
             "circle": False,
             "marker": False,

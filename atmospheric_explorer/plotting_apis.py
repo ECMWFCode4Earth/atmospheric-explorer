@@ -3,9 +3,11 @@ APIs for generating dynamic and static plots
 """
 from __future__ import annotations
 
+import re
 from math import ceil, log10
 from textwrap import dedent
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -24,7 +26,6 @@ from atmospheric_explorer.data_transformations import (
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
-from shapely import Polygon, MultiPolygon
 
 logger = get_logger("atmexp")
 
@@ -78,20 +79,20 @@ def add_ci(
     """Add confidence intervals to a plotly trace"""
     line_color = ",".join([str(n) for n in hex_to_rgb(trace.line.color)])
     if len(labels) > 1:
-        label = list(filter(lambda c: c in trace.hovertemplate, labels))[0]
+        regex = re.compile("label=(.+?)(?=<br>)")
+        label = regex.search(trace.hovertemplate)[1]
     else:
         label = labels[0]
     label_index = labels.index(label)
     total_rows = ceil(len(labels) / 2)
     label_row = total_rows - label_index // 2
     label_col = label_index % 2 + 1
-    df_label = data_frame[data_frame["_shape_label"] == label]
+    df_label = data_frame[data_frame["label"] == label]
     times = df_label.index.tolist()
-    y1_lower = df_label["lower"].to_list()
     fig.add_trace(
         go.Scatter(
             x=times,
-            y=y1_lower,
+            y=df_label["lower"].to_list(),
             line_color=f"rgba({line_color}, 0)",
             fill=None,
             fillcolor=f"rgba({line_color}, 0.2)",
@@ -105,11 +106,10 @@ def add_ci(
         row=label_row,
         col=label_col,
     )
-    y1_upper = df_label["upper"].to_list()
     fig.add_trace(
         go.Scatter(
             x=times,
-            y=y1_upper,
+            y=df_label["upper"].to_list(),
             line_color=f"rgba({line_color}, 0)",
             fill="tonexty",
             fillcolor=f"rgba({line_color}, 0.2)",
@@ -127,11 +127,7 @@ def add_ci(
 
 
 def line_with_ci_subplots(
-    data_frame: pd.DataFrame,
-    col_num: int,
-    unit: str,
-    title: str,
-    labels: list[str]
+    data_frame: pd.DataFrame, col_num: int, unit: str, title: str
 ) -> go.Figure:
     """\
     Facet line plot on countries/administrative entinties.
@@ -139,36 +135,44 @@ def line_with_ci_subplots(
 
     Parameters:
         data_frame (pd.DataFrame): pandas dataframe with (at least) columns
-                                    '_shape_label','input_observations','mean','lower','upper'
+                                    'label','input_observations','mean','lower','upper'
         countries (list[str]): list of countries/administrative entities that must be considered in the facet plot
         col_num (int): number of maximum columns in the facet plot
         unit (str): unit of measure
         title (str): plot title
     """
-    fig = px.line(
-        data_frame=data_frame,
-        y="mean",
-        color="input_observations",
-        facet_col="_shape_label",
-        facet_col_wrap=col_num,
-        facet_col_spacing=0.04,
-        facet_row_spacing=0.15 if len(labels) > 3 else 0.2,
-        category_orders={
-            "_shape_label": labels,
-            "input_observations": ["surface", "satellite"],
-        },
-        color_discrete_sequence=px.colors.qualitative.D3,
-    )
+    labels = sorted(data_frame["label"].unique())
+    colors = sorted(data_frame["color"].unique())
+    if len(labels) > 1:
+        fig = px.line(
+            data_frame=data_frame,
+            y="value",
+            color="color",
+            facet_col="label",
+            facet_col_wrap=col_num,
+            facet_col_spacing=0.04,
+            facet_row_spacing=0.15 if len(labels) > 3 else 0.2,
+            color_discrete_sequence=px.colors.qualitative.D3,
+            category_orders={"color": colors, "label": labels},
+        )
+    else:
+        fig = px.line(
+            data_frame=data_frame,
+            y="value",
+            color="color",
+            color_discrete_sequence=px.colors.qualitative.D3,
+            category_orders={"color": colors},
+        )
     fig.for_each_trace(
         lambda tr: add_ci(
             fig,
             tr,
-            data_frame[data_frame["input_observations"] == tr.legendgroup],
+            data_frame[data_frame["color"] == tr.legendgroup],
             labels,
         )
     )
     fig.for_each_annotation(
-        lambda a: a.update(text=a.text.split("_shape_label=")[-1], font={"size": 14})
+        lambda a: a.update(text=a.text.split("label=")[-1], font={"size": 14})
     )
     fig.update_yaxes(title=unit, col=1)
     fig.update_yaxes(showticklabels=True, matches=None)
@@ -189,19 +193,13 @@ def line_with_ci_subplots(
         hovermode="closest",
     )
     fig.update_traces(mode="lines+markers")
-    fig.update_traces(
-        selector=-2 * len(labels) - 1, showlegend=True
-    )  # legend for ci
+    fig.update_traces(selector=-2 * len(labels) - 1, showlegend=True)  # legend for ci
     fig.update_traces(selector=-1, showlegend=True)  # legend for ci
     return fig
 
 
 def _ghg_surface_satellite_yearly_data(
-    data_variable: str,
-    years: list[str],
-    months: list[str],
-    shapes: dict[str, Polygon | MultiPolygon] = None,
-    var_name: str = "flux_foss",
+    data_variable: str, years: list[str], months: list[str]
 ) -> xr.DataArray | xr.Dataset:
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
@@ -231,24 +229,7 @@ def _ghg_surface_satellite_yearly_data(
     df_satellite = satellite_data.read_dataset()
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
-    # Clip countries
-    if shapes is not None:
-        df_total = clip_and_concat_shapes(df_total, shapes)
-    # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_final = df_total.sortby("time").mean(dim=["longitude", "latitude"])
-    # Convert units
-    da_converted = df_final[var_name]
-    # STILL MISSING: Convert units per month to units per year/aggregation level?
-    da_converted.attrs["units"] = df_total[var_name].units
-    da_converted_agg = (
-        da_converted.resample(time="YS")
-        .map(confidence_interval, dim="time")
-        .rename({"time": "Year"})
-    )
-    da_converted_agg.name = var_name
-    da_converted_agg.attrs = da_converted.attrs
-    # Pandas is easier to use for plotting
-    return da_converted_agg
+    return df_total
 
 
 def ghg_surface_satellite_yearly_plot(
@@ -257,7 +238,7 @@ def ghg_surface_satellite_yearly_plot(
     months: list[str],
     title: str,
     var_name: str = "flux_foss",
-    shapes: dict[str, Polygon | MultiPolygon] = None
+    shapes: gpd.GeoDataFrame = None,
 ) -> go.Figure:
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset"""
     # pylint: disable=too-many-arguments
@@ -275,29 +256,48 @@ def ghg_surface_satellite_yearly_plot(
     """
         )
     )
-    da_converted_agg = _ghg_surface_satellite_yearly_data(
-        data_variable, years, months, shapes, var_name
+    df_total = _ghg_surface_satellite_yearly_data(data_variable, years, months)
+    # Clip countries
+    if shapes is not None:
+        df_total = clip_and_concat_shapes(df_total, shapes)
+        col_num = 2 if len(shapes) >= 2 else 1
+    else:
+        df_total = df_total.expand_dims({"label": [""]})
+        col_num = 1
+    # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
+    df_final = df_total.sortby("time").mean(dim=["longitude", "latitude"])
+    # Convert units
+    da_converted = df_final[var_name]
+    # STILL MISSING: Convert units per month to units per year/aggregation level?
+    da_converted.attrs["units"] = df_total[var_name].units
+    da_converted_agg = (
+        da_converted.resample(time="YS")
+        .map(confidence_interval, dim="time")
+        .rename({"time": "Year"})
     )
+    da_converted_agg.name = var_name
+    da_converted_agg.attrs = da_converted.attrs
+    # Pandas is easier to use for plotting
     df_pandas = (
         da_converted_agg.to_dataframe()
         .unstack("ci")
         .droplevel(axis=1, level=0)
-        .reset_index(["_shape_label", "input_observations"])
+        .reset_index(["label", "input_observations"])
+        .rename({"input_observations": "color", "mean": "value"}, axis=1)
     )
-    col_num = 2 if len(shapes) >= 2 else 1
     return line_with_ci_subplots(
-        df_pandas, col_num, da_converted_agg.attrs["units"], title, list(shapes.keys())
+        df_pandas, col_num, da_converted_agg.attrs["units"], title
     )
 
 
 def eac4_anomalies_plot(
     data_variable: str,
     var_name: str,
-    countries: list[str],
     dates_range: str,
     time_values: str,
     title: str,
     resampling: str = "1MS",
+    shapes: gpd.GeoDataFrame = None,
 ) -> go.Figure:
     """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
 
@@ -311,7 +311,7 @@ def eac4_anomalies_plot(
     eac4_anomalies_plot called with arguments
     data_variable: {data_variable}
     var_name: {var_name}
-    countries: {countries}
+    shapes: {shapes}
     dates_range: {dates_range}
     time_values: {time_values}
     title: {title}
@@ -329,9 +329,12 @@ def eac4_anomalies_plot(
     df_down = xr.open_dataset(data.file_full_path)
     df_down = shifting_long(df_down)
     df_down = df_down.rio.write_crs("EPSG:4326")
-    df_clipped = clip_and_concat_countries(df_down, countries).sel(admin=countries[0])
+    if shapes is not None:
+        df_down = clip_and_concat_shapes(df_down, shapes).sel(
+            label=shapes.iloc[0]["label"]
+        )
     df_agg = (
-        df_clipped.mean(dim=["latitude", "longitude"])
+        df_down.mean(dim=["latitude", "longitude"])
         .resample(time=resampling, restore_coord_dims=True)
         .mean(dim="time")
     )
@@ -425,10 +428,10 @@ def eac4_hovmoeller_levels_plot(
     dates_range: str,
     time_values: str,
     pressure_level: list[str],  # non metto i model level
-    countries: list[str],
     title: str,
     resampling: str = "1MS",
     base_colorscale: list[str] = px.colors.sequential.RdBu_r,
+    shapes: gpd.GeoDataFrame = None,
 ) -> go.Figure:
     """Hoevmoeller plot of EAC4 multilevel variables, time vs pressure level"""
     # pylint: disable=too-many-arguments
@@ -443,7 +446,7 @@ def eac4_hovmoeller_levels_plot(
     dates_range: {dates_range}
     time_values: {time_values}
     pressure_level: {pressure_level}
-    countries: {countries}
+    shapes: {shapes}
     title: {title}
     resampling: {resampling}
     base_colorscale: {base_colorscale}
@@ -461,9 +464,12 @@ def eac4_hovmoeller_levels_plot(
     df_down = data.read_dataset()
     df_down = df_down.rio.write_crs("EPSG:4326")
     df_down = shifting_long(df_down)
-    df_clipped = clip_and_concat_countries(df_down, countries).sel(admin=countries[0])
+    if shapes is not None:
+        df_down = clip_and_concat_shapes(df_down, shapes).sel(
+            label=shapes.iloc[0]["label"]
+        )
     df_agg = (
-        df_clipped.resample(time=resampling, restore_coord_dims=True)
+        df_down.resample(time=resampling, restore_coord_dims=True)
         .mean(dim="time")
         .mean(dim="longitude")
         .mean(dim="latitude")

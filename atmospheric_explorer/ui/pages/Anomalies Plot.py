@@ -61,7 +61,7 @@ if submitted:
     end_date = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE]
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
     time_values = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES]
-    countries = st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
+    shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
@@ -69,7 +69,7 @@ if submitted:
                     f"""\
                 Building first plot with parameters
                 Variable: carbon_dioxide
-                Countries: {countries}
+                Countries: {shapes}
                 Dates range: {dates_range}
                 Times: {time_values}
                 """
@@ -77,12 +77,12 @@ if submitted:
             )
             st.plotly_chart(
                 eac4_anomalies_plot(
-                    "total_column_nitrogen_dioxide",
-                    "tcno2",
-                    countries,
-                    dates_range,
-                    time_values,
-                    "Total Column NO2",
+                    data_variable="total_column_nitrogen_dioxide",
+                    var_name="tcno2",
+                    dates_range=dates_range,
+                    time_values=time_values,
+                    title="Total Column NO2",
+                    shapes=shapes.dataframe,
                 ),
                 use_container_width=True,
             )
