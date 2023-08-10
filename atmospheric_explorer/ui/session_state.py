@@ -9,6 +9,7 @@ class GeneralSessionStateKeys(Enum):
 
     LAST_OBJECT_CLICKED = "last_object_clicked"
     SELECTED_SHAPES = "selected_shapes"
+    SELECT_COUNTRIES = "select_countries"
     LAST_ACTIVE_DRAWING = "last_active_drawing"
 
 
