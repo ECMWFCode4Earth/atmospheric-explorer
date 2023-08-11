@@ -22,7 +22,7 @@ if GHGSessionStateKeys.GHG_START_YEAR not in st.session_state:
 if GHGSessionStateKeys.GHG_END_YEAR not in st.session_state:
     st.session_state[GHGSessionStateKeys.GHG_END_YEAR] = 2022
 if GHGSessionStateKeys.GHG_MONTHS not in st.session_state:
-    st.session_state[GHGSessionStateKeys.GHG_MONTHS] = ["01"]
+    st.session_state[GHGSessionStateKeys.GHG_MONTHS] = ["01", "02"]
 
 with st.form("filters"):
     logger.info("Adding filters")

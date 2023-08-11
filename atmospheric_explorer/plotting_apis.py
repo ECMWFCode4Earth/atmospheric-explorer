@@ -199,7 +199,11 @@ def line_with_ci_subplots(
 
 
 def _ghg_surface_satellite_yearly_data(
-    data_variable: str, years: list[str], months: list[str]
+    data_variable: str,
+    years: list[str],
+    months: list[str],
+    var_name: str,
+    shapes: gpd.GeoDataFrame | None,
 ) -> xr.DataArray | xr.Dataset:
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
@@ -226,10 +230,31 @@ def _ghg_surface_satellite_yearly_data(
     satellite_data.download()
     # Read data as dataset
     df_surface = surface_data.read_dataset()
+    df_surface[var_name] = df_surface[var_name] * df_surface["area"]
     df_satellite = satellite_data.read_dataset()
+    df_satellite[var_name] = df_satellite[var_name] * df_satellite["area"]
     df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
     df_total = df_total.rio.write_crs("EPSG:4326")
-    return df_total
+    # Check only needed years and months are present
+    df_total = df_total.where(
+        df_total["time.year"].isin([int(y) for y in years]), drop=True
+    ).where(df_total["time.month"].isin([int(m) for m in months]), drop=True)
+    # Clip countries
+    if shapes is not None:
+        df_total = clip_and_concat_shapes(df_total, shapes)
+    # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
+    df_total = df_total.sortby("time").sum(dim=["longitude", "latitude"])
+    # Convert units
+    da_converted = convert_units_array(df_total[var_name], data_variable)
+    da_converted_agg = (
+        da_converted.resample(time="YS")
+        .map(confidence_interval, dim="time")
+        .rename({"time": "Year", "input_observations": "color"})
+    )
+    da_converted_agg.name = var_name
+    da_converted_agg.attrs = da_converted.attrs
+    # Pandas is easier to use for plotting
+    return da_converted_agg
 
 
 def ghg_surface_satellite_yearly_plot(
@@ -238,7 +263,7 @@ def ghg_surface_satellite_yearly_plot(
     months: list[str],
     title: str,
     var_name: str = "flux_foss",
-    shapes: gpd.GeoDataFrame = None,
+    shapes: gpd.GeoDataFrame | None = None,
 ) -> go.Figure:
     """Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset"""
     # pylint: disable=too-many-arguments
@@ -256,33 +281,21 @@ def ghg_surface_satellite_yearly_plot(
     """
         )
     )
-    df_total = _ghg_surface_satellite_yearly_data(data_variable, years, months)
+    da_converted_agg = _ghg_surface_satellite_yearly_data(
+        data_variable, years, months, var_name, shapes
+    )
     # Clip countries
     if shapes is not None:
-        df_total = clip_and_concat_shapes(df_total, shapes)
         col_num = 2 if len(shapes) >= 2 else 1
     else:
         col_num = 1
-    # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_final = df_total.sortby("time").mean(dim=["longitude", "latitude"])
-    # Convert units
-    da_converted = df_final[var_name]
-    # STILL MISSING: Convert units per month to units per year/aggregation level?
-    da_converted.attrs["units"] = df_total[var_name].units
-    da_converted_agg = (
-        da_converted.resample(time="YS")
-        .map(confidence_interval, dim="time")
-        .rename({"time": "Year"})
-    )
-    da_converted_agg.name = var_name
-    da_converted_agg.attrs = da_converted.attrs
     # Pandas is easier to use for plotting
     df_pandas = (
         da_converted_agg.to_dataframe()
         .unstack("ci")
         .droplevel(axis=1, level=0)
-        .reset_index(["label", "input_observations"])
-        .rename({"input_observations": "color", "mean": "value"}, axis=1)
+        .reset_index(["label", "color"])
+        .rename({"mean": "value"}, axis=1)
     )
     return line_with_ci_subplots(
         df_pandas, col_num, da_converted_agg.attrs["units"], title
