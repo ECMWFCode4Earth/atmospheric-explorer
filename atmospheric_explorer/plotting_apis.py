@@ -262,7 +262,6 @@ def ghg_surface_satellite_yearly_plot(
         df_total = clip_and_concat_shapes(df_total, shapes)
         col_num = 2 if len(shapes) >= 2 else 1
     else:
-        df_total = df_total.expand_dims({"label": [""]})
         col_num = 1
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
     df_final = df_total.sortby("time").mean(dim=["longitude", "latitude"])
@@ -427,7 +426,7 @@ def eac4_hovmoeller_levels_plot(
     var_name: str,
     dates_range: str,
     time_values: str,
-    pressure_level: list[str],  # non metto i model level
+    pressure_level: list[str],
     title: str,
     resampling: str = "1MS",
     base_colorscale: list[str] = px.colors.sequential.RdBu_r,

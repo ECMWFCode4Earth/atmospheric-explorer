@@ -43,7 +43,7 @@ def build_sidebar():
                 st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
             )
             if len(shapes) > 3:
-                selected_shapes_text = f"{len(shapes)} shapes"
+                selected_shapes_text = f"{len(shapes)} countries"
             else:
                 selected_shapes_text = "<br>" + "<br>".join(
                     st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES).labels
