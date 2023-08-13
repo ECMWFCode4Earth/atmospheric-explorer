@@ -12,12 +12,24 @@ from atmospheric_explorer.plotting_apis import eac4_anomalies_plot
 from atmospheric_explorer.ui.session_state import (
     EAC4AnomaliesSessionStateKeys,
     GeneralSessionStateKeys,
+    eac4_data_variable_default_plot_title_mapping,
+    eac4_data_variable_var_name_mapping,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
 page_init()
 
+# Get mapped var_name and plot_title from dictionary.
+# var_name cannot be changed in the UI, while plot_title can be changed.
+mapped_var_name = eac4_data_variable_var_name_mapping[
+    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
+]
+mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
+    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
+]
+
+# Set default SessionState values
 if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE not in st.session_state:
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
@@ -28,6 +40,18 @@ if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE not in st.session_state
     )
 if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES not in st.session_state:
     st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = ["00:00"]
+if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE not in st.session_state:
+    st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
+    ] = "total_column_nitrogen_dioxide"
+if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME not in st.session_state:
+    st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME
+    ] = mapped_var_name
+if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE not in st.session_state:
+    st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
+    ] = mapped_plot_title
 
 with st.form("filters"):
     logger.info("Adding filters")
@@ -51,6 +75,23 @@ with st.form("filters"):
             st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES],
         )
     )
+    st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
+    ] = st.selectbox(
+        "Data variable",
+        ["total_column_nitrogen_dioxide"],
+    )
+    st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME
+    ] = mapped_var_name
+    st.text(f"Var name: {mapped_var_name}")
+    st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
+    ] = st.text_input(
+        "Plot title",
+        st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE],
+    )
+
     submitted = st.form_submit_button("Generate plot")
 
 build_sidebar()
@@ -62,27 +103,36 @@ if submitted:
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
     time_values = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES]
     shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+    data_variable = st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
+    ]
+    var_name = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME]
+    plot_title = st.session_state[
+        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
+    ]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
                 dedent(
                     f"""\
-                Building first plot with parameters
-                Variable: carbon_dioxide
-                Countries: {shapes}
+                Building Anomalies plot with parameters
+                Data variable: {data_variable}
+                Var name: {var_name}
+                Shapes: {shapes}
                 Dates range: {dates_range}
                 Times: {time_values}
+                Title: {plot_title}
                 """
                 )
             )
             st.plotly_chart(
                 eac4_anomalies_plot(
-                    data_variable="total_column_nitrogen_dioxide",
-                    var_name="tcno2",
+                    data_variable=data_variable,
+                    var_name=var_name,
                     dates_range=dates_range,
                     time_values=time_values,
-                    title="Total Column NO2",
-                    shapes=shapes.dataframe,
+                    title=plot_title,
+                    shapes=shapes.dataframe
                 ),
                 use_container_width=True,
             )
