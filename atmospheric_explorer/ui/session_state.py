@@ -45,7 +45,8 @@ class GHGSessionStateKeys(Enum):
     GHG_MONTHS = "ghg_months"
     GHG_DATA_VARIABLE = "ghg_data_variable"
     GHG_VAR_NAME = "ghg_var_name"
-    GHG_TITLE = "ghg_title"
+    GHG_PLOT_TITLE = "ghg_title"
+    GHG_ADD_SATELLITE = "ghg_add_satellite"
 
 
 # EAC4 mappings and data variables list
@@ -66,15 +67,21 @@ eac4_data_variables = list(eac4_data_variable_var_name_mapping.keys())
 # GHG mappings and data variables list
 # ! We are only considering surface_flux quantities
 ghg_data_variable_var_name_mapping = {
-    "carbon_dioxide": "tcno2",
-    "total_column_ozone": "gtco3",
-    "carbon_monoxide": "co",
+    "carbon_dioxide": [
+        ["flux_foss", "flux_foss"],
+        ["flux_apos", "flux_apos_bio"],
+    ],
+    "methane": [
+        "ch4_emis_total",
+        "ch4_emis_biomass_burning",
+    ],
+    "nitrous_oxide": "N2O",
 }
 
 ghg_data_variable_default_plot_title_mapping = {
     "carbon_dioxide": "CO2",
-    "total_column_ozone": "Total column O3",
-    "carbon_monoxide": "CO",
+    "methane": "CH4",
+    "nitrous_oxide": "N2O",
 }
 
-ghg_data_variables = list(eac4_data_variable_var_name_mapping.keys())
+ghg_data_variables = list(ghg_data_variable_var_name_mapping.keys())

@@ -314,7 +314,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     for a full list of parameters and more details about the dataset
 
     Attributes:
-        data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
+        data_variables (str | list[str]): data variables to be downloaded from CAMS,
             see https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=overview
         file_format (str): format for the downloaded data, can be either 'zip' or 'tar.gz'
         quantity (str): quantity, can be one of ['mean_column', 'surface_flux', 'concentration']
