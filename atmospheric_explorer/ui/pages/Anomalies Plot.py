@@ -21,15 +21,6 @@ from atmospheric_explorer.ui.utils import build_sidebar, page_init
 logger = get_logger("atmexp")
 page_init()
 
-# Get mapped var_name and plot_title from dictionary.
-# var_name cannot be changed in the UI, while plot_title can be changed.
-mapped_var_name = eac4_data_variable_var_name_mapping[
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
-]
-mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
-]
-
 # Set default SessionState values
 if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE not in st.session_state:
     st.session_state[
@@ -45,6 +36,15 @@ if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE not in st.session_
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
     ] = "total_column_nitrogen_dioxide"
+
+# Get mapped var_name and plot_title from dictionary.
+# var_name cannot be changed in the UI, while plot_title can be changed.
+mapped_var_name = eac4_data_variable_var_name_mapping[
+    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
+]
+mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
+    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
+]
 if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME not in st.session_state:
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME
@@ -78,10 +78,9 @@ with st.form("filters"):
     )
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-    ] = st.selectbox(
-        "Data variable",
-        eac4_data_variables,
-    )
+    ] = st.selectbox(label="Data variable", options=eac4_data_variables)
+    update = st.form_submit_button("Update widgets below")
+
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME
     ] = mapped_var_name
@@ -90,7 +89,7 @@ with st.form("filters"):
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
     ] = st.text_input(
         "Plot title",
-        st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE],
+        value=mapped_plot_title,
     )
 
     submitted = st.form_submit_button("Generate plot")

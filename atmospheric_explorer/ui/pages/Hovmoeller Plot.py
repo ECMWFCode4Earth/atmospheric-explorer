@@ -24,22 +24,7 @@ from atmospheric_explorer.ui.utils import build_sidebar, page_init
 logger = get_logger("atmexp")
 page_init()
 
-# Get mapped var_name and plot_title from dictionary.
-# var_name cannot be changed in the UI, while plot_title can be changed.
-mapped_var_name = eac4_data_variable_var_name_mapping[
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-]
-mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-]
-
 # Set default SessionState values
-match st.session_state[HovmSessionStateKeys.HOVM_YAXIS]:
-    case "Latitude":
-        default_data_variable = "total_column_ozone"
-    case "Pressure Level":
-        default_data_variable = "carbon_monoxide"
-
 if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
     st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
 if HovmSessionStateKeys.HOVM_END_DATE not in st.session_state:
@@ -50,8 +35,22 @@ if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
     st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
 if HovmSessionStateKeys.HOVM_LEVELS not in st.session_state:
     st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = []
+match st.session_state[HovmSessionStateKeys.HOVM_YAXIS]:
+    case "Latitude":
+        default_data_variable = "total_column_ozone"
+    case "Pressure Level":
+        default_data_variable = "carbon_monoxide"
 if HovmSessionStateKeys.HOVM_DATA_VARIABLE not in st.session_state:
     st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = default_data_variable
+
+# Get mapped var_name and plot_title from dictionary.
+# var_name cannot be changed in the UI, while plot_title can be changed.
+mapped_var_name = eac4_data_variable_var_name_mapping[
+    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
+]
+mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
+    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
+]
 if HovmSessionStateKeys.HOVM_VAR_NAME not in st.session_state:
     st.session_state[HovmSessionStateKeys.HOVM_VAR_NAME] = mapped_var_name
 if HovmSessionStateKeys.HOVM_PLOT_TITLE not in st.session_state:
@@ -73,23 +72,13 @@ with st.form("filters"):
             st.session_state[HovmSessionStateKeys.HOVM_TIMES],
         )
     )
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
-        "Data variable",
-        eac4_data_variables,
-    )
-    st.session_state[HovmSessionStateKeys.HOVM_VAR_NAME] = mapped_var_name
-    st.text(f"Var name: {mapped_var_name}")
-    st.session_state[HovmSessionStateKeys.HOVM_PLOT_TITLE] = st.text_input(
-        "Plot title",
-        st.session_state[HovmSessionStateKeys.HOVM_PLOT_TITLE],
-    )
 
     match st.radio(
         "Vertical axis",
         ["Latitude", "Pressure Level", "Model Level"],
         index=0,
         horizontal=True,
-        help="Select one of the levels and click the form button to show the level selection widget",
+        help="Select one of the level types and click the 'Update widgets' button to select levels",
     ):
         case "Latitude":
             st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
@@ -139,6 +128,18 @@ with st.form("filters"):
                 ),
                 key=int,
             )
+    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
+        "Data variable",
+        eac4_data_variables,
+    )
+    update = st.form_submit_button("Update widgets")
+
+    st.session_state[HovmSessionStateKeys.HOVM_VAR_NAME] = mapped_var_name
+    st.text(f"Var name: {mapped_var_name}")
+    st.session_state[HovmSessionStateKeys.HOVM_PLOT_TITLE] = st.text_input(
+        "Plot title",
+        value=mapped_plot_title,
+    )
     submitted = st.form_submit_button("Generate plot")
 
 build_sidebar()
