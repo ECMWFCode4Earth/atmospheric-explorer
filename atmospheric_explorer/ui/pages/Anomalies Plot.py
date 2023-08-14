@@ -14,6 +14,7 @@ from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
     eac4_data_variable_default_plot_title_mapping,
     eac4_data_variable_var_name_mapping,
+    eac4_data_variables,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
@@ -79,7 +80,7 @@ with st.form("filters"):
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
     ] = st.selectbox(
         "Data variable",
-        ["total_column_nitrogen_dioxide"],
+        eac4_data_variables,
     )
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME

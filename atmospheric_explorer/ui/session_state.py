@@ -34,7 +34,7 @@ class HovmSessionStateKeys(Enum):
     HOVM_LEVELS = "hovm_levels"
     HOVM_DATA_VARIABLE = "hovm_data_variable"
     HOVM_VAR_NAME = "hovm_var_name"
-    HOVM_TITLE = "hovm_title"
+    HOVM_PLOT_TITLE = "hovm_title"
 
 
 class GHGSessionStateKeys(Enum):
@@ -50,8 +50,14 @@ class GHGSessionStateKeys(Enum):
 
 eac4_data_variable_var_name_mapping = {
     "total_column_nitrogen_dioxide": "tcno2",
+    "total_column_ozone": "gtco3",
+    "carbon_monoxide": "co",
 }
 
 eac4_data_variable_default_plot_title_mapping = {
-    "total_column_nitrogen_dioxide": "Total Column NO2",
+    "total_column_nitrogen_dioxide": "Total column NO2",
+    "total_column_ozone": "Total column O3",
+    "carbon_monoxide": "CO",
 }
+
+eac4_data_variables = list(eac4_data_variable_var_name_mapping.keys)
