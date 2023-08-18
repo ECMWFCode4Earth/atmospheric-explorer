@@ -282,14 +282,14 @@ def ghg_surface_satellite_yearly_plot(
         years (list[str]): list of years (in YYYY format) to plot the data for
         months (list[str]): list of month (in MM format) to plot the data for
         title (str): plot title
-        add_satellite_observations (bool): show 'satellite' input_observations
-            data along with 'surface' (only available for carbon_dioxide data
-            variable).
         var_name (str | list[str]): use a single var_name if the plot only
             shows one input_observations category ('surface').
             Use a list with values corresponding respectively to 'surface'
             and 'satellite' if add_satellite_observations is true.
             Example: ['flux_apos', 'flux_apos_bio']
+        add_satellite_observations (bool): show 'satellite' input_observations
+            data along with 'surface' (only available for carbon_dioxide data
+            variable). ! CURRENTLY NOT WORKING, so we leave it False by default
     """
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals

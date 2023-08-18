@@ -71,11 +71,12 @@ with st.form("filters"):
         options=mapped_var_names,
         help="Select var_name parameters. For CO2, each couple corresponds to [surface, satellite] var_names",
     )
-    if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
-        st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE] = st.checkbox(
-            label="Include satellite observations",
-            value=st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE],
-        )
+    # NOTE: including satellite observations is currently not working (see plotting_apis.py)
+    # if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
+    #     st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE] = st.checkbox(
+    #         label="Include satellite observations",
+    #         value=st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE],
+    #     )
     st.session_state[GHGSessionStateKeys.GHG_PLOT_TITLE] = st.text_input(
         "Plot title",
         value=mapped_plot_title,

@@ -64,10 +64,12 @@ eac4_data_variables = list(eac4_data_variable_var_name_mapping.keys())
 
 # GHG mappings and data variables list
 # ! We are only considering surface_flux quantities
+# carbon_dioxide var_names are lists corresponding respectively to
+# [surface, satellite] var_names
 ghg_data_variable_var_name_mapping = {
     "carbon_dioxide": [
         ["flux_foss", "flux_foss"],
-        ["flux_apos", "flux_apos_bio"],
+        ["flux_apos_bio", "flux_apos"],
     ],
     "methane": [
         "ch4_emis_total",
