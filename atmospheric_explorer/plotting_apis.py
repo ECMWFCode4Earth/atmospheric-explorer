@@ -220,7 +220,7 @@ def _ghg_surface_satellite_yearly_data(
     )
     surface_data.download()
     # Read data as dataset
-    df_surface = surface_data.read_dataset()
+    df_surface = surface_data.read_dataset().squeeze(dim="time_aggregation")
     df_surface[var_name] = df_surface[var_name] * df_surface["area"]
     if add_satellite_observations:
         satellite_data = InversionOptimisedGreenhouseGas(
@@ -234,9 +234,9 @@ def _ghg_surface_satellite_yearly_data(
         )
         satellite_data.download()
         # Read data as dataset
-        df_satellite = satellite_data.read_dataset()
+        df_satellite = satellite_data.read_dataset().squeeze(dim="time_aggregation")
         df_satellite[var_name] = df_satellite[var_name] * df_satellite["area"]
-        df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
+        df_total = xr.concat([df_surface, df_satellite], dim="input_observations")
     else:
         df_total = df_surface
     df_total = df_total.rio.write_crs("EPSG:4326")
