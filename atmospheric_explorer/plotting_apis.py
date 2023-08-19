@@ -308,12 +308,7 @@ def ghg_surface_satellite_yearly_plot(
         )
     )
     da_converted_agg = _ghg_surface_satellite_yearly_data(
-        data_variable,
-        years,
-        months,
-        var_name,
-        shapes,
-        add_satellite_observations
+        data_variable, years, months, var_name, shapes, add_satellite_observations
     )
     # Clip countries
     if shapes is not None:

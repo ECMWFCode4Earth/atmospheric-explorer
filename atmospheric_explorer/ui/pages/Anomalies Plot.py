@@ -132,7 +132,7 @@ if submitted:
                     dates_range=dates_range,
                     time_values=time_values,
                     title=plot_title,
-                    shapes=shapes.dataframe
+                    shapes=shapes.dataframe,
                 ),
                 use_container_width=True,
             )

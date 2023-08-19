@@ -193,7 +193,7 @@ if submitted:
                                 time_values=time_values,
                                 pressure_level=levels,
                                 title=plot_title,
-                                shapes=shapes.dataframe
+                                shapes=shapes.dataframe,
                             ),
                             use_container_width=True,
                         )
