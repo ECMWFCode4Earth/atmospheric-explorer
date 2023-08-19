@@ -8,7 +8,8 @@ class GeneralSessionStateKeys(Enum):
     """Enum that keeps all keys used for Streamlit session state."""
 
     LAST_OBJECT_CLICKED = "last_object_clicked"
-    SELECTED_COUNTRIES = "selected_countries"
+    SELECTED_SHAPES = "selected_shapes"
+    SELECT_COUNTRIES = "select_countries"
     LAST_ACTIVE_DRAWING = "last_active_drawing"
 
 

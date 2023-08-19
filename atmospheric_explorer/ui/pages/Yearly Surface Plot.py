@@ -22,7 +22,7 @@ if GHGSessionStateKeys.GHG_START_YEAR not in st.session_state:
 if GHGSessionStateKeys.GHG_END_YEAR not in st.session_state:
     st.session_state[GHGSessionStateKeys.GHG_END_YEAR] = 2022
 if GHGSessionStateKeys.GHG_MONTHS not in st.session_state:
-    st.session_state[GHGSessionStateKeys.GHG_MONTHS] = ["01"]
+    st.session_state[GHGSessionStateKeys.GHG_MONTHS] = ["01", "02"]
 
 with st.form("filters"):
     logger.info("Adding filters")
@@ -52,7 +52,7 @@ if submitted:
         )
     ]
     months = st.session_state[GHGSessionStateKeys.GHG_MONTHS]
-    countries = st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
+    shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
@@ -60,7 +60,7 @@ if submitted:
                     f"""\
             Building first plot with parameters
             Variable: carbon_dioxide
-            Countries: {countries}
+            Shapes: {shapes}
             Years: {years}
             Month: {months}
             """
@@ -68,7 +68,12 @@ if submitted:
             )
             st.plotly_chart(
                 ghg_surface_satellite_yearly_plot(
-                    "carbon_dioxide", countries, years, months, "CO2", "flux_foss"
+                    data_variable="carbon_dioxide",
+                    var_name="flux_foss",
+                    years=years,
+                    months=months,
+                    title="CO2",
+                    shapes=shapes.dataframe,
                 ),
                 use_container_width=True,
             )

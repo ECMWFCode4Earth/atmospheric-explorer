@@ -3,11 +3,10 @@ Module with utils for the UI
 """
 from pathlib import Path
 
-import geopandas as gpd
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.shapefile import ShapefilesDownloader
+from atmospheric_explorer.ui.interactive_map.shape_selection import ShapeSelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -27,28 +26,31 @@ def page_init():
     local_css(Path(__file__).resolve().parent.joinpath("style.css"))
     if GeneralSessionStateKeys.LAST_OBJECT_CLICKED not in st.session_state:
         st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED] = [42, 13]
-    if GeneralSessionStateKeys.SELECTED_COUNTRIES not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES] = ["Italy"]
-
-
-@st.cache_data(show_spinner="Fetching shapefile...")
-def shapefile_dataframe() -> gpd.GeoDataFrame:
-    """Get and cache the shapefile"""
-    return ShapefilesDownloader().get_as_dataframe()[["ADMIN", "geometry"]]
+    if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
+        st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES
+        ] = ShapeSelection.from_countries_list(["Italy"])
+    if GeneralSessionStateKeys.SELECT_COUNTRIES not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES] = False
 
 
 def build_sidebar():
     """Build sidebar"""
     logger.info("Building sidebar")
     with st.sidebar:
-        if st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES) is not None:
-            countries = st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
-            if len(countries) > 3:
-                selected_countries_text = f"{len(countries)} countries"
-            else:
-                selected_countries_text = "<br>" + "<br>".join(
-                    st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES)
-                )
-            st.write(
-                f"Selected countries: {selected_countries_text}", unsafe_allow_html=True
+        if st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES) is not None:
+            shapes = set(
+                st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
             )
+            if len(shapes) > 3:
+                selected_shapes_text = f"{len(shapes)} countries"
+            else:
+                selected_shapes_text = "<br>" + "<br>".join(
+                    st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES).labels
+                )
+            descr = (
+                f"Selected countries: {selected_shapes_text}"
+                if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]
+                else "Selected generic shape"
+            )
+            st.write(descr, unsafe_allow_html=True)

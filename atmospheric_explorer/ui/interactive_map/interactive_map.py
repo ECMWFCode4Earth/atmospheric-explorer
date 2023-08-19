@@ -8,11 +8,11 @@ from folium.plugins import Draw
 from streamlit_folium import st_folium
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.country_selection import (
-    countries_selection,
+from atmospheric_explorer.ui.interactive_map.shape_selection import (
+    ShapeSelection,
+    shapefile_dataframe,
 )
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
-from atmospheric_explorer.ui.utils import shapefile_dataframe
 
 logger = get_logger("atmexp")
 
@@ -22,7 +22,7 @@ def _country_hover_style(_):
     return {"fillColor": "red"}
 
 
-def _selected_countries_style(_) -> dict:
+def _selected_shapes_style(_) -> dict:
     """Style used for selected countries, needed for caching"""
     return {"fillColor": "green", "color": "green"}
 
@@ -36,37 +36,31 @@ def world_polygon() -> folium.GeoJson:
         name="world_polygon",
         highlight_function=_country_hover_style,
         zoom_on_click=False,
-        tooltip=folium.features.GeoJsonTooltip(fields=["ADMIN"], aliases=[""]),
+        tooltip=folium.features.GeoJsonTooltip(fields=["label"], aliases=[""]),
     )
 
 
-@st.cache_data(show_spinner="Fetching selected state polygon...")
-def selected_countries_fgroup(
-    selected_countries: list[str] | None,
-) -> folium.FeatureGroup:
+# @st.cache_data(show_spinner="Fetching selected state polygon...")
+def selected_shapes_fgroup() -> folium.FeatureGroup:
     """Return a folium feature group that adds a colored polygon over the selected state"""
-    logger.info("Fetch %s polygon", selected_countries)
-    shapefile = shapefile_dataframe()
-    selected_countries_polygons = shapefile[shapefile["ADMIN"].isin(selected_countries)]
     countries_feature_group = folium.FeatureGroup(name="Countries")
     countries_feature_group.add_child(
         folium.GeoJson(
-            data=selected_countries_polygons,
-            name="selected_countries_polygon",
-            style_function=_selected_countries_style,
-            tooltip=folium.features.GeoJsonTooltip(fields=["ADMIN"], aliases=[""]),
+            data=st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].dataframe,
+            name="selected_shapes_polygon",
+            style_function=_selected_shapes_style,
+            tooltip=folium.features.GeoJsonTooltip(fields=["label"], aliases=[""]),
         )
     )
     return countries_feature_group
 
 
-@st.cache_resource(show_spinner="Fetching map...")
-def build_folium_map(selected_countries: list[str] | None):
+# @st.cache_resource(show_spinner="Fetching map...")
+def build_folium_map():
     """Build folium map with a layer of polygons on countries"""
     logger.info("Build folium map")
     folium_map = folium.Map()
     Draw(
-        export=True,
         draw_options={
             "circle": False,
             "marker": False,
@@ -76,17 +70,16 @@ def build_folium_map(selected_countries: list[str] | None):
     ).add_to(
         folium_map
     )  # draw toolbar
-    world_polygon().add_to(folium_map)
-    selected_countries_fgroup(selected_countries).add_to(folium_map)
+    if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]:
+        world_polygon().add_to(folium_map)
+    selected_shapes_fgroup().add_to(folium_map)
     return folium_map
 
 
 def show_folium_map():
     """Show folium map in Streamlit"""
     logger.info("Show folium map")
-    folium_map = build_folium_map(
-        st.session_state.get(GeneralSessionStateKeys.SELECTED_COUNTRIES)
-    )
+    folium_map = build_folium_map()
     out_event = st_folium(
         folium_map,
         key="folium_map",
@@ -109,14 +102,24 @@ def update_session_map_click(out_event):
             "last_object_clicked"
         ]
     if out_event.get("last_active_drawing") is not None:
-        selected_countries = countries_selection(out_event)
-        prev_selection = set(
-            st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES]
-        )
-        if selected_countries.isdisjoint(
-            prev_selection
-        ) or selected_countries.issuperset(prev_selection):
-            st.session_state[GeneralSessionStateKeys.SELECTED_COUNTRIES] = sorted(
-                list(selected_countries)
+        selected_shape = ShapeSelection.from_out_event(out_event)
+        if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]:
+            selected_countries = ShapeSelection.countries_from_shape(selected_shape)
+            sel_countries = set(selected_countries.labels)
+            prev_selection = set(
+                st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
             )
-            st.experimental_rerun()
+            if sel_countries.isdisjoint(prev_selection) or sel_countries.issuperset(
+                prev_selection
+            ):
+                st.session_state[
+                    GeneralSessionStateKeys.SELECTED_SHAPES
+                ] = selected_countries
+                st.experimental_rerun()
+        else:
+            prev_selection = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+            if selected_shape != prev_selection:
+                st.session_state[
+                    GeneralSessionStateKeys.SELECTED_SHAPES
+                ] = selected_shape
+                st.experimental_rerun()
