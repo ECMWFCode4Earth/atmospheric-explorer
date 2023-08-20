@@ -58,9 +58,9 @@ def _year_filters():
 def _times_filter():
     st.session_state[HovmSessionStateKeys.HOVM_TIMES] = sorted(
         st.multiselect(
-            "Times",
-            eac4_times,
-            st.session_state[HovmSessionStateKeys.HOVM_TIMES],
+            label="Times",
+            options=eac4_times,
+            default=st.session_state[HovmSessionStateKeys.HOVM_TIMES],
         )
     )
 

@@ -14,90 +14,95 @@ from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
 )
 from atmospheric_explorer.ui.ui_mappings import (
-    eac4_data_variable_default_plot_title_mapping,
-    eac4_data_variable_var_name_mapping,
-    eac4_data_variables,
+    eac4_single_level_data_variable_default_plot_title_mapping,
+    eac4_single_level_data_variable_var_name_mapping,
+    eac4_single_level_data_variables,
+    eac4_times,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
-page_init()
 
-# Set default SessionState values
-if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE not in st.session_state:
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
-    ] = datetime(2022, 1, 1)
-if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE not in st.session_state:
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE] = datetime(
-        2022, 12, 31
-    )
-if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES not in st.session_state:
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = ["00:00"]
-if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE not in st.session_state:
-    st.session_state[
+
+def _init():
+    page_init()
+    # Set default SessionState values
+    if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE not in st.session_state:
+        st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
+        ] = datetime(2022, 1, 1)
+    if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE not in st.session_state:
+        st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
+        ] = datetime(2022, 12, 31)
+    if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES not in st.session_state:
+        st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = ["00:00"]
+    if (
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-    ] = "total_column_nitrogen_dioxide"
+        not in st.session_state
+    ):
+        st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
+        ] = "total_column_nitrogen_dioxide"
 
-# Get mapped var_name and plot_title from dictionary.
-# var_name cannot be changed in the UI, while plot_title can be changed.
-mapped_var_name = eac4_data_variable_var_name_mapping[
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
-]
-mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
-]
-if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME not in st.session_state:
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME
-    ] = mapped_var_name
-if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE not in st.session_state:
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
-    ] = mapped_plot_title
 
-with st.form("filters"):
-    logger.info("Adding filters")
+def _dates_filters():
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
     ] = start_date_col.date_input(
-        "Start date",
+        label="Start date",
         value=st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE],
     )
     st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
     ] = end_date_col.date_input(
-        "End date",
+        label="End date",
         value=st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE],
     )
+
+
+def _times_filters():
     st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = sorted(
         st.multiselect(
-            "Times",
-            [f"{h:02}:00" for h in range(0, 24, 3)],
-            st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES],
+            label="Times",
+            options=eac4_times,
+            default=st.session_state[
+                EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES
+            ],
         )
     )
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-    ] = st.selectbox(label="Data variable", options=eac4_data_variables)
-    update = st.form_submit_button("Update widgets below")
 
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME
-    ] = mapped_var_name
-    st.text(f"Var name: {mapped_var_name}")
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
-    ] = st.text_input(
-        "Plot title",
-        value=mapped_plot_title,
-    )
 
-    submitted = st.form_submit_button("Generate plot")
+def _filters():
+    with st.expander("Filters", expanded=True):
+        logger.info("Adding filters")
+        _dates_filters()
+        _times_filters()
+        st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
+        ] = st.selectbox(
+            label="Data variable", options=eac4_single_level_data_variables
+        )
+        v_name = eac4_single_level_data_variable_var_name_mapping[
+            st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
+        ]
+        st.text(f"Var name: {v_name}")
+        title = st.text_input(
+            label="Plot title",
+            value=eac4_single_level_data_variable_default_plot_title_mapping[
+                st.session_state[
+                    EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
+                ]
+            ],
+        )
+    return v_name, title
 
+
+_init()
+var_name, plot_title = _filters()
 build_sidebar()
-if submitted:
+if st.button("Generate plot"):
     start_date = st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
     ]
@@ -107,10 +112,6 @@ if submitted:
     shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     data_variable = st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-    ]
-    var_name = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_VAR_NAME]
-    plot_title = st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_PLOT_TITLE
     ]
     with st.container():
         with st.spinner("Downloading data and building plot"):
