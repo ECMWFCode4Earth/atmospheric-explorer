@@ -53,7 +53,7 @@ class SetParameter:
         return (self == other) or (self.value.issuperset(other.value))
 
     def difference(self, other: SetParameter) -> SetParameter:
-        return SetParameter(self.value - other.value)
+        return type(self)(self.value - other.value)
 
     def __repr__(self) -> str:
         return f"{self.value_api}"
@@ -61,13 +61,16 @@ class SetParameter:
     def __iter__(self):
         return iter(self.value)
     
+    def is_disjoint(self, other: SetParameter) -> bool:
+        return self.value.isdisjoint(other.value)
+    
     def merge(self, other: SetParameter) -> SetParameter:
         val = self.value
         val.update(other.value)
         format_str = self.format_str or other.format_str
         if format_str is None:
-            return SetParameter(value=val)
-        return SetParameter(value=val, format_str=format_str)
+            return type(self)(value=val)
+        return type(self)(value=val, format_str=format_str)
 
 
 @pydantic_dataclass
@@ -76,6 +79,12 @@ class IntSetParameter(SetParameter):
 
     def __repr__(self) -> str:
         return f"{self.value_api}"
+
+    def difference(self, other: IntSetParameter) -> IntSetParameter:
+        return super().difference(other)
+
+    def merge(self, other: IntSetParameter) -> IntSetParameter:
+        return super().merge(other)
 
 @pydantic_dataclass
 class DateIntervalParameter:
@@ -103,39 +112,61 @@ class DateIntervalParameter:
     @computed_field
     @property
     def value_api(self) -> list[str]:
-        return f"{self.start}/{self.end}"
+        return f"{self.start.strftime('%Y-%m-%d')}/{self.end.strftime('%Y-%m-%d')}"
     
     @computed_field
     @property
     def all_days(self) -> list[str]:
         return date_range(self.start, self.end, freq='D')
 
-    def __eq__(self, other: DateIntervalParameter):
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
+    def __eq__(self, other: DateIntervalParameter) -> bool:
         return self.start == other.start and self.end == other.end
 
-    def _includes(self, other: DateIntervalParameter):
+    def _includes(self, other: DateIntervalParameter) -> bool:
         return (
             self.start <= other.start
             and self.end >= other.end
         )
 
+    def is_disjoint(self, other: DateIntervalParameter) -> bool:
+        return (
+            self.start > other.end
+            or self.end < other.start
+        )
+
     def is_eq_superset(self, other: DateIntervalParameter):
         return (self == other) or self._includes(other)
 
-    def difference(self, other: DateIntervalParameter) -> DateIntervalParameter | None:
-        if self.start > other.end:
-            start = self.start
-            end = self.end
+    def difference(self, other: DateIntervalParameter) -> list[DateIntervalParameter] | None:
+        if other.is_eq_superset(self):
+            return None
+        elif self.is_disjoint(other):
+            return self
         else:
+            if self._includes(other):
+                if self.start == other.start:
+                    return [
+                        DateIntervalParameter(start=other.end, end=self.end),
+                    ]
+                elif self.end == other.end:
+                    return [
+                        DateIntervalParameter(start=self.start, end=other.start),
+                    ]
+                else:
+                    return [
+                        DateIntervalParameter(start=self.start, end=other.start),
+                        DateIntervalParameter(start=other.end, end=self.end),
+                    ]
             if self.end > other.end:
+                start = other.end
                 end = self.end
             else:
-                end = other.start
-            if self.start < other.start:
                 start = self.start
-            else:
-                start = other.end
-        return DateIntervalParameter(start=start, end=end)
+                end = other.start
+        return [DateIntervalParameter(start=start, end=end)]
 
     def __repr__(self) -> str:
         return f"{self.value_api}"
@@ -145,17 +176,20 @@ class DateIntervalParameter:
         end = max(self.end, other.end)
         return DateIntervalParameter(start=start, end=end)
     
+    # @classmethod
+    # def from_dates(cls, dates: list[datetime]) -> list[DateIntervalParameter]:
+    #     dates = sorted(dates)
+    #     diffs = [0] + [(y-x).days > 1 for x,y in pairwise(dates)]
+    #     diffs_groups = list(accumulate(diffs))
+    #     dates_groups = [[c for _, c in g] for _, g in groupby(zip(diffs_groups, dates), key=lambda x: x[0])]
+    #     dates_ranges = [(min(g), max(g)) for g in dates_groups]
+    #     return [cls(start=r[0], end=r[1]) for r in dates_ranges] if len(dates_ranges) > 1 else cls(start=dates_ranges[0][0], end=dates_ranges[0][1])
+
     @classmethod
-    def from_dates(cls, dates: list[datetime]) -> DateIntervalParameter | list[DateIntervalParameter]:
-        dates = sorted(dates)
-        diffs = [0] + [(y-x).days > 1 for x,y in pairwise(dates)]
-        diffs_groups = list(accumulate(diffs))
-        dates_groups = [[c for _, c in g] for _, g in groupby(zip(diffs_groups, dates), key=lambda x: x[0])]
-        dates_ranges = [(min(g), max(g)) for g in dates_groups]
-        return [cls(start=r[0], end=r[1]) for r in dates_ranges] if len(dates_ranges) > 1 else cls(start=dates_ranges[0][0], end=dates_ranges[0][1])
-
-
+    def from_dates(cls, dates: list[datetime]) -> DateIntervalParameter:
+        return DateIntervalParameter(start=min(dates), end=max(dates))
 
 if __name__ == '__main__':
     d = DateIntervalParameter.from_dates([datetime(2020, 1, 1), datetime(2020, 1, 2), datetime(2020, 1, 3), datetime(2021, 1, 3), datetime(2021, 1, 4)])
     print(d)
+    print(DateIntervalParameter('2021-01-01/2021-02-01').difference(DateIntervalParameter('2022-01-01/2022-02-01')))

@@ -8,8 +8,11 @@ from __future__ import annotations
 from textwrap import dedent
 
 from sqlalchemy import Integer, String, delete, select, Date
+from sqlalchemy.sql import or_
 from sqlalchemy.dialects.sqlite import insert as sqlite_upsert
 from sqlalchemy.orm import Session, mapped_column
+from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
+from atmospheric_explorer.data_interface.cams_interface.parameters_types import DateIntervalParameter
 
 from atmospheric_explorer.data_interface.cache import Base, cache_engine
 from atmospheric_explorer.data_interface.eac4.eac4_parameters import EAC4Parameters
@@ -24,7 +27,8 @@ class EAC4CacheTable(Base):
     __tablename__ = "eac4_cache_table"
     param_id = mapped_column(Integer, nullable=False, unique=False)
     data_variables = mapped_column(String(30), primary_key=True)
-    day = mapped_column(Date, primary_key=True)
+    date_start = mapped_column(Date, primary_key=True)
+    date_end = mapped_column(Date, primary_key=True)
     time = mapped_column(String(5), primary_key=True)
     pressure_level = mapped_column(Integer, primary_key=True, default=-1)
     model_level = mapped_column(Integer, primary_key=True, default=-1)
@@ -35,7 +39,7 @@ class EAC4CacheTable(Base):
             f"""
             'param_id': {self.param_id},
             'data_variables': {self.data_variables},
-            'day': {self.day},
+            'dates': {self.date_start}/{self.date_end},
             'time': {self.time},
             'pressure_level': {self.pressure_level},
             'model_level': {self.model_level},
@@ -45,14 +49,20 @@ class EAC4CacheTable(Base):
 
     @classmethod
     def _filter_parameters(cls, stmt, parameters: list[EAC4Parameters]):
-        p = EAC4Parameters.merge(parameters)
-        return stmt.where(
-            cls.data_variables.in_(p.data_variables.value),
-            cls.pressure_level.in_(p.pressure_level.value),
-            cls.model_level.in_(p.model_level.value),
-            cls.time.in_(p.time_values),
-            cls.day.between(p.dates_range.start, p.dates_range.end)
+        param = EAC4Parameters.merge(parameters)
+        stmt = stmt.where(
+            cls.data_variables.in_(param.data_variables.value),
+            cls.time.in_(param.time_values),
+            or_(
+                cls.date_start.between(param.dates_range.start, param.dates_range.end),
+                cls.date_end.between(param.dates_range.start, param.dates_range.end)
+            )
         )
+        if param.pressure_level is not None:
+            stmt = stmt.where(cls.pressure_level.in_(param.pressure_level.value))
+        if param.model_level is not None:
+            stmt = stmt.where(cls.model_level.in_(param.model_level.value))
+        return stmt
 
     @classmethod
     def get_rows(cls, parameters: list[EAC4Parameters] | None = None) -> list[dict]:
@@ -75,16 +85,17 @@ class EAC4CacheTable(Base):
                 {
                     "param_id": id(parameters),
                     "data_variables": dv,
-                    "day": day,
+                    "date_start": date_start,
+                    "date_end": date_end,
                     "time": time,
                     "pressure_level": pl,
                     "model_level": ml,
                     "files_path": files_path
-
                 }
-                for dv, day, time, pl, ml in product(
+                for dv, date_start, date_end, time, pl, ml in product(
                     parameters.data_variables.value,
-                    parameters.dates_range.all_days,
+                    [parameters.dates_range.start],
+                    [parameters.dates_range.end],
                     parameters.time_values.value,
                     parameters.pressure_level.value if parameters.pressure_level is not None else [-1],
                     parameters.model_level.value if parameters.model_level is not None else [-1]
@@ -94,7 +105,8 @@ class EAC4CacheTable(Base):
         upsert_stmt = upsert_stmt.on_conflict_do_update(
             index_elements=[
                 cls.data_variables,
-                cls.day,
+                cls.date_start,
+                cls.date_end,
                 cls.time,
                 cls.pressure_level,
                 cls.model_level
@@ -140,7 +152,7 @@ if __name__ == "__main__":
     )
     p2 = EAC4Parameters.from_base_types(
         data_variables="a",
-        dates_range="2021-01-04/2021-02-05",
+        dates_range="2021-01-06/2021-02-05",
         time_values="00:00"
     )
     EAC4CacheTable.cache(p1, "file")

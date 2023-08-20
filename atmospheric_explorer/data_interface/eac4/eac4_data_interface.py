@@ -6,8 +6,6 @@ This module collects classes to easily interact with data downloaded from CAMS A
 from __future__ import annotations
 
 import os
-import zipfile
-from datetime import datetime
 from glob import glob
 
 import xarray as xr
@@ -54,7 +52,7 @@ class EAC4DataInterface(CAMSDataInterface):
 
     def __init__(
         self: EAC4DataInterface,
-        data_variables: str,
+        data_variables: str | set[str] | list[str],
         dates_range: str,
         time_values: str | set[str] | list[str],
         pressure_level: str | set[str] | list[str] | None = None,
@@ -70,6 +68,8 @@ class EAC4DataInterface(CAMSDataInterface):
             model_level=model_level,
         )
         self._cache_status = CachingStatus.UNCACHED
+        self._cached_parameters = []
+        self._diff_parameters = None
         self._update_parameters()
         if self._diff_parameters is not None:
             logger.info("The parameter specified are not fully cached, creating variables to manage files")
@@ -96,25 +96,31 @@ class EAC4DataInterface(CAMSDataInterface):
         )
 
     @staticmethod
-    def _get_cached_parameters(params: EAC4Parameters) -> list(EAC4Parameters) | None:
+    def _get_cached_parameters(params: EAC4Parameters) -> list[EAC4Parameters]:
         """Return cached parameters with the same key variables as the ones in params."""
-        rows = EAC4CacheTable.get_rows(params)
+        rows = EAC4CacheTable.get_rows([params])
         logger.debug("Cached parameters: %s", rows)
         if rows:
-            res = []
-            param_groups = [[c for _, c in g] for _, g in groupby(rows, key=lambda x: x['param_id'])]
-            for params in param_groups:
-                date_start = min([p.day for p in params])
-                date_end = max([p.day for p in params])
-                res.append(EAC4Parameters.from_base_types(
-                    data_variables={r.data_variables for r in rows},
-                    dates_range=f"{date_start}/{date_end}",
-                    time_values={r.time for r in rows},
-                    pressure_level={r.pressure_level for r in rows},
-                    model_level={r.model_level for r in rows},
-                ))
-                return res
-        return None
+            res = [EAC4Parameters.from_base_types(
+                data_variables=r.data_variables,
+                dates_range=f"{r.date_start}/{r.date_end}",
+                time_values=[r.time],
+                pressure_level=r.pressure_level if r.pressure_level != -1 else None,
+                model_level=r.model_level if r.model_level != -1 else None
+            ) for r in rows]
+            # param_groups = [[c for _, c in g] for _, g in groupby(rows, key=lambda x: x['param_id'])]
+            # for params in param_groups:
+            #     date_start = min([p.day for p in params])
+            #     date_end = max([p.day for p in params])
+            #     res.append(EAC4Parameters.from_base_types(
+            #         data_variables={r.data_variables for r in rows},
+            #         dates_range=f"{date_start}/{date_end}",
+            #         time_values={r.time for r in rows},
+            #         pressure_level={r.pressure_level for r in rows},
+            #         model_level={r.model_level for r in rows},
+            #     ))
+            return res
+        return []
 
     def _clear_data(self: EAC4DataInterface):
         if self._diff_parameters.is_eq_superset(self.parameters):
@@ -127,9 +133,20 @@ class EAC4DataInterface(CAMSDataInterface):
 
     def _update_parameters(self: EAC4DataInterface) -> None:
         self._cached_parameters = self._get_cached_parameters(self.parameters)
-        if self._cached_parameters is not None:
+        if self._cached_parameters:
             logger.info("Some data points are already cached, updating parameters")
-            self._diff_parameters = self.parameters.difference(self._cached_parameters)
+            tmp_diff = [
+                self.parameters.difference(c) for c in self._cached_parameters
+            ]
+            tmp_diff = [p for p in tmp_diff if p is not None]
+            tmp_diff2 = []
+            for d in tmp_diff:
+                tmp_diff2.extend(d)
+            self._diff_parameters = (
+                EAC4Parameters.merge(tmp_diff2)
+                if tmp_diff2
+                else None
+            )
             if self._diff_parameters is None:
                 self._cache_status = CachingStatus.FULLY_CACHED
             elif self._diff_parameters.is_eq_superset(self.parameters):
@@ -149,14 +166,15 @@ class EAC4DataInterface(CAMSDataInterface):
         This function also extracts the netcdf file inside the zip file, which is then deleted.
         """
         # Download only remaining parameters
-        if self._diff_parameters is not None:
+        if self._diff_parameters:
             logger.info("Downloading non-cached parameters: %s", self._diff_parameters)
             super()._download(self._diff_parameters, self.file_full_path)
             # This dataset downloads zipfiles with possibly multiple netcdf files inside
             # We must extract it
             self._clear_data()
             EAC4CacheTable.cache(self._diff_parameters, self.file_full_path)
-            self._update_parameters()
+            self._cached_parameters = self._diff_parameters
+            self._cache_status = CachingStatus.FULLY_CACHED
         else:
             logger.info("The parameters specified are already cached, skipping download.")
 
@@ -178,15 +196,15 @@ if __name__ == "__main__":
     Base.metadata.drop_all(cache_engine)
     Base.metadata.create_all(cache_engine)
     d1 = EAC4DataInterface(
-        data_variables="a",
-        dates_range="2020-01-01/2020-03-01",
+        data_variables="total_column_ozone",
+        dates_range="2020-01-01/2020-01-10",
         time_values=["00:00"],
     )
     d1.download()
     print(EAC4CacheTable.get_rows())
     d2 = EAC4DataInterface(
-        data_variables="a",
-        dates_range="2020-01-01/2021-03-01",
+        data_variables=["total_column_ozone", "total_column_methane"],
+        dates_range="2020-01-01/2021-01-20",
         time_values=["00:00"],
     )
     d2.download()

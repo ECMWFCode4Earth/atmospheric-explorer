@@ -14,7 +14,7 @@ import xarray as xr
 
 from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
 from atmospheric_explorer.data_interface.ghg import InversionOptimisedGreenhouseGas
-from atmospheric_explorer.data_transformations import (
+from atmospheric_explorer.data_interface.data_transformations import (
     clip_and_concat_countries,
     confidence_interval,
     shifting_long,

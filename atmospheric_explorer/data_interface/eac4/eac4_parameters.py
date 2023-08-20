@@ -4,8 +4,6 @@ from atmospheric_explorer.data_interface.cams_interface.parameters_types import 
 from atmospheric_explorer.data_interface.cams_interface.cams_parameters import CAMSParameters
 from atmospheric_explorer.loggers import get_logger
 from pydantic.dataclasses import dataclass as pydantic_dataclass
-from datetime import datetime
-from itertools import pairwise, groupby
 
 logger = get_logger("atmexp")
 
@@ -39,22 +37,23 @@ class EAC4Parameters(CAMSParameters):
 
     def build_call_body(self: EAC4Parameters) -> dict:
         """Build the CDSAPI call body"""
-        return {
+        call_body = {
             "variable": self.data_variables.value_api,
-            "dates": self.dates_range.value_api,
-            "times": self.time_values.value_api,
-            "pressure_level": self.pressure_level.value_api,
-            "model_level": self.model_level.value_api
+            "date": self.dates_range.value_api,
+            "time": self.time_values.value_api
         }
+        if self.pressure_level is not None:
+            call_body['pressure_level'] = self.pressure_level.value_api
+        if self.model_level is not None:
+            call_body['model_level'] = self.model_level.value_api
+        return call_body
 
     def _data_diff(self, other: EAC4Parameters) -> SetParameter | None:
         if other.data_variables.is_eq_superset(self.data_variables):
             return None
         return self.data_variables.difference(other.data_variables)
 
-    def _dates_diff(self, other: EAC4Parameters) -> DateIntervalParameter | None:
-        if other.dates_range.is_eq_superset(self.dates_range):
-            return None
+    def _dates_diff(self, other: EAC4Parameters) -> list[DateIntervalParameter] | None:
         return self.dates_range.difference(other.dates_range)
 
     def _times_diff(self, other: EAC4Parameters) -> SetParameter | None:
@@ -62,17 +61,21 @@ class EAC4Parameters(CAMSParameters):
             return None
         return self.time_values.difference(other.time_values)
 
-    def _pl_diff(self, other: EAC4Parameters) -> SetParameter | None:
+    def _pl_diff(self, other: EAC4Parameters) -> IntSetParameter | None:
+        if other.pressure_level is None:
+            return None
         if other.pressure_level.is_eq_superset(self.pressure_level):
             return None
         return self.pressure_level.difference(other.pressure_level)
 
-    def _ml_diff(self, other: EAC4Parameters) -> SetParameter | None:
+    def _ml_diff(self, other: EAC4Parameters) -> IntSetParameter | None:
+        if other.model_level is None:
+            return None
         if other.model_level.is_eq_superset(self.model_level):
             return None
         return self.model_level.difference(other.model_level)
 
-    def difference(self, other: EAC4Parameters) -> SetParameter | None:
+    def difference(self, other: EAC4Parameters) -> list[EAC4Parameters] | None:
         """Return a EAC4Parameters instance with all non-overlapping parameters."""
         if other.is_eq_superset(self):
             return None
@@ -80,46 +83,62 @@ class EAC4Parameters(CAMSParameters):
             logger.debug(
                 "Parameters have the same data variables, moving to compute difference"
             )
-            dv_diff = self._data_diff(other)
+            data_diff = self._data_diff(other)
             dates_diff = self._dates_diff(other)
             times_diff = self._times_diff(other)
             pl_diff = self._pl_diff(other)
             ml_diff = self._ml_diff(other)
-            if dv_diff is not None:
+            if data_diff is not None:
                 logger.debug(
                     "Parameters have different data variables"
                 )
                 if (dates_diff or times_diff or pl_diff or ml_diff) is not None:
                     logger.debug(
-                        "Other parameters area different, downloading strict superset"
+                        "Other parameters are different, downloading strict superset"
                     )
-                    return EAC4Parameters(
+                    if self.pressure_level is None:
+                        pl = None
+                    else:
+                        pl = self.pressure_level.merge(other.pressure_level)
+                    if self.model_level is None:
+                        ml = None
+                    else:
+                        ml = self.model_level.merge(other.model_level)
+                    return [EAC4Parameters(
                         data_variables=self.data_variables.merge(other.data_variables),
                         dates_range=self.dates_range.merge(other.dates_range),
                         time_values=self.time_values.merge(other.time_values),
-                        pressure_level=self.pressure_level.merge(other.pressure_level),
-                        model_level=self.model_level.merge(other.model_level)
-                    )
+                        pressure_level=pl,
+                        model_level=ml
+                    )]
                 else:
                     logger.debug(
                         "Other parameters are the same, downloading only the new data variables"
                     )
-                    return EAC4Parameters(
-                        data_variables=dv_diff,
+                    return [EAC4Parameters(
+                        data_variables=data_diff,
                         dates_range=self.dates_range,
                         time_values=self.time_values,
                         pressure_level=self.pressure_level,
                         model_level=self.model_level
-                    )
+                    )]
             else:
                 logger.debug("Data variables are the same, computing differences")
-                return EAC4Parameters(
-                    data_variables=self.data_variables,
-                    dates_range=dates_diff if dates_diff is not None else self.dates_range,
-                    time_values=times_diff if times_diff is not None else self.time_values,
-                    pressure_level=pl_diff if pl_diff is not None else self.pressure_level,
-                    model_level=ml_diff if ml_diff is not None else self.model_level
-                )
+                if dates_diff is not None:
+                    return [EAC4Parameters(
+                        data_variables=self.data_variables,
+                        dates_range=d,
+                        time_values=times_diff if times_diff is not None else self.time_values,
+                        pressure_level=pl_diff if pl_diff is not None else self.pressure_level,
+                        model_level=ml_diff if ml_diff is not None else self.model_level
+                    ) for d in dates_diff]
+                return [EAC4Parameters(
+                        data_variables=self.data_variables,
+                        dates_range=self.dates_range,
+                        time_values=times_diff if times_diff is not None else self.time_values,
+                        pressure_level=pl_diff if pl_diff is not None else self.pressure_level,
+                        model_level=ml_diff if ml_diff is not None else self.model_level
+                    )]
 
     @classmethod
     def from_base_types(
@@ -170,9 +189,9 @@ if __name__ == "__main__":
     )
     p2 = EAC4Parameters.from_base_types(
         data_variables="b",
-        dates_range="2021-01-01/2022-01-05",
+        dates_range="2021-01-01/2023-01-05",
         time_values=["00:00"],
-        pressure_level=["1", "2", "3", "4"],
+        pressure_level=["1", "2", "3", "4", "5"],
         model_level=["1", "2"],
     )
     print(p2.difference(p1))
