@@ -198,6 +198,12 @@ def line_with_ci_subplots(
     return fig
 
 
+def _ghg_align_dims(data_frame: xr.Dataset, dim: str, values: list) -> xr.Dataset:
+    if dim not in data_frame.dims:
+        return data_frame.assign_coords({dim: values})
+    return data_frame
+
+
 def _ghg_surface_satellite_yearly_data(
     data_variable: str,
     years: list[str],
@@ -209,6 +215,19 @@ def _ghg_surface_satellite_yearly_data(
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
     # Download surface data file
+    logger.debug(
+        dedent(
+            f"""\
+    _ghg_surface_satellite_yearly_data called with arguments
+    data_variable: {data_variable}
+    years: {years}
+    months: {months}
+    var_name: {var_name}
+    shapes: {shapes}
+    add_satellite_observations: {add_satellite_observations}
+    """
+        )
+    )
     surface_data = InversionOptimisedGreenhouseGas(
         data_variables=data_variable,
         file_format="zip",
@@ -220,7 +239,10 @@ def _ghg_surface_satellite_yearly_data(
     )
     surface_data.download()
     # Read data as dataset
-    df_surface = surface_data.read_dataset().squeeze(dim="time_aggregation")
+    df_surface = surface_data.read_dataset()
+    df_surface = _ghg_align_dims(df_surface, "time_aggregation", ["monthly_mean"])
+    df_surface = _ghg_align_dims(df_surface, "input_observations", ["surface"])
+    df_surface = df_surface.squeeze(dim="time_aggregation")
     df_surface[var_name] = df_surface[var_name] * df_surface["area"]
     if add_satellite_observations:
         satellite_data = InversionOptimisedGreenhouseGas(
@@ -234,7 +256,12 @@ def _ghg_surface_satellite_yearly_data(
         )
         satellite_data.download()
         # Read data as dataset
-        df_satellite = satellite_data.read_dataset().squeeze(dim="time_aggregation")
+        df_satellite = satellite_data.read_dataset()
+        df_satellite = _ghg_align_dims(
+            df_satellite, "time_aggregation", ["monthly_mean"]
+        )
+        df_satellite = _ghg_align_dims(df_satellite, "input_observations", ["surface"])
+        df_satellite = df_satellite.squeeze(dim="time_aggregation")
         df_satellite[var_name] = df_satellite[var_name] * df_satellite["area"]
         df_total = xr.concat([df_surface, df_satellite], dim="input_observations")
     else:
@@ -299,11 +326,12 @@ def ghg_surface_satellite_yearly_plot(
             f"""\
     ghg_surface_satellite_yearly_plot called with arguments
     data_variable: {data_variable}
-    shapes: {shapes}
     years: {years}
     months: {months}
     title: {title}
     var_name: {var_name}
+    shapes: {shapes}
+    add_satellite_observations: {add_satellite_observations}
     """
         )
     )

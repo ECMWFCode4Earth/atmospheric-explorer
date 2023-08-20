@@ -499,10 +499,12 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def read_dataset(self: InversionOptimisedGreenhouseGas) -> xr.Dataset:
         """Returns data as an xarray.Dataset"""
-        # Create dataframe with first file
-        try:
+        # Dataset MUST have time dimension
+        # Read first file to check dimensions
+        files = sorted(glob(self.file_full_path))
+        data_frame = xr.open_dataset(files[0])
+        if "time" in data_frame.dims:
             logger.debug("Reading files using xarray.open_mfdataset")
             return xr.open_mfdataset(self.file_full_path)
-        except ValueError:
-            logger.debug("Reading files iteratively")
-            return self._read_dataset_no_time_coord()
+        logger.debug("Reading files iteratively")
+        return self._read_dataset_no_time_coord()
