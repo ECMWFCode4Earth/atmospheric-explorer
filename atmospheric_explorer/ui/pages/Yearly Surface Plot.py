@@ -11,6 +11,8 @@ from atmospheric_explorer.plotting_apis import ghg_surface_satellite_yearly_plot
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
     GHGSessionStateKeys,
+)
+from atmospheric_explorer.ui.ui_mappings import (
     ghg_data_variable_default_plot_title_mapping,
     ghg_data_variable_var_name_mapping,
     ghg_data_variables,
@@ -30,7 +32,6 @@ if GHGSessionStateKeys.GHG_DATA_VARIABLE not in st.session_state:
     st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] = "carbon_dioxide"
 if GHGSessionStateKeys.GHG_ADD_SATELLITE not in st.session_state:
     st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE] = False
-
 # Get mapped var_name and plot_title from dictionary.
 # For GHG, both var_name(s) and plot_title can be changed in the UI.
 mapped_var_names = ghg_data_variable_var_name_mapping[
@@ -71,17 +72,15 @@ with st.form("filters"):
         options=mapped_var_names,
         help="Select var_name parameters. For CO2, each couple corresponds to [surface, satellite] var_names",
     )
-    # NOTE: including satellite observations is currently not working (see plotting_apis.py)
-    # if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
-    #     st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE] = st.checkbox(
-    #         label="Include satellite observations",
-    #         value=st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE],
-    #     )
+    if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
+        st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE] = st.checkbox(
+            label="Include satellite observations",
+            value=st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE],
+        )
     st.session_state[GHGSessionStateKeys.GHG_PLOT_TITLE] = st.text_input(
         "Plot title",
         value=mapped_plot_title,
     )
-
     submitted = st.form_submit_button("Generate plot")
 
 build_sidebar()
@@ -118,12 +117,12 @@ if submitted:
             st.plotly_chart(
                 ghg_surface_satellite_yearly_plot(
                     data_variable=data_variable,
-                    var_name=var_name,
-                    add_satellite_observations=add_satellite_observations,
                     years=years,
                     months=months,
                     title=plot_title,
+                    var_name=var_name,
                     shapes=shapes.dataframe,
+                    add_satellite_observations=add_satellite_observations,
                 ),
                 use_container_width=True,
             )

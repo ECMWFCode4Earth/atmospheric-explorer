@@ -33,6 +33,9 @@ class ShapeSelection:
         self.dataframe = dataframe
         self.is_countries_poly = is_country
 
+    def __repr__(self) -> str:
+        return repr(self.dataframe)
+
     @property
     def labels(self) -> list[str]:
         """Selection labels, useful when countries are selected."""
