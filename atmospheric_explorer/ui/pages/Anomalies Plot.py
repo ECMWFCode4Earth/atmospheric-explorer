@@ -12,6 +12,8 @@ from atmospheric_explorer.plotting_apis import eac4_anomalies_plot
 from atmospheric_explorer.ui.session_state import (
     EAC4AnomaliesSessionStateKeys,
     GeneralSessionStateKeys,
+)
+from atmospheric_explorer.ui.ui_mappings import (
     eac4_data_variable_default_plot_title_mapping,
     eac4_data_variable_var_name_mapping,
     eac4_data_variables,
