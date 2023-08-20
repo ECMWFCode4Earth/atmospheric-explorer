@@ -30,6 +30,7 @@ logger = get_logger("atmexp")
 
 
 def _init():
+    page_init()
     # Set default SessionState values
     if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
@@ -119,7 +120,6 @@ def _filters():
         return v_name, title
 
 
-page_init()
 _init()
 var_name, plot_title = _filters()
 build_sidebar()

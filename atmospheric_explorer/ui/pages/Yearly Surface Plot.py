@@ -20,10 +20,10 @@ from atmospheric_explorer.ui.ui_mappings import (
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
-page_init()
 
 
 def _init():
+    page_init()
     if GHGSessionStateKeys.GHG_START_YEAR not in st.session_state:
         st.session_state[GHGSessionStateKeys.GHG_START_YEAR] = 2020
     if GHGSessionStateKeys.GHG_END_YEAR not in st.session_state:
