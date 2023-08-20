@@ -17,49 +17,35 @@ from atmospheric_explorer.ui.session_state import (
     HovmSessionStateKeys,
 )
 from atmospheric_explorer.ui.ui_mappings import (
-    eac4_data_variable_default_plot_title_mapping,
-    eac4_data_variable_var_name_mapping,
-    eac4_data_variables,
+    eac4_model_levels,
+    eac4_pressure_levels,
+    eac4_single_level_data_variable_default_plot_title_mapping,
+    eac4_single_level_data_variable_var_name_mapping,
+    eac4_single_level_data_variables,
+    eac4_times,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
 logger = get_logger("atmexp")
-page_init()
 
-# Set default SessionState values
-if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
-if HovmSessionStateKeys.HOVM_END_DATE not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 12, 31)
-if HovmSessionStateKeys.HOVM_TIMES not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_TIMES] = ["00:00"]
-if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
-if HovmSessionStateKeys.HOVM_LEVELS not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = []
-match st.session_state[HovmSessionStateKeys.HOVM_YAXIS]:
-    case "Latitude":
-        default_data_variable = "total_column_ozone"
-    case "Pressure Level":
-        default_data_variable = "carbon_monoxide"
-if HovmSessionStateKeys.HOVM_DATA_VARIABLE not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = default_data_variable
 
-# Get mapped var_name and plot_title from dictionary.
-# var_name cannot be changed in the UI, while plot_title can be changed.
-mapped_var_name = eac4_data_variable_var_name_mapping[
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-]
-mapped_plot_title = eac4_data_variable_default_plot_title_mapping[
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-]
-if HovmSessionStateKeys.HOVM_VAR_NAME not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_VAR_NAME] = mapped_var_name
-if HovmSessionStateKeys.HOVM_PLOT_TITLE not in st.session_state:
-    st.session_state[HovmSessionStateKeys.HOVM_PLOT_TITLE] = mapped_plot_title
+def _init():
+    # Set default SessionState values
+    if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
+    if HovmSessionStateKeys.HOVM_END_DATE not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 12, 31)
+    if HovmSessionStateKeys.HOVM_TIMES not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_TIMES] = ["00:00"]
+    if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
+    if HovmSessionStateKeys.HOVM_LEVELS not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = []
+    if HovmSessionStateKeys.HOVM_DATA_VARIABLE not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = "total_column_ozone"
 
-with st.form("filters"):
-    logger.info("Adding filters")
+
+def _year_filters():
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
     st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = start_date_col.date_input(
         "Start date", value=st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
@@ -67,85 +53,77 @@ with st.form("filters"):
     st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = end_date_col.date_input(
         "End date", value=st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
     )
+
+
+def _times_filter():
     st.session_state[HovmSessionStateKeys.HOVM_TIMES] = sorted(
         st.multiselect(
             "Times",
-            [f"{h:02}:00" for h in range(0, 24, 3)],
+            eac4_times,
             st.session_state[HovmSessionStateKeys.HOVM_TIMES],
         )
     )
 
-    match st.radio(
+
+def _y_axis_filter():
+    st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = st.radio(
         "Vertical axis",
         ["Latitude", "Pressure Level", "Model Level"],
         index=0,
         horizontal=True,
-        help="Select one of the level types and click the 'Update widgets' button to select levels",
-    ):
+        help="Select one of the level types",
+    )
+    match st.session_state[HovmSessionStateKeys.HOVM_YAXIS]:
         case "Latitude":
-            st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
+            pass
         case "Pressure Level":
-            st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Pressure Level"
             st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = sorted(
                 st.multiselect(
-                    "Pressure Level",
-                    [
-                        "1",
-                        "2",
-                        "3",
-                        "5",
-                        "7",
-                        "10",
-                        "20",
-                        "30",
-                        "50",
-                        "70",
-                        "100",
-                        "150",
-                        "200",
-                        "250",
-                        "300",
-                        "400",
-                        "500",
-                        "600",
-                        "700",
-                        "800",
-                        "850",
-                        "900",
-                        "925",
-                        "950",
-                        "1000",
-                    ],
-                    [],
+                    label="Pressure Level",
+                    options=eac4_pressure_levels,
+                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS],
                 ),
                 key=int,
             )
         case "Model Level":
-            st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Model Level"
             st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = sorted(
                 st.multiselect(
-                    "Model Level",
-                    [str(m_level) for m_level in range(1, 61, 1)],
-                    [],
+                    label="Model Level",
+                    options=eac4_model_levels,
+                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS],
                 ),
                 key=int,
             )
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
-        "Data variable",
-        eac4_data_variables,
-    )
-    update = st.form_submit_button("Update widgets")
 
-    st.session_state[HovmSessionStateKeys.HOVM_VAR_NAME] = mapped_var_name
-    st.text(f"Var name: {mapped_var_name}")
-    st.session_state[HovmSessionStateKeys.HOVM_PLOT_TITLE] = st.text_input(
-        "Plot title",
-        value=mapped_plot_title,
-    )
-    submitted = st.form_submit_button("Generate plot")
 
+def _filters():
+    with st.expander("Filters", expanded=True):
+        logger.info("Adding filters")
+        _year_filters()
+        _times_filter()
+        _y_axis_filter()
+        st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
+            label="Data variable",
+            options=eac4_single_level_data_variables,
+        )
+        v_name = eac4_single_level_data_variable_var_name_mapping[
+            st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
+        ]
+        st.text(f"Var name: {v_name}")
+        title = st.text_input(
+            label="Plot title",
+            value=eac4_single_level_data_variable_default_plot_title_mapping[
+                st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
+            ],
+        )
+        return v_name, title
+
+
+page_init()
+_init()
+var_name, plot_title = _filters()
 build_sidebar()
-if submitted:
+if st.button("Generate plot"):
     y_axis = st.session_state[HovmSessionStateKeys.HOVM_YAXIS]
     start_date = st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
     end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
@@ -154,8 +132,6 @@ if submitted:
     levels = st.session_state[HovmSessionStateKeys.HOVM_LEVELS]
     shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     data_variable = st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-    var_name = st.session_state[HovmSessionStateKeys.HOVM_VAR_NAME]
-    plot_title = st.session_state[HovmSessionStateKeys.HOVM_PLOT_TITLE]
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
