@@ -47,3 +47,4 @@ class GHGSessionStateKeys(Enum):
     GHG_VAR_NAME = "ghg_var_name"
     GHG_PLOT_TITLE = "ghg_title"
     GHG_ADD_SATELLITE = "ghg_add_satellite"
+    GHG_ALL_MONTHS = "ghg_all_months"
