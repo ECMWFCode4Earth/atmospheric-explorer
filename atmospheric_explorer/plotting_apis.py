@@ -30,7 +30,7 @@ from atmospheric_explorer.utils import hex_to_rgb
 logger = get_logger("atmexp")
 
 
-def sequential_colorscale_bar(
+def _sequential_colorscale_bar(
     values: list[float] | list[int], colors: list[str]
 ) -> tuple[list, dict]:
     """Compute a sequential colorscale and colorbar form a list of values and a list of colors"""
@@ -70,7 +70,7 @@ def sequential_colorscale_bar(
     return color_scale_custom, colorbar_custom
 
 
-def add_ci(
+def _add_ci(
     fig: go.Figure,
     trace: go.Figure,
     data_frame: pd.DataFrame,
@@ -164,7 +164,7 @@ def line_with_ci_subplots(
             category_orders={"color": colors},
         )
     fig.for_each_trace(
-        lambda tr: add_ci(
+        lambda tr: _add_ci(
             fig,
             tr,
             data_frame[data_frame["color"] == tr.legendgroup],
@@ -198,16 +198,36 @@ def line_with_ci_subplots(
     return fig
 
 
+def _ghg_align_dims(data_frame: xr.Dataset, dim: str, values: list) -> xr.Dataset:
+    if dim not in data_frame.dims:
+        return data_frame.assign_coords({dim: values})
+    return data_frame
+
+
 def _ghg_surface_satellite_yearly_data(
     data_variable: str,
     years: list[str],
     months: list[str],
     var_name: str,
     shapes: gpd.GeoDataFrame | None,
+    add_satellite_observations: bool = False,
 ) -> xr.DataArray | xr.Dataset:
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
     # Download surface data file
+    logger.debug(
+        dedent(
+            f"""\
+    _ghg_surface_satellite_yearly_data called with arguments
+    data_variable: {data_variable}
+    years: {years}
+    months: {months}
+    var_name: {var_name}
+    shapes: {shapes}
+    add_satellite_observations: {add_satellite_observations}
+    """
+        )
+    )
     surface_data = InversionOptimisedGreenhouseGas(
         data_variables=data_variable,
         file_format="zip",
@@ -218,22 +238,34 @@ def _ghg_surface_satellite_yearly_data(
         month=months,
     )
     surface_data.download()
-    satellite_data = InversionOptimisedGreenhouseGas(
-        data_variables=data_variable,
-        file_format="zip",
-        quantity="surface_flux",
-        input_observations="satellite",
-        time_aggregation="monthly_mean",
-        year=years,
-        month=months,
-    )
-    satellite_data.download()
     # Read data as dataset
     df_surface = surface_data.read_dataset()
+    df_surface = _ghg_align_dims(df_surface, "time_aggregation", ["monthly_mean"])
+    df_surface = _ghg_align_dims(df_surface, "input_observations", ["surface"])
+    df_surface = df_surface.squeeze(dim="time_aggregation")
     df_surface[var_name] = df_surface[var_name] * df_surface["area"]
-    df_satellite = satellite_data.read_dataset()
-    df_satellite[var_name] = df_satellite[var_name] * df_satellite["area"]
-    df_total = xr.concat([df_surface, df_satellite], dim="input_observations").squeeze()
+    if add_satellite_observations:
+        satellite_data = InversionOptimisedGreenhouseGas(
+            data_variables=data_variable,
+            file_format="zip",
+            quantity="surface_flux",
+            input_observations="satellite",
+            time_aggregation="monthly_mean",
+            year=years,
+            month=months,
+        )
+        satellite_data.download()
+        # Read data as dataset
+        df_satellite = satellite_data.read_dataset()
+        df_satellite = _ghg_align_dims(
+            df_satellite, "time_aggregation", ["monthly_mean"]
+        )
+        df_satellite = _ghg_align_dims(df_satellite, "input_observations", ["surface"])
+        df_satellite = df_satellite.squeeze(dim="time_aggregation")
+        df_satellite[var_name] = df_satellite[var_name] * df_satellite["area"]
+        df_total = xr.concat([df_surface, df_satellite], dim="input_observations")
+    else:
+        df_total = df_surface
     df_total = df_total.rio.write_crs("EPSG:4326")
     # Check only needed years and months are present
     df_total = df_total.where(
@@ -264,25 +296,47 @@ def ghg_surface_satellite_yearly_plot(
     title: str,
     var_name: str = "flux_foss",
     shapes: gpd.GeoDataFrame | None = None,
+    add_satellite_observations: bool = True,
 ) -> go.Figure:
-    """Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset"""
+    """\
+    Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset.
+    Note that we are only considering **surface_flux** quantities in this function.
+
+    Parameters:
+        data_variable (str): data variable (greenhouse gas) to be plotted.
+            Can be one among: 'carbon_dioxide', 'methane, 'nitrous_oxide'
+        countries (list[str]): list of country names to plot the data for
+        years (list[str]): list of years (in YYYY format) to plot the data for
+        months (list[str]): list of month (in MM format) to plot the data for
+        title (str): plot title
+        var_name (str | list[str]): use a single var_name if the plot only
+            shows one input_observations category ('surface').
+            Use a list with values corresponding respectively to 'surface'
+            and 'satellite' if add_satellite_observations is true.
+            Example: ['flux_apos', 'flux_apos_bio']
+        add_satellite_observations (bool): show 'satellite' input_observations
+            data along with 'surface' (only available for carbon_dioxide data
+            variable). ! CURRENTLY NOT WORKING, so we leave it False by default
+    """
     # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-locals
     # pylint: disable=invalid-name
     logger.debug(
         dedent(
             f"""\
     ghg_surface_satellite_yearly_plot called with arguments
     data_variable: {data_variable}
-    shapes: {shapes}
     years: {years}
     months: {months}
     title: {title}
     var_name: {var_name}
+    shapes: {shapes}
+    add_satellite_observations: {add_satellite_observations}
     """
         )
     )
     da_converted_agg = _ghg_surface_satellite_yearly_data(
-        data_variable, years, months, var_name, shapes
+        data_variable, years, months, var_name, shapes, add_satellite_observations
     )
     # Clip countries
     if shapes is not None:
@@ -413,7 +467,7 @@ def eac4_hovmoeller_latitude_plot(
         .mean(dim="longitude")
     )
     df_converted = convert_units_array(df_agg[var_name], data_variable)
-    colorscale, colorbar = sequential_colorscale_bar(
+    colorscale, colorbar = _sequential_colorscale_bar(
         df_converted.values.flatten(), base_colorscale
     )
     fig = px.imshow(df_converted.T, origin="lower")
@@ -433,7 +487,6 @@ def eac4_hovmoeller_latitude_plot(
     return fig
 
 
-# Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
 def eac4_hovmoeller_levels_plot(
     data_variable: str,
     var_name: str,
@@ -445,7 +498,7 @@ def eac4_hovmoeller_levels_plot(
     base_colorscale: list[str] = px.colors.sequential.RdBu_r,
     shapes: gpd.GeoDataFrame = None,
 ) -> go.Figure:
-    """Hoevmoeller plot of EAC4 multilevel variables, time vs pressure level"""
+    """Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset."""
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
     # pylint: disable=dangerous-default-value
@@ -491,7 +544,7 @@ def eac4_hovmoeller_levels_plot(
     df_converted = df_converted.assign_coords(
         {"level": [str(c) for c in df_converted.coords["level"].values]}
     )
-    colorscale, colorbar = sequential_colorscale_bar(
+    colorscale, colorbar = _sequential_colorscale_bar(
         df_converted.values.flatten(), base_colorscale
     )
     fig = px.imshow(df_converted.T, origin="lower")

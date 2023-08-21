@@ -24,6 +24,7 @@ class CAMSDataInterfaceTesting(CAMSDataInterface):
     def read_dataset(self: CAMSDataInterface):
         pass
 
+
 @pytest.fixture
 def mock_get_timeout(monkeypatch):
     def mock_get(*args, **kwargs):

@@ -314,7 +314,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     for a full list of parameters and more details about the dataset
 
     Attributes:
-        data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
+        data_variables (str | list[str]): data variables to be downloaded from CAMS,
             see https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=overview
         file_format (str): format for the downloaded data, can be either 'zip' or 'tar.gz'
         quantity (str): quantity, can be one of ['mean_column', 'surface_flux', 'concentration']
@@ -499,10 +499,12 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def read_dataset(self: InversionOptimisedGreenhouseGas) -> xr.Dataset:
         """Returns data as an xarray.Dataset"""
-        # Create dataframe with first file
-        try:
+        # Dataset MUST have time dimension
+        # Read first file to check dimensions
+        files = sorted(glob(self.file_full_path))
+        data_frame = xr.open_dataset(files[0])
+        if "time" in data_frame.dims:
             logger.debug("Reading files using xarray.open_mfdataset")
             return xr.open_mfdataset(self.file_full_path)
-        except ValueError:
-            logger.debug("Reading files iteratively")
-            return self._read_dataset_no_time_coord()
+        logger.debug("Reading files iteratively")
+        return self._read_dataset_no_time_coord()
