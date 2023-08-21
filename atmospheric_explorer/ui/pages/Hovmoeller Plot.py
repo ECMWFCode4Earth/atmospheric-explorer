@@ -17,11 +17,14 @@ from atmospheric_explorer.ui.session_state import (
     HovmSessionStateKeys,
 )
 from atmospheric_explorer.ui.ui_mappings import (
+    eac4_ml_data_variable_default_plot_title_mapping,
+    eac4_ml_data_variable_var_name_mapping,
+    eac4_ml_data_variables,
     eac4_model_levels,
     eac4_pressure_levels,
-    eac4_single_level_data_variable_default_plot_title_mapping,
-    eac4_single_level_data_variable_var_name_mapping,
-    eac4_single_level_data_variables,
+    eac4_sl_data_variable_default_plot_title_mapping,
+    eac4_sl_data_variable_var_name_mapping,
+    eac4_sl_data_variables,
     eac4_times,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
@@ -97,27 +100,35 @@ def _y_axis_filter():
             )
 
 
+def _var_filters():
+    if st.session_state[HovmSessionStateKeys.HOVM_YAXIS] == "Latitude":
+        all_vars = eac4_sl_data_variables
+        vars_mapping = eac4_sl_data_variable_var_name_mapping
+        title_mapping = eac4_sl_data_variable_default_plot_title_mapping
+    else:
+        all_vars = eac4_ml_data_variables
+        vars_mapping = eac4_ml_data_variable_var_name_mapping
+        title_mapping = eac4_ml_data_variable_default_plot_title_mapping
+    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
+        label="Data variable",
+        options=all_vars,
+    )
+    v_name = vars_mapping[st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]]
+    st.text(f"Var name: {v_name}")
+    title = st.text_input(
+        label="Plot title",
+        value=title_mapping[st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]],
+    )
+    return v_name, title
+
+
 def _filters():
     with st.expander("Filters", expanded=True):
         logger.info("Adding filters")
         _year_filters()
         _times_filter()
         _y_axis_filter()
-        st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
-            label="Data variable",
-            options=eac4_single_level_data_variables,
-        )
-        v_name = eac4_single_level_data_variable_var_name_mapping[
-            st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-        ]
-        st.text(f"Var name: {v_name}")
-        title = st.text_input(
-            label="Plot title",
-            value=eac4_single_level_data_variable_default_plot_title_mapping[
-                st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
-            ],
-        )
-        return v_name, title
+        return _var_filters()
 
 
 _init()

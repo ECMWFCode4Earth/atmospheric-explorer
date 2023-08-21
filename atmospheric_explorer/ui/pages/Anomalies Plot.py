@@ -14,9 +14,9 @@ from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
 )
 from atmospheric_explorer.ui.ui_mappings import (
-    eac4_single_level_data_variable_default_plot_title_mapping,
-    eac4_single_level_data_variable_var_name_mapping,
-    eac4_single_level_data_variables,
+    eac4_sl_data_variable_default_plot_title_mapping,
+    eac4_sl_data_variable_var_name_mapping,
+    eac4_sl_data_variables,
     eac4_times,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
@@ -81,16 +81,14 @@ def _filters():
         _times_filters()
         st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-        ] = st.selectbox(
-            label="Data variable", options=eac4_single_level_data_variables
-        )
-        v_name = eac4_single_level_data_variable_var_name_mapping[
+        ] = st.selectbox(label="Data variable", options=eac4_sl_data_variables)
+        v_name = eac4_sl_data_variable_var_name_mapping[
             st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
         ]
         st.text(f"Var name: {v_name}")
         title = st.text_input(
             label="Plot title",
-            value=eac4_single_level_data_variable_default_plot_title_mapping[
+            value=eac4_sl_data_variable_default_plot_title_mapping[
                 st.session_state[
                     EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
                 ]

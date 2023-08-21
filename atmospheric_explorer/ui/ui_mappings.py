@@ -1,19 +1,32 @@
 """\
 Module to keep all mapping of data variables for the Streamlit application.
 """
+from atmospheric_explorer.units_conversion import get_constants
 
+const = get_constants()
 # EAC4 mappings and data variables list
-eac4_single_level_data_variable_var_name_mapping = {
-    "total_column_nitrogen_dioxide": "tcno2",
-    "total_column_ozone": "gtco3",
+eac4_sl_data_variable_var_name_mapping = {
+    s: const[s]["var_name"]
+    for s in const.sections()
+    if const[s]["database"] == "eac4" and const[s]["type"] == "single_level"
 }
-eac4_single_level_data_variable_default_plot_title_mapping = {
-    "total_column_nitrogen_dioxide": "Total column NO2",
-    "total_column_ozone": "Total column O3",
+eac4_sl_data_variable_default_plot_title_mapping = {
+    s: const[s]["default_title"]
+    for s in const.sections()
+    if const[s]["database"] == "eac4" and const[s]["type"] == "single_level"
 }
-eac4_single_level_data_variables = list(
-    eac4_single_level_data_variable_var_name_mapping.keys()
-)
+eac4_sl_data_variables = list(eac4_sl_data_variable_var_name_mapping.keys())
+eac4_ml_data_variable_var_name_mapping = {
+    s: const[s]["var_name"]
+    for s in const.sections()
+    if const[s]["database"] == "eac4" and const[s]["type"] == "multi_level"
+}
+eac4_ml_data_variable_default_plot_title_mapping = {
+    s: const[s]["default_title"]
+    for s in const.sections()
+    if const[s]["database"] == "eac4" and const[s]["type"] == "multi_level"
+}
+eac4_ml_data_variables = list(eac4_ml_data_variable_var_name_mapping.keys())
 eac4_pressure_levels = [
     "1",
     "2",
@@ -63,9 +76,9 @@ ghg_data_variable_var_name_mapping = {
 }
 
 ghg_data_variable_default_plot_title_mapping = {
-    "carbon_dioxide": "CO2",
-    "methane": "CH4",
-    "nitrous_oxide": "N2O",
+    s: const[s]["default_title"]
+    for s in const.sections()
+    if const[s]["database"] == "ghg"
 }
 
 ghg_data_variables = list(ghg_data_variable_var_name_mapping.keys())
