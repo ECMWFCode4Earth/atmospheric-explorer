@@ -8,10 +8,7 @@ from textwrap import dedent
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.plotting_apis import (
-    eac4_hovmoeller_latitude_plot,
-    eac4_hovmoeller_levels_plot,
-)
+from atmospheric_explorer.plotting.hovmoller import eac4_hovmoeller_plot
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
     HovmSessionStateKeys,
@@ -85,7 +82,7 @@ def _y_axis_filter():
                 st.multiselect(
                     label="Pressure Level",
                     options=eac4_pressure_levels,
-                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS],
+                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS] or ["1"],
                 ),
                 key=int,
             )
@@ -94,7 +91,7 @@ def _y_axis_filter():
                 st.multiselect(
                     label="Model Level",
                     options=eac4_model_levels,
-                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS],
+                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS] or ["1"],
                 ),
                 key=int,
             )
@@ -163,7 +160,7 @@ if st.button("Generate plot"):
             match y_axis:
                 case "Latitude":
                     st.plotly_chart(
-                        eac4_hovmoeller_latitude_plot(
+                        eac4_hovmoeller_plot(
                             data_variable=data_variable,
                             var_name=var_name,
                             dates_range=dates_range,
@@ -175,12 +172,26 @@ if st.button("Generate plot"):
                 case "Pressure Level":
                     if levels:
                         st.plotly_chart(
-                            eac4_hovmoeller_levels_plot(
+                            eac4_hovmoeller_plot(
                                 data_variable=data_variable,
                                 var_name=var_name,
                                 dates_range=dates_range,
                                 time_values=time_values,
                                 pressure_level=levels,
+                                title=plot_title,
+                                shapes=shapes.dataframe,
+                            ),
+                            use_container_width=True,
+                        )
+                case "Model Level":
+                    if levels:
+                        st.plotly_chart(
+                            eac4_hovmoeller_plot(
+                                data_variable=data_variable,
+                                var_name=var_name,
+                                dates_range=dates_range,
+                                time_values=time_values,
+                                model_level=levels,
                                 title=plot_title,
                                 shapes=shapes.dataframe,
                             ),
