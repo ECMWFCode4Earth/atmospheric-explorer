@@ -45,10 +45,12 @@ def _sequential_colorscale_bar(
     tickvals = [
         np.mean(separators[k : k + 2]) for k in range(len(separators) - 1)
     ]  # position of tick text
-    if separators.max() < (len(separators) - 1):
+    logger.debug("Separators for colorbar: %s", separators)
+    if (separators.max() - separators.min()) < (len(separators) - 1):
         n_decimals = int(
             round(1 - log10(separators.max() / (len(separators) - 1)), 0)
         )  # number of decimals needed to distinguish color levels
+        logger.debug("Colorbar decimals: %i", n_decimals)
         ticktext = (
             [f"<{separators[1]:.{n_decimals}f}"]
             + [
@@ -58,6 +60,7 @@ def _sequential_colorscale_bar(
             + [f">{separators[-2]:.{n_decimals}f}"]
         )
     else:
+        logger.debug("Colorbar decimals: 0")
         ticktext = (
             [f"<{separators[1]:.0f}"]
             + [
@@ -66,7 +69,12 @@ def _sequential_colorscale_bar(
             ]
             + [f">{separators[-2]:.0f}"]
         )
-    colorbar_custom = {"thickness": 25, "tickvals": tickvals, "ticktext": ticktext}
+    colorbar_custom = {
+        "thickness": 25,
+        "tickvals": tickvals,
+        "ticktext": ticktext,
+        "xpad": 0,
+    }
     return color_scale_custom, colorbar_custom
 
 
@@ -493,7 +501,7 @@ def eac4_hovmoeller_plot(
     pressure_level: list[str] | None = None,
     model_level: list[str] | None = None,
     resampling: str = "1MS",
-    base_colorscale: list[str] = px.colors.sequential.RdBu_r,
+    base_colorscale: list[str] = None,
     shapes: gpd.GeoDataFrame = None,
 ) -> go.Figure:
     """Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset."""
@@ -527,23 +535,25 @@ def eac4_hovmoeller_plot(
         pressure_level=pressure_level,
         model_level=model_level,
     )
-    colorscale, colorbar = _sequential_colorscale_bar(
-        df_converted.values.flatten(), base_colorscale
-    )
     fig = px.imshow(df_converted.T, origin="lower")
     fig.update_xaxes(title="Month")
     if pressure_level is not None:
-        fig.update_yaxes(autorange="reversed", title="Pressure Level [hPa]")
+        fig.update_yaxes(
+            autorange="reversed", title="Pressure Level [hPa]", type="category"
+        )
         if base_colorscale is None:
             base_colorscale = px.colors.sequential.RdBu_r
     elif model_level is not None:
-        fig.update_yaxes(autorange="reversed", title="Model Level")
+        fig.update_yaxes(autorange="reversed", title="Model Level", type="category")
         if base_colorscale is None:
             base_colorscale = px.colors.sequential.RdBu_r
     else:
         fig.update_yaxes(title="Latitude [degrees]")
         if base_colorscale is None:
             base_colorscale = px.colors.sequential.Turbo
+    colorscale, colorbar = _sequential_colorscale_bar(
+        df_converted.values.flatten(), base_colorscale
+    )
     fig.update_layout(
         title={
             "text": f"{title} [{df_converted.attrs['units']}]",
