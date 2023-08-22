@@ -425,75 +425,73 @@ def eac4_anomalies_plot(
     return fig
 
 
-def eac4_hovmoeller_latitude_plot(
+## HOVMOELL
+
+
+def _eac4_hovmoeller_data(
     data_variable: str,
     var_name: str,
     dates_range: str,
     time_values: str,
-    title: str,
-    resampling: str = "1MS",
-    base_colorscale: list[str] = px.colors.sequential.Turbo,
-) -> go.Figure:
-    """Generate a Hovmoeller plot (latitude vs. months) for a quantity from the Global Reanalysis EAC4 dataset."""
+    resampling: str,
+    shapes: gpd.GeoDataFrame | None,
+    pressure_level: list[str] | None = None,
+    model_level: list[str] | None = None,
+) -> xr.Dataset:
     # pylint: disable=too-many-arguments
-    # pylint: disable=dangerous-default-value
-    logger.debug(
-        dedent(
-            f"""\
-    eac4_hovmoeller_latitude_plot called with arguments
-    data_variable: {data_variable}
-    var_name: {var_name}
-    dates_range: {dates_range}
-    time_values: {time_values}
-    title: {title}
-    resampling: {resampling}
-    base_colorscale: {base_colorscale}
-    """
+    if pressure_level is not None:
+        data = EAC4Instance(
+            data_variable,
+            "netcdf",
+            pressure_level=pressure_level,
+            dates_range=dates_range,
+            time_values=time_values,
         )
-    )
-    data = EAC4Instance(
-        data_variable,
-        "netcdf",
-        dates_range=dates_range,
-        time_values=time_values,
-    )
+    elif model_level is not None:
+        data = EAC4Instance(
+            data_variable,
+            "netcdf",
+            model_level=model_level,
+            dates_range=dates_range,
+            time_values=time_values,
+        )
+    else:
+        data = EAC4Instance(
+            data_variable,
+            "netcdf",
+            dates_range=dates_range,
+            time_values=time_values,
+        )
     data.download()
     df_down = data.read_dataset()
     df_down = df_down.rio.write_crs("EPSG:4326")
     df_down = shifting_long(df_down)
+    if shapes is not None:
+        df_down = clip_and_concat_shapes(df_down, shapes).sel(
+            label=shapes.iloc[0]["label"]
+        )
     df_agg = (
-        df_down.resample(time=resampling, restore_coord_dims=True)
+        df_down[var_name]
+        .resample(time=resampling, restore_coord_dims=True)
         .mean(dim="time")
         .mean(dim="longitude")
     )
-    df_converted = convert_units_array(df_agg[var_name], data_variable)
-    colorscale, colorbar = _sequential_colorscale_bar(
-        df_converted.values.flatten(), base_colorscale
-    )
-    fig = px.imshow(df_converted.T, origin="lower")
-    fig.update_xaxes(title="Month")
-    fig.update_yaxes(title="Latitude [degrees]")
-    fig.update_layout(
-        title={
-            "text": f"{title} [{df_converted.attrs['units']}]",
-            "x": 0.45,
-            "y": 0.95,
-            "automargin": True,
-            "yref": "container",
-            "font": {"size": 19},
-        },
-        coloraxis={"colorscale": colorscale, "colorbar": colorbar},
-    )
-    return fig
+    if (pressure_level or model_level) is not None:
+        df_agg = df_agg.mean(dim="latitude").sortby("level")
+        df_agg = df_agg.assign_coords(
+            {"level": [str(c) for c in df_agg.coords["level"].values]}
+        )
+    return convert_units_array(df_agg, data_variable)
 
 
-def eac4_hovmoeller_levels_plot(
+def eac4_hovmoeller_plot(
     data_variable: str,
     var_name: str,
     dates_range: str,
     time_values: str,
-    pressure_level: list[str],
     title: str,
+    pressure_level: list[str] | None = None,
+    model_level: list[str] | None = None,
     resampling: str = "1MS",
     base_colorscale: list[str] = px.colors.sequential.RdBu_r,
     shapes: gpd.GeoDataFrame = None,
@@ -505,53 +503,47 @@ def eac4_hovmoeller_levels_plot(
     logger.debug(
         dedent(
             f"""\
-    eac4_hovmoeller_levels_plot called with arguments
-    data_variable: {data_variable}
-    var_name: {var_name}
-    dates_range: {dates_range}
-    time_values: {time_values}
-    pressure_level: {pressure_level}
-    shapes: {shapes}
-    title: {title}
-    resampling: {resampling}
-    base_colorscale: {base_colorscale}
-    """
+            eac4_hovmoeller_levels_plot called with arguments
+            data_variable: {data_variable}
+            var_name: {var_name}
+            dates_range: {dates_range}
+            time_values: {time_values}
+            title: {title}
+            pressure_level: {pressure_level}
+            model_level: {model_level}
+            resampling: {resampling}
+            base_colorscale: {base_colorscale}
+            shapes: {shapes}
+            """
         )
     )
-    data = EAC4Instance(
-        data_variable,
-        "netcdf",
-        pressure_level=pressure_level,
+    df_converted = _eac4_hovmoeller_data(
+        data_variable=data_variable,
+        var_name=var_name,
         dates_range=dates_range,
         time_values=time_values,
-    )
-    data.download()
-    df_down = data.read_dataset()
-    df_down = df_down.rio.write_crs("EPSG:4326")
-    df_down = shifting_long(df_down)
-    if shapes is not None:
-        df_down = clip_and_concat_shapes(df_down, shapes).sel(
-            label=shapes.iloc[0]["label"]
-        )
-    df_agg = (
-        df_down.resample(time=resampling, restore_coord_dims=True)
-        .mean(dim="time")
-        .mean(dim="longitude")
-        .mean(dim="latitude")
-        .sortby("level")
-    )
-    df_converted = convert_units_array(df_agg[var_name], data_variable)
-    df_converted = df_converted.assign_coords(
-        {"level": [str(c) for c in df_converted.coords["level"].values]}
+        resampling=resampling,
+        shapes=shapes,
+        pressure_level=pressure_level,
+        model_level=model_level,
     )
     colorscale, colorbar = _sequential_colorscale_bar(
         df_converted.values.flatten(), base_colorscale
     )
     fig = px.imshow(df_converted.T, origin="lower")
-    fig.update_xaxes(
-        title="Month"
-    )  # TODO Change this based on resampling # pylint: disable=fixme
-    fig.update_yaxes(autorange="reversed", title="Levels[hPa]")
+    fig.update_xaxes(title="Month")
+    if pressure_level is not None:
+        fig.update_yaxes(autorange="reversed", title="Pressure Level [hPa]")
+        if base_colorscale is None:
+            base_colorscale = px.colors.sequential.RdBu_r
+    elif model_level is not None:
+        fig.update_yaxes(autorange="reversed", title="Model Level")
+        if base_colorscale is None:
+            base_colorscale = px.colors.sequential.RdBu_r
+    else:
+        fig.update_yaxes(title="Latitude [degrees]")
+        if base_colorscale is None:
+            base_colorscale = px.colors.sequential.Turbo
     fig.update_layout(
         title={
             "text": f"{title} [{df_converted.attrs['units']}]",
