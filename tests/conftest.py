@@ -11,15 +11,11 @@ from __future__ import annotations
 import pytest
 import requests.exceptions
 
-from atmospheric_explorer.cams_interfaces import CAMSDataInterface
+from atmospheric_explorer.data_interface import CAMSDataInterface
 
 
 class CAMSDataInterfaceTesting(CAMSDataInterface):
     """Mock class used to instantiate CAMSDataInterface so that it can be tested"""
-
-    def includes(self: CAMSDataInterfaceTesting, other: CAMSDataInterfaceTesting):
-        """Mock function needed to instantiate CAMSDataInterface"""
-        return True
 
     def read_dataset(self: CAMSDataInterface):
         pass

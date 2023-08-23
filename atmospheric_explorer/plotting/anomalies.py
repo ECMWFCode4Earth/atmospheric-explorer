@@ -10,13 +10,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interfaces import EAC4Instance
+from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_shapes,
     shifting_long,
 )
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.units_conversion import convert_units_array
 
 logger = get_logger("atmexp")
 
@@ -51,8 +50,7 @@ def eac4_anomalies_plot(
         )
     )
     data = EAC4Instance(
-        data_variable,
-        "netcdf",
+        data_variables=data_variable,
         dates_range=dates_range,
         time_values=time_values,
     )
@@ -70,7 +68,7 @@ def eac4_anomalies_plot(
         .mean(dim="time")
     )
     reference_value = df_agg.mean(dim="time")
-    df_converted = convert_units_array(df_agg[var_name], data_variable)
+    df_converted = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
     reference_value = df_converted.mean().values
     df_anomalies = df_converted - reference_value
     df_anomalies.attrs = df_converted.attrs

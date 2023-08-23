@@ -13,13 +13,15 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interfaces import InversionOptimisedGreenhouseGas
+from atmospheric_explorer.data_interface.ghg import (
+    GHGConfig,
+    InversionOptimisedGreenhouseGas,
+)
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_shapes,
     confidence_interval,
 )
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.units_conversion import convert_units_array
 from atmospheric_explorer.utils import hex_to_rgb
 
 logger = get_logger("atmexp")
@@ -185,7 +187,6 @@ def _ghg_surface_satellite_yearly_data(
     )
     surface_data = InversionOptimisedGreenhouseGas(
         data_variables=data_variable,
-        file_format="zip",
         quantity="surface_flux",
         input_observations="surface",
         time_aggregation="monthly_mean",
@@ -202,7 +203,6 @@ def _ghg_surface_satellite_yearly_data(
     if add_satellite_observations:
         satellite_data = InversionOptimisedGreenhouseGas(
             data_variables=data_variable,
-            file_format="zip",
             quantity="surface_flux",
             input_observations="satellite",
             time_aggregation="monthly_mean",
@@ -232,7 +232,9 @@ def _ghg_surface_satellite_yearly_data(
     # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
     df_total = df_total.sortby("time").sum(dim=["longitude", "latitude"])
     # Convert units
-    da_converted = convert_units_array(df_total[var_name], data_variable)
+    da_converted = GHGConfig.convert_units_array(
+        df_total[var_name], data_variable, "surface_flux", "monthly_mean"
+    )
     da_converted_agg = (
         da_converted.resample(time="YS")
         .map(confidence_interval, dim="time")
