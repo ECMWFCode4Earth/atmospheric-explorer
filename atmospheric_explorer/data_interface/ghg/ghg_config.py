@@ -39,14 +39,14 @@ class GHGConfig(metaclass=ConfigMeta, filename="ghg/ghg_config.yaml"):
         to the units specified in the constants.cfg file.
         """
         var_name = array.name
-        conf = next(
+        conf = list(
             filter(
                 lambda a: a["var_name"] == var_name,
                 cls.get_config()["variables"][data_variable][quantity][
                     time_aggregation
                 ],
             )
-        )
+        )[0]
         conv_f = float(conf["conversion"]["conversion_factor"])
         logger.debug(
             "Converting array %s to unit %s with factor %f",

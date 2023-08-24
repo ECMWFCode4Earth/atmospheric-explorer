@@ -3,13 +3,10 @@
 # pylint: disable=missing-function-docstring
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
-# import numpy as np
 import pytest
 
 from atmospheric_explorer.data_interface.config_parser import OperationParser
 from atmospheric_explorer.exceptions import OperationNotAllowed
-
-# import xarray as xr
 
 
 def test_arithmetic_eval():
