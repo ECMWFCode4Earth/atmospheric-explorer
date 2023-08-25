@@ -85,18 +85,20 @@ def _filters():
         _year_filter()
         _months_filter()
         _vars_filter()
+        var_names = ghg_data_variable_var_name_mapping[
+            st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
+        ]
         v_name = st.selectbox(
             label="Var name",
-            options=ghg_data_variable_var_name_mapping[
-                st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
-            ],
+            options=var_names,
             help="Select var_name inside dataset",
         )
+        idx = var_names.index(v_name)
         title = st.text_input(
             "Plot title",
             value=ghg_data_variable_default_plot_title_mapping[
                 st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
-            ],
+            ][idx],
         )
     return v_name, title
 

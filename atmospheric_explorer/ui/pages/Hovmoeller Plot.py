@@ -40,8 +40,10 @@ def _init():
         st.session_state[HovmSessionStateKeys.HOVM_TIMES] = ["00:00"]
     if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
-    if HovmSessionStateKeys.HOVM_LEVELS not in st.session_state:
-        st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = []
+    if HovmSessionStateKeys.HOVM_P_LEVELS not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS] = [1, 2]
+    if HovmSessionStateKeys.HOVM_M_LEVELS not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS] = [1, 2]
     if HovmSessionStateKeys.HOVM_DATA_VARIABLE not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = "total_column_ozone"
 
@@ -78,20 +80,22 @@ def _y_axis_filter():
         case "Latitude":
             pass
         case "Pressure Level":
-            st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = sorted(
+            st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS] = sorted(
                 st.multiselect(
                     label="Pressure Level",
                     options=eac4_pressure_levels,
-                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS] or ["1"],
+                    default=st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS]
+                    or [1, 2],
                 ),
                 key=int,
             )
         case "Model Level":
-            st.session_state[HovmSessionStateKeys.HOVM_LEVELS] = sorted(
+            st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS] = sorted(
                 st.multiselect(
                     label="Model Level",
                     options=eac4_model_levels,
-                    default=st.session_state[HovmSessionStateKeys.HOVM_LEVELS] or ["1"],
+                    default=st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS]
+                    or [1, 2],
                 ),
                 key=int,
             )
@@ -137,28 +141,26 @@ if st.button("Generate plot"):
     end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
     time_values = st.session_state[HovmSessionStateKeys.HOVM_TIMES]
-    levels = st.session_state[HovmSessionStateKeys.HOVM_LEVELS]
     shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     data_variable = st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
     with st.container():
         with st.spinner("Downloading data and building plot"):
-            logger.debug(
-                dedent(
-                    f"""\
-                Building Hovmoeller plot with parameters
-                Y axis: {y_axis}
-                Variable: {data_variable}
-                Var name: {var_name}
-                Shapes: {shapes}
-                Dates range: {dates_range}
-                Times: {time_values}
-                Levels: {levels}
-                Title: {plot_title}
-                """
-                )
-            )
             match y_axis:
                 case "Latitude":
+                    logger.debug(
+                        dedent(
+                            f"""\
+                        Building Hovmoeller plot with parameters
+                        Y axis: {y_axis}
+                        Variable: {data_variable}
+                        Var name: {var_name}
+                        Shapes: {shapes}
+                        Dates range: {dates_range}
+                        Times: {time_values}
+                        Title: {plot_title}
+                        """
+                        )
+                    )
                     st.plotly_chart(
                         eac4_hovmoeller_plot(
                             data_variable=data_variable,
@@ -170,6 +172,22 @@ if st.button("Generate plot"):
                         use_container_width=True,
                     )
                 case "Pressure Level":
+                    levels = st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS]
+                    logger.debug(
+                        dedent(
+                            f"""\
+                            Building Hovmoeller plot with parameters
+                            Y axis: {y_axis}
+                            Variable: {data_variable}
+                            Var name: {var_name}
+                            Shapes: {shapes}
+                            Dates range: {dates_range}
+                            Times: {time_values}
+                            Levels: {levels}
+                            Title: {plot_title}
+                        """
+                        )
+                    )
                     if levels:
                         st.plotly_chart(
                             eac4_hovmoeller_plot(
@@ -184,6 +202,22 @@ if st.button("Generate plot"):
                             use_container_width=True,
                         )
                 case "Model Level":
+                    levels = st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS]
+                    logger.debug(
+                        dedent(
+                            f"""\
+                            Building Hovmoeller plot with parameters
+                            Y axis: {y_axis}
+                            Variable: {data_variable}
+                            Var name: {var_name}
+                            Shapes: {shapes}
+                            Dates range: {dates_range}
+                            Times: {time_values}
+                            Levels: {levels}
+                            Title: {plot_title}
+                        """
+                        )
+                    )
                     if levels:
                         st.plotly_chart(
                             eac4_hovmoeller_plot(

@@ -12,13 +12,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.cams_interfaces import EAC4Instance
+from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_shapes,
     shifting_long,
 )
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.units_conversion import convert_units_array
 
 logger = get_logger("atmexp")
 
@@ -84,24 +83,21 @@ def _eac4_hovmoeller_data(
     # pylint: disable=too-many-arguments
     if pressure_level is not None:
         data = EAC4Instance(
-            data_variable,
-            "netcdf",
+            data_variables=data_variable,
             pressure_level=pressure_level,
             dates_range=dates_range,
             time_values=time_values,
         )
     elif model_level is not None:
         data = EAC4Instance(
-            data_variable,
-            "netcdf",
+            data_variables=data_variable,
             model_level=model_level,
             dates_range=dates_range,
             time_values=time_values,
         )
     else:
         data = EAC4Instance(
-            data_variable,
-            "netcdf",
+            data_variables=data_variable,
             dates_range=dates_range,
             time_values=time_values,
         )
@@ -124,7 +120,7 @@ def _eac4_hovmoeller_data(
         df_agg = df_agg.assign_coords(
             {"level": [str(c) for c in df_agg.coords["level"].values]}
         )
-    return convert_units_array(df_agg, data_variable)
+    return EAC4Config.convert_units_array(df_agg, data_variable)
 
 
 def eac4_hovmoeller_plot(
