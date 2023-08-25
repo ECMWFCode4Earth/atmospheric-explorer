@@ -242,6 +242,7 @@ def _ghg_surface_satellite_yearly_data(
     )
     da_converted_agg.name = var_name
     da_converted_agg.attrs = da_converted.attrs
+    da_converted_agg.attrs["units"] = "kg"
     # Pandas is easier to use for plotting
     return da_converted_agg
 
