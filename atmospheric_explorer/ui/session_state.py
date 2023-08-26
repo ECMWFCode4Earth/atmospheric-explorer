@@ -9,8 +9,9 @@ class GeneralSessionStateKeys(Enum):
 
     LAST_OBJECT_CLICKED = "last_object_clicked"
     SELECTED_SHAPES = "selected_shapes"
-    SELECT_COUNTRIES = "select_countries"
+    SELECT_ENTITIES = "select_entities"
     LAST_ACTIVE_DRAWING = "last_active_drawing"
+    MAP_LEVEL = "map_level"
 
 
 class EAC4AnomaliesSessionStateKeys(Enum):

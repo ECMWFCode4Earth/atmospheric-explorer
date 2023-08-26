@@ -8,10 +8,7 @@ from folium.plugins import Draw
 from streamlit_folium import st_folium
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.shape_selection import (
-    ShapeSelection,
-    shapefile_dataframe,
-)
+from atmospheric_explorer.ui.interactive_map.shape_selection import ShapeSelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -28,11 +25,11 @@ def _selected_shapes_style(_) -> dict:
 
 
 @st.cache_data(show_spinner="Fetching world polygon...")
-def world_polygon() -> folium.GeoJson:
+def world_polygon(level: str) -> folium.GeoJson:
     """Return a folium GeoJson object that adds colored polygons over all countries"""
     logger.info("Fetch world polygon")
     return folium.GeoJson(
-        shapefile_dataframe(),
+        ShapeSelection.shapefile_dataframe(level),
         name="world_polygon",
         highlight_function=_country_hover_style,
         zoom_on_click=False,
@@ -70,8 +67,10 @@ def build_folium_map():
     ).add_to(
         folium_map
     )  # draw toolbar
-    if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]:
-        world_polygon().add_to(folium_map)
+    if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
+        world_polygon(st.session_state[GeneralSessionStateKeys.MAP_LEVEL]).add_to(
+            folium_map
+        )
     selected_shapes_fgroup().add_to(folium_map)
     return folium_map
 
@@ -103,8 +102,10 @@ def update_session_map_click(out_event):
         ]
     if out_event.get("last_active_drawing") is not None:
         selected_shape = ShapeSelection.from_out_event(out_event)
-        if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]:
-            selected_countries = ShapeSelection.countries_from_shape(selected_shape)
+        if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
+            selected_countries = ShapeSelection.entities_from_generic_shape(
+                selected_shape, st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+            )
             sel_countries = set(selected_countries.labels)
             prev_selection = set(
                 st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels

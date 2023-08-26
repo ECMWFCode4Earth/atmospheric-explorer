@@ -132,6 +132,7 @@ def _filters():
         return _var_filters()
 
 
+# Page
 _init()
 var_name, plot_title = _filters()
 build_sidebar()

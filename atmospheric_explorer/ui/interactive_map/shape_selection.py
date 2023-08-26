@@ -14,14 +14,12 @@ from atmospheric_explorer.shapefile import ShapefilesDownloader
 logger = get_logger("atmexp")
 
 
-@st.cache_data(show_spinner="Fetching shapefile...")
-def shapefile_dataframe() -> gpd.GeoDataFrame:
-    """Get and cache the shapefile"""
-    return (
-        ShapefilesDownloader()
-        .get_as_dataframe()
-        .rename({"ADMIN": "label"}, axis=1)[["label", "geometry"]]
-    )
+map_level_column_mapping = {
+    "Continents": "CONTINENT",
+    "Administrative entities": "ADMIN",
+    "Countries": "GEOUNIT",
+    "Countries with subunits": "SUBUNIT",
+}
 
 
 class ShapeSelection:
@@ -29,17 +27,34 @@ class ShapeSelection:
 
     _crs = "EPSG:4326"
 
-    def __init__(self, dataframe: gpd.GeoDataFrame, is_country: bool):
+    def __init__(
+        self, dataframe: gpd.GeoDataFrame, is_entity: bool, level: str | None = None
+    ):
+        self.level = level
         self.dataframe = dataframe
-        self.is_countries_poly = is_country
+        self.is_entity_poly = is_entity
 
     def __repr__(self) -> str:
         return repr(self.dataframe)
+
+    def __eq__(self, other: ShapeSelection) -> bool:
+        return self.dataframe.equals(other.dataframe)
 
     @property
     def labels(self) -> list[str]:
         """Selection labels, useful when countries are selected."""
         return self.dataframe["label"].unique()
+
+    @staticmethod
+    @st.cache_data(show_spinner="Fetching shapefile...")
+    def shapefile_dataframe(level: str) -> gpd.GeoDataFrame:
+        """Get and cache the shapefile"""
+        col = map_level_column_mapping[level]
+        sh_df = ShapefilesDownloader(instance="map_subunits")
+        sh_df = sh_df.get_as_dataframe()[[col, "geometry"]].rename(
+            {col: "label"}, axis=1
+        )
+        return sh_df.dissolve(by="label").reset_index()
 
     @staticmethod
     def get_event_label(out_event) -> str | None:
@@ -61,27 +76,25 @@ class ShapeSelection:
                 },
                 crs=cls._crs,
             ),
-            is_country=(admin is not None),
+            is_entity=(admin is not None),
         )
 
     @classmethod
-    def from_countries_list(cls, countries: list[str]) -> ShapeSelection:
-        """Generate a ShapeSelection object from a list of countries, shapes are taken from the shapefile."""
-        sh_df = shapefile_dataframe()
-        sh_df = sh_df[sh_df["label"].isin(countries)]
-        return cls(dataframe=sh_df, is_country=True)
-
-    def __eq__(self, other: ShapeSelection) -> bool:
-        return self.dataframe.equals(other.dataframe)
+    def from_entities_list(cls, entities: list[str], level: str) -> ShapeSelection:
+        """Generate a ShapeSelection object from a list of entities, shapes are taken from the shapefile."""
+        sh_df = cls.shapefile_dataframe(level)
+        sh_df = sh_df[sh_df["label"].isin(entities)]
+        return cls(dataframe=sh_df, is_entity=True, level=level)
 
     @classmethod
-    def countries_from_shape(cls, shape_selection: ShapeSelection) -> ShapeSelection:
+    def entities_from_generic_shape(
+        cls, shape_selection: ShapeSelection, level: str
+    ) -> ShapeSelection:
         """\
-        Generate a ShapeSelection object encompassing countries that are touched by the shape_selection objects passed.
+        Generate a ShapeSelection object encompassing entitities that are touched by the shape_selection objects passed.
+        It assumes the shape_selection argument is a generic shape.
         """
-        if shape_selection.is_countries_poly:
-            return shape_selection
-        shapefile = shapefile_dataframe()
+        shapefile = cls.shapefile_dataframe(level)
         selected_geometry = unary_union(shape_selection.dataframe["geometry"])
         return cls(
             dataframe=(
@@ -89,5 +102,29 @@ class ShapeSelection:
                     ~selected_geometry.intersection(shapefile["geometry"]).is_empty
                 ].reset_index(drop=True)
             ),
-            is_country=True,
+            is_entity=True,
         )
+
+    @classmethod
+    def convert_selection(
+        cls, shape_selection: ShapeSelection, level: str | None = None
+    ) -> ShapeSelection:
+        """Converts selections between levels and types (shape vs entity)."""
+        if level is None:
+            return cls(dataframe=shape_selection.dataframe, is_entity=False, level=None)
+        if shape_selection.is_entity_poly:
+            if level == shape_selection.level:
+                return shape_selection
+            col_from = map_level_column_mapping[shape_selection.level]
+            col_to = map_level_column_mapping[level]
+            sh_df = ShapefilesDownloader(instance="map_subunits").get_as_dataframe()[
+                [col_from, col_to]
+            ]
+            sh_df = sh_df.merge(
+                shape_selection.dataframe,
+                how="inner",
+                left_on=col_from,
+                right_on="label",
+            )
+            return cls.from_entities_list(sh_df[col_to].unique(), level)
+        return cls.entities_from_generic_shape(shape_selection, level)

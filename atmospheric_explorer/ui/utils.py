@@ -6,7 +6,10 @@ from pathlib import Path
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.shape_selection import ShapeSelection
+from atmospheric_explorer.ui.interactive_map.shape_selection import (
+    ShapeSelection,
+    map_level_column_mapping,
+)
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -26,12 +29,18 @@ def page_init():
     local_css(Path(__file__).resolve().parent.joinpath("style.css"))
     if GeneralSessionStateKeys.LAST_OBJECT_CLICKED not in st.session_state:
         st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED] = [42, 13]
+    if GeneralSessionStateKeys.SELECT_ENTITIES not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = False
+    if GeneralSessionStateKeys.MAP_LEVEL not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = list(
+            map_level_column_mapping.keys()
+        )[2]
     if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
-        ] = ShapeSelection.from_countries_list(["Italy"])
-    if GeneralSessionStateKeys.SELECT_COUNTRIES not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES] = False
+        ] = ShapeSelection.from_entities_list(
+            ["Italy"], st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+        )
 
 
 def build_sidebar():
@@ -50,7 +59,7 @@ def build_sidebar():
                 )
             descr = (
                 f"Selected countries: {selected_shapes_text}"
-                if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]
+                if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]
                 else "Selected generic shape"
             )
             st.write(descr, unsafe_allow_html=True)

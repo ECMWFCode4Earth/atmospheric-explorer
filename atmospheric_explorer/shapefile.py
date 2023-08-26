@@ -59,7 +59,7 @@ class ShapefilesDownloader:
         map_type: str = "cultural",
         info_type: str = "admin",
         depth: int = 0,
-        instance: str = "countries",
+        instance: str = "map_subunits",
         timeout: int = 10,
     ):  # pylint: disable=too-many-arguments
         self.dst_dir = (
