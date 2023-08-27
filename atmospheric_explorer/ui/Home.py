@@ -38,6 +38,10 @@ with st.form("selection"):
             options=list(MapLevels),
             index=0,
             key=GeneralSessionStateKeys.MAP_LEVEL,
+            help="""\
+            Switch between continents, countries etc.
+            After selecting the level, click the "Update Selection" button to make the selection effective.
+            """,
         )
         if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
             org = st.selectbox(
@@ -82,7 +86,13 @@ with st.form("selection"):
                     GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
                 ]
             )
-    st.form_submit_button("Update map")
+    st.form_submit_button(
+        "Update Selection",
+        help="""\
+        Update both the map and the form.
+        Click to make any change in the form effective.
+        """,
+    )
 progress_bar.progress(0.4, "Building side bar")
 build_sidebar()
 progress_bar.progress(0.6, "Building map")
