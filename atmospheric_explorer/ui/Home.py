@@ -6,12 +6,12 @@ Main UI page
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.custom_mappings import organizations
 from atmospheric_explorer.ui.interactive_map.interactive_map import (
-    map_levels,
+    shapefile_dataframe,
     show_folium_map,
     update_session_map_click,
 )
+from atmospheric_explorer.ui.interactive_map.map_config import MapLevels, organizations
 from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
@@ -36,9 +36,9 @@ with st.form("selection"):
     if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
         st.selectbox(
             label="Entity level",
-            options=map_levels,
+            options=[level for level in MapLevels],
             index=0,
-            key=GeneralSessionStateKeys.MAP_LEVEL
+            key=GeneralSessionStateKeys.MAP_LEVEL,
         )
         if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
             org = st.selectbox(
@@ -48,18 +48,19 @@ with st.form("selection"):
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES
             ] = EntitySelection.from_entities_list(
-                entities=organizations[org],
-                level="Countries"
+                entities=organizations[org], level="Countries"
             )
-            st.session_state["entities"] = organizations[org]
+            st.session_state[
+                GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
+            ] = organizations[org]
         else:
-            sh = EntitySelection.shapefile_dataframe(
+            sh = shapefile_dataframe(
                 st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             )
             prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
             if (
-                not isinstance(prev_sel, EntitySelection) or
-                prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+                not isinstance(prev_sel, EntitySelection)
+                or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             ):
                 new_sel = EntitySelection.convert_selection(
                     shape_selection=prev_sel,
@@ -67,24 +68,28 @@ with st.form("selection"):
                 )
                 st.multiselect(
                     st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                    options = sh["label"].unique(),
-                    default = new_sel.labels,
-                    key = 'entities'
+                    options=sh["label"].unique(),
+                    default=new_sel.labels,
+                    key=GeneralSessionStateKeys.SELECTED_SHAPES_LABELS,
                 )
             else:
                 st.multiselect(
                     st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                    options = sh["label"].unique(),
-                    default = st.session_state['entities'],
-                    key = 'entities'
+                    options=sh["label"].unique(),
+                    default=st.session_state[
+                        GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
+                    ],
+                    key=GeneralSessionStateKeys.SELECTED_SHAPES_LABELS,
                 )
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES
             ] = EntitySelection.from_entities_list(
-                entities=st.session_state['entities'],
+                entities=st.session_state[
+                    GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
+                ],
                 level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
             )
-            
+
     st.form_submit_button("Update map")
 progress_bar.progress(0.2, "Building side bar")
 build_sidebar()

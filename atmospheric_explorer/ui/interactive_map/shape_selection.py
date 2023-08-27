@@ -12,15 +12,20 @@ from shapely.ops import unary_union
 
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.shapefile import ShapefilesDownloader
+from atmospheric_explorer.ui.interactive_map.map_config import (
+    map_level_shapefile_mapping,
+)
 
 logger = get_logger("atmexp")
 
-map_level_column_mapping = {
-    "Continents": "CONTINENT",
-    "Organizations": "ADMIN",
-    "Countries": "ADMIN",
-    "Countries with subunits": "SUBUNIT",
-}
+
+@st.cache_data(show_spinner="Fetching shapefile...")
+def shapefile_dataframe(level: str) -> gpd.GeoDataFrame:
+    """Get and cache the shapefile"""
+    col = map_level_shapefile_mapping[level]
+    sh_df = ShapefilesDownloader(instance="map_subunits")
+    sh_df = sh_df.get_as_dataframe()[[col, "geometry"]].rename({col: "label"}, axis=1)
+    return sh_df.dissolve(by="label").reset_index()
 
 
 class Selection(ABC):
@@ -95,21 +100,10 @@ class EntitySelection(Selection):
         super().__init__(dataframe)
         self.level = level
 
-    @staticmethod
-    @st.cache_data(show_spinner="Fetching shapefile...")
-    def shapefile_dataframe(level: str) -> gpd.GeoDataFrame:
-        """Get and cache the shapefile"""
-        col = map_level_column_mapping[level]
-        sh_df = ShapefilesDownloader(instance="map_subunits")
-        sh_df = sh_df.get_as_dataframe()[[col, "geometry"]].rename(
-            {col: "label"}, axis=1
-        )
-        return sh_df.dissolve(by="label").reset_index()
-
     @classmethod
     def from_entities_list(cls, entities: list[str], level: str) -> EntitySelection:
         """Generate a ShapeSelection object from a list of entities, shapes are taken from the shapefile."""
-        sh_df = cls.shapefile_dataframe(level)
+        sh_df = shapefile_dataframe(level)
         sh_df = sh_df[sh_df["label"].isin(entities)]
         return cls(dataframe=sh_df, level=level)
 
@@ -123,7 +117,7 @@ class EntitySelection(Selection):
         """
         if not isinstance(shape_selection, GenericShapeSelection):
             raise ValueError("Selection must be a generic shape selection")
-        shapefile = cls.shapefile_dataframe(level)
+        shapefile = shapefile_dataframe(level)
         selected_geometry = unary_union(shape_selection.dataframe["geometry"])
         return cls(
             dataframe=(
@@ -161,10 +155,10 @@ class EntitySelection(Selection):
         if level is None:
             raise ValueError("Expected the level!")
         if isinstance(shape_selection, EntitySelection):
-            if level == shape_selection.level:
-                return shape_selection
-            col_from = map_level_column_mapping[shape_selection.level]
-            col_to = map_level_column_mapping[level]
+            col_from = map_level_shapefile_mapping[shape_selection.level]
+            col_to = map_level_shapefile_mapping[level]
+            if level == shape_selection.level or col_from == col_to:
+                return cls(dataframe=shape_selection.dataframe, level=level)
             sh_df = ShapefilesDownloader(instance="map_subunits").get_as_dataframe()[
                 [col_from, col_to]
             ]

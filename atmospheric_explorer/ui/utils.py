@@ -6,8 +6,8 @@ from pathlib import Path
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.interactive_map import map_levels
-from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection, GenericShapeSelection
+from atmospheric_explorer.ui.interactive_map.map_config import MapLevels
+from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -28,18 +28,17 @@ def page_init():
     if GeneralSessionStateKeys.LAST_OBJECT_CLICKED not in st.session_state:
         st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED] = [42, 13]
     if GeneralSessionStateKeys.SELECT_ENTITIES not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = False
+        st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = True
     if GeneralSessionStateKeys.MAP_LEVEL not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = map_levels[0]
+        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = MapLevels.CONTINENTS
     if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
-        ] = GenericShapeSelection.convert_selection(
-            EntitySelection.from_entities_list(
-                ["Europe"],
-                st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            )
+        ] = EntitySelection.from_entities_list(
+            ["Europe"], st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
         )
+    if GeneralSessionStateKeys.SELECTED_SHAPES_LABELS not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = ["Europe"]
 
 
 def build_sidebar():
