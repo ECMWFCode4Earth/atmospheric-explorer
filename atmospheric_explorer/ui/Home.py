@@ -29,7 +29,6 @@ progress_bar.progress(0.3, "Building selectors")
 with st.form("selection"):
     st.checkbox(
         label="Select entities",
-        value=st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES],
         key=GeneralSessionStateKeys.SELECT_ENTITIES,
         help="Switch to the selection of political or geographical entities such as continents and countries",
     )
