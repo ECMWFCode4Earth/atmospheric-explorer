@@ -27,15 +27,18 @@ st.subheader("Geographical selection")
 logger.info("Checking session state")
 progress_bar.progress(0.3, "Building selectors")
 with st.form("selection"):
-    st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = st.checkbox(
+    st.checkbox(
         label="Select entities",
         value=st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES],
+        key=GeneralSessionStateKeys.SELECT_ENTITIES,
         help="Switch to the selection of political or geographical entities such as continents and countries",
     )
     if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
-        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = st.selectbox(
+        st.selectbox(
             label="Entity level",
-            options=map_levels
+            options=map_levels,
+            index=0,
+            key=GeneralSessionStateKeys.MAP_LEVEL
         )
         if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
             org = st.selectbox(
@@ -45,14 +48,19 @@ with st.form("selection"):
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES
             ] = EntitySelection.from_entities_list(
-                entities=organizations[org], level="Countries"
+                entities=organizations[org],
+                level="Countries"
             )
+            st.session_state["entities"] = organizations[org]
         else:
             sh = EntitySelection.shapefile_dataframe(
                 st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             )
             prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
-            if not isinstance(prev_sel, EntitySelection) or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]:
+            if (
+                not isinstance(prev_sel, EntitySelection) or
+                prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+            ):
                 new_sel = EntitySelection.convert_selection(
                     shape_selection=prev_sel,
                     level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],

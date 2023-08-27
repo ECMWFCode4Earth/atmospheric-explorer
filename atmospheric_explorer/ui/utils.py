@@ -30,13 +30,13 @@ def page_init():
     if GeneralSessionStateKeys.SELECT_ENTITIES not in st.session_state:
         st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = False
     if GeneralSessionStateKeys.MAP_LEVEL not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = list(map_levels)[2]
+        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = map_levels[0]
     if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
         ] = GenericShapeSelection.convert_selection(
             EntitySelection.from_entities_list(
-                ["Italy"],
+                ["Europe"],
                 st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             )
         )
