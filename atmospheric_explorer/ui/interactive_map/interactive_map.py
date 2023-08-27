@@ -106,9 +106,7 @@ def update_session_map_click(out_event):
         ]
     if out_event.get("last_active_drawing") is not None:
         if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
-            selected_countries = EntitySelection.from_out_event(
-                out_event, level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            )
+            selected_countries = EntitySelection.from_out_event(out_event)
             sel_countries = set(selected_countries.labels)
             prev_selection = set(
                 st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels

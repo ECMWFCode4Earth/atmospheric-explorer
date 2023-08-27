@@ -36,7 +36,7 @@ with st.form("selection"):
     if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
         st.selectbox(
             label="Entity level",
-            options=[level for level in MapLevels],
+            options=list(MapLevels),
             index=0,
             key=GeneralSessionStateKeys.MAP_LEVEL,
         )
@@ -48,7 +48,7 @@ with st.form("selection"):
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES
             ] = EntitySelection.from_entities_list(
-                entities=organizations[org], level="Countries"
+                entities=organizations[org], level=MapLevels.COUNTRIES
             )
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
@@ -62,10 +62,7 @@ with st.form("selection"):
                 not isinstance(prev_sel, EntitySelection)
                 or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             ):
-                new_sel = EntitySelection.convert_selection(
-                    shape_selection=prev_sel,
-                    level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                )
+                new_sel = EntitySelection.convert_selection(prev_sel)
                 st.multiselect(
                     st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
                     options=sh["label"].unique(),
@@ -86,10 +83,8 @@ with st.form("selection"):
             ] = EntitySelection.from_entities_list(
                 entities=st.session_state[
                     GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-                ],
-                level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+                ]
             )
-
     st.form_submit_button("Update map")
 progress_bar.progress(0.2, "Building side bar")
 build_sidebar()

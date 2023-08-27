@@ -1,7 +1,13 @@
+"""\
+Mappings and configs for the interactive map.
+"""
+
 from enum import StrEnum
 
 
 class MapLevels(StrEnum):
+    """Levels for the interactive map"""
+
     CONTINENTS = "Continents"
     ORGANIZATIONS = "Organizations"
     COUNTRIES = "Countries"
