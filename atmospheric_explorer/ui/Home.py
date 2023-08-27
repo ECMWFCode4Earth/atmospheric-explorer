@@ -46,9 +46,7 @@ with st.form("selection"):
             )
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES
-            ] = EntitySelection.from_entities_list(
-                entities=organizations[org], level=MapLevels.COUNTRIES
-            )
+            ] = EntitySelection.from_entities_list(organizations[org])
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
             ] = organizations[org]
