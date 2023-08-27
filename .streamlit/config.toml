@@ -14,7 +14,7 @@ disableWatchdogWarning = false
 
 # If True, will show a warning when you run a Streamlit-enabled script via "python my_script.py".
 # Default: true
-showWarningOnDirectExecution = true
+showWarningOnDirectExecution = false
 
 # DataFrame serialization.
 # Acceptable values: - 'legacy': Serialize DataFrames using Streamlit's custom format. Slow but battle-tested. - 'arrow': Serialize DataFrames using Apache Arrow. Much faster and versatile.

@@ -25,7 +25,7 @@ progress_bar = st.progress(0.0, "Starting app")
 st.title("Atmospheric Explorer")
 st.subheader("Geographical selection")
 logger.info("Checking session state")
-progress_bar.progress(0.3, "Building selectors")
+progress_bar.progress(0.2, "Building selectors")
 with st.form("selection"):
     st.checkbox(
         label="Select entities",
@@ -53,25 +53,25 @@ with st.form("selection"):
                 GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
             ] = organizations[org]
         else:
-            sh = shapefile_dataframe(
+            sh_all_labels = shapefile_dataframe(
                 st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            )
+            )["label"].unique()
             prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
             if (
                 not isinstance(prev_sel, EntitySelection)
                 or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             ):
-                new_sel = EntitySelection.convert_selection(prev_sel)
+                new_labels = EntitySelection.convert_selection(prev_sel).labels
                 st.multiselect(
                     st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                    options=sh["label"].unique(),
-                    default=new_sel.labels,
+                    options=sh_all_labels,
+                    default=new_labels,
                     key=GeneralSessionStateKeys.SELECTED_SHAPES_LABELS,
                 )
             else:
                 st.multiselect(
                     st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                    options=sh["label"].unique(),
+                    options=sh_all_labels,
                     default=st.session_state[
                         GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
                     ],
@@ -85,11 +85,11 @@ with st.form("selection"):
                 ]
             )
     st.form_submit_button("Update map")
-progress_bar.progress(0.2, "Building side bar")
+progress_bar.progress(0.4, "Building side bar")
 build_sidebar()
-progress_bar.progress(0.4, "Building map")
+progress_bar.progress(0.6, "Building map")
 out_event = show_folium_map()
-progress_bar.progress(0.9, "Updating session")
+progress_bar.progress(0.8, "Updating session")
 update_session_map_click(out_event)
 progress_bar.progress(1.0, "Done")
 progress_bar.empty()
