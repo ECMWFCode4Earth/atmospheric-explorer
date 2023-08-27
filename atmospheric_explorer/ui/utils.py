@@ -7,7 +7,7 @@ import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.ui.interactive_map.interactive_map import map_levels
-from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection
+from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection, GenericShapeSelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -34,8 +34,11 @@ def page_init():
     if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
-        ] = EntitySelection.from_entities_list(
-            ["Italy"], st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+        ] = GenericShapeSelection.convert_selection(
+            EntitySelection.from_entities_list(
+                ["Italy"],
+                st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+            )
         )
 
 

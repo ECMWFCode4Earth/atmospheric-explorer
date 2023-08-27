@@ -35,8 +35,7 @@ with st.form("selection"):
     if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
         st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = st.selectbox(
             label="Entity level",
-            options=map_levels,
-            index=map_levels.index(st.session_state[GeneralSessionStateKeys.MAP_LEVEL]),
+            options=map_levels
         )
         if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
             org = st.selectbox(
@@ -52,22 +51,32 @@ with st.form("selection"):
             sh = EntitySelection.shapefile_dataframe(
                 st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             )
-            entities = st.multiselect(
-                st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                options=sh["label"].unique(),
-                default=EntitySelection.convert_selection(
-                    shape_selection=st.session_state[
-                        GeneralSessionStateKeys.SELECTED_SHAPES
-                    ],
+            prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+            if not isinstance(prev_sel, EntitySelection) or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]:
+                new_sel = EntitySelection.convert_selection(
+                    shape_selection=prev_sel,
                     level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                ).labels,
-            )
+                )
+                st.multiselect(
+                    st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+                    options = sh["label"].unique(),
+                    default = new_sel.labels,
+                    key = 'entities'
+                )
+            else:
+                st.multiselect(
+                    st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+                    options = sh["label"].unique(),
+                    default = st.session_state['entities'],
+                    key = 'entities'
+                )
             st.session_state[
                 GeneralSessionStateKeys.SELECTED_SHAPES
             ] = EntitySelection.from_entities_list(
-                entities=entities,
+                entities=st.session_state['entities'],
                 level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
             )
+            
     st.form_submit_button("Update map")
 progress_bar.progress(0.2, "Building side bar")
 build_sidebar()
