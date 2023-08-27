@@ -8,10 +8,20 @@ from folium.plugins import Draw
 from streamlit_folium import st_folium
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.shape_selection import ShapeSelection
+from atmospheric_explorer.ui.interactive_map.shape_selection import (
+    EntitySelection,
+    Selection,
+)
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
+
+map_levels = [
+    "Continents",
+    "Organizations",
+    "Countries",
+    "Countries with subunits",
+]
 
 
 def _country_hover_style(_):
@@ -29,7 +39,7 @@ def world_polygon(level: str) -> folium.GeoJson:
     """Return a folium GeoJson object that adds colored polygons over all countries"""
     logger.info("Fetch world polygon")
     return folium.GeoJson(
-        ShapeSelection.shapefile_dataframe(level),
+        EntitySelection.shapefile_dataframe(level),
         name="world_polygon",
         highlight_function=_country_hover_style,
         zoom_on_click=False,
@@ -101,9 +111,9 @@ def update_session_map_click(out_event):
             "last_object_clicked"
         ]
     if out_event.get("last_active_drawing") is not None:
-        selected_shape = ShapeSelection.from_out_event(out_event)
+        selected_shape = Selection.from_out_event(out_event)
         if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
-            selected_countries = ShapeSelection.entities_from_generic_shape(
+            selected_countries = EntitySelection.convert_selection(
                 selected_shape, st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             )
             sel_countries = set(selected_countries.labels)
