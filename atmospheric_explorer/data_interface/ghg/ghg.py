@@ -11,6 +11,9 @@ from datetime import datetime
 from glob import glob
 
 import xarray as xr
+import rioxarray
+import numpy as np
+from atmospheric_explorer.config import crs
 
 from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
@@ -47,7 +50,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def __init__(
         self: InversionOptimisedGreenhouseGas,
-        data_variables: str | set[str] | list[str],
+        data_variables: str,
         quantity: str,
         input_observations: str,
         time_aggregation: str,
@@ -184,14 +187,30 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
             data_frame = data_frame.to_dataset()
         return data_frame
 
+    @staticmethod
+    def _align_dims(data_frame: xr.Dataset, dim: str, values: list) -> xr.Dataset:
+        if dim not in data_frame.dims:
+            return data_frame.expand_dims({dim: values})
+        return data_frame
+
+    def _simplify_dataset(self: InversionOptimisedGreenhouseGas, dataset: xr.Dataset):
+        if self.data_variables == "methane":
+            dataset = dataset.drop(['longitude_bounds', 'latitude_bounds', 'time_bounds'])
+            dataset = dataset.rename({'cell_area': 'area'})
+        dataset = InversionOptimisedGreenhouseGas._align_dims(dataset, "time_aggregation", np.array([self.time_aggregation], dtype='object'))
+        dataset = InversionOptimisedGreenhouseGas._align_dims(dataset, "input_observations", np.array([self.input_observations], dtype='object'))
+        return dataset.rio.write_crs(crs)
+
     def read_dataset(self: InversionOptimisedGreenhouseGas) -> xr.Dataset:
         """Returns data as an xarray.Dataset"""
         # Dataset MUST have time dimension
         # Read first file to check dimensions
         files = sorted(glob(self.file_full_path))
-        data_frame = xr.open_dataset(files[0])
-        if "time" in data_frame.dims:
+        dataset = xr.open_dataset(files[0])
+        if "time" in dataset.dims:
             logger.debug("Reading files using xarray.open_mfdataset")
-            return xr.open_mfdataset(self.file_full_path)
-        logger.debug("Reading files iteratively")
-        return self._read_dataset_no_time_coord()
+            dataset = xr.open_mfdataset(self.file_full_path)
+        else:
+            logger.debug("Reading files iteratively")
+            dataset = self._read_dataset_no_time_coord()
+        return self._simplify_dataset(dataset)

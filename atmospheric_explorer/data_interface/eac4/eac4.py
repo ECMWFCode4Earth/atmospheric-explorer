@@ -8,6 +8,8 @@ from __future__ import annotations
 import os
 
 import xarray as xr
+import rioxarray
+from atmospheric_explorer.config import crs
 
 from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
@@ -148,6 +150,9 @@ class EAC4Instance(CAMSDataInterface):
         """
         return super()._download(self.file_full_path)
 
+    def _simplify_dataset(self: EAC4Instance, dataset: xr.Dataset):
+        return dataset.rio.write_crs(crs)
+
     def read_dataset(self: EAC4Instance) -> xr.Dataset:
         """Returns data as an xarray.Dataset"""
-        return xr.open_dataset(self.file_full_path)
+        return self._simplify_dataset(xr.open_dataset(self.file_full_path))

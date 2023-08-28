@@ -25,7 +25,7 @@ def clip_and_concat_shapes(
         df_clipped = data_frame.rio.clip(
             [mapping(shapes)],
             drop=True,
-            all_touched=True,
+            all_touched=True
         )
         df_clipped = df_clipped.expand_dims({"label": [labels]})
         df_clipped_concat = xr.concat(

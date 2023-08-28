@@ -155,9 +155,9 @@ def line_with_ci_subplots(
     return fig
 
 
-def _ghg_align_dims(data_frame: xr.Dataset, dim: str, values: list) -> xr.Dataset:
-    if dim not in data_frame.dims:
-        return data_frame.assign_coords({dim: values})
+def _ghg_flux_over_full_area(data_frame: xr.Dataset, data_variable: str, var_name: str):
+    data_frame[var_name] = data_frame[var_name] * data_frame["area"]
+    data_frame[var_name].attrs["units"] = data_frame[var_name].attrs["units"].replace(' m-2', '')
     return data_frame
 
 
@@ -196,10 +196,7 @@ def _ghg_surface_satellite_yearly_data(
     surface_data.download()
     # Read data as dataset
     df_surface = surface_data.read_dataset()
-    df_surface = _ghg_align_dims(df_surface, "time_aggregation", ["monthly_mean"])
-    df_surface = _ghg_align_dims(df_surface, "input_observations", ["surface"])
     df_surface = df_surface.squeeze(dim="time_aggregation")
-    df_surface[var_name] = df_surface[var_name] * df_surface["area"]
     if add_satellite_observations:
         satellite_data = InversionOptimisedGreenhouseGas(
             data_variables=data_variable,
@@ -212,16 +209,14 @@ def _ghg_surface_satellite_yearly_data(
         satellite_data.download()
         # Read data as dataset
         df_satellite = satellite_data.read_dataset()
-        df_satellite = _ghg_align_dims(
-            df_satellite, "time_aggregation", ["monthly_mean"]
-        )
-        df_satellite = _ghg_align_dims(df_satellite, "input_observations", ["surface"])
         df_satellite = df_satellite.squeeze(dim="time_aggregation")
-        df_satellite[var_name] = df_satellite[var_name] * df_satellite["area"]
         df_total = xr.concat([df_surface, df_satellite], dim="input_observations")
     else:
         df_total = df_surface
-    df_total = df_total.rio.write_crs("EPSG:4326")
+    # Convert units
+    df_total[var_name] = GHGConfig.convert_units_array(
+        df_total[var_name], data_variable, "surface_flux", "monthly_mean"
+    )
     # Check only needed years and months are present
     df_total = df_total.where(
         df_total["time.year"].isin([int(y) for y in years]), drop=True
@@ -229,20 +224,30 @@ def _ghg_surface_satellite_yearly_data(
     # Clip countries
     if shapes is not None:
         df_total = clip_and_concat_shapes(df_total, shapes)
-    # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
-    df_total = df_total.sortby("time").sum(dim=["longitude", "latitude"])
-    # Convert units
-    da_converted = GHGConfig.convert_units_array(
-        df_total[var_name], data_variable, "surface_flux", "monthly_mean"
-    )
-    da_converted_agg = (
-        da_converted.resample(time="YS")
-        .map(confidence_interval, dim="time")
-        .rename({"time": "Year", "input_observations": "color"})
-    )
-    da_converted_agg.name = var_name
-    da_converted_agg.attrs = da_converted.attrs
-    da_converted_agg.attrs["units"] = "kg"
+    with xr.set_options(keep_attrs=True):
+        if data_variable != "nitrous_oxide":
+            # Multiply fluxes over full area
+            df_total = _ghg_flux_over_full_area(df_total, data_variable, var_name)
+            # Drop all values that are null over all coords, compute the mean of the remaining values over long and lat
+            df_total = df_total.sortby("time").sum(dim=["longitude", "latitude"])
+            da_converted_agg = (
+                df_total[var_name].resample(time="YS")
+                .map(confidence_interval, dim="time")
+                .rename({"time": "Year", "input_observations": "color"})
+            )
+            da_converted_agg.name = var_name
+            da_converted_agg.attrs = df_total[var_name].attrs
+            da_converted_agg.attrs["units"] = 'kg year**-1'
+        else:
+            df_total = df_total.sortby("time").mean(dim=["longitude", "latitude"])
+            da_converted_agg = (
+                df_total[var_name].resample(time="YS")
+                .map(confidence_interval, dim="time")
+                .rename({"time": "Year", "input_observations": "color"})
+            )
+            da_converted_agg.name = var_name
+            da_converted_agg.attrs = df_total[var_name].attrs
+            da_converted_agg.attrs["units"] = 'kg m**-2 year**-1'
     # Pandas is easier to use for plotting
     return da_converted_agg
 
