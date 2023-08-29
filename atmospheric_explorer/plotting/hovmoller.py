@@ -187,7 +187,7 @@ def eac4_hovmoeller_plot(
     )
     fig.update_layout(
         title={
-            "text": f"{title} [{df_converted.attrs['units']}]",
+            "text": title,
             "x": 0.45,
             "y": 0.95,
             "automargin": True,

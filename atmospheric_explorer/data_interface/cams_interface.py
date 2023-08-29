@@ -71,7 +71,9 @@ class CAMSDataInterface(ABC):
         Uses cdsapi to interact with CAMS ADS.
         """
         client = cdsapi.Client()
-        client.retrieve(self._dataset_name, self._build_call_body(), file_fullpath)
+        body = self._build_call_body()
+        logger.debug("Calling cdsapi with body %s", body)
+        client.retrieve(self._dataset_name, body, file_fullpath)
         logger.info("Finished downloading file %s", file_fullpath)
 
     @abstractmethod
