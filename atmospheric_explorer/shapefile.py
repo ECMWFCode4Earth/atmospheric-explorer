@@ -24,7 +24,7 @@ class ShapefilesDownloader:
     This class manages the download, extraction and saving on disk of
     shapefiles. Shapefiles will be downloaded as zip files and then extracted into a folder.
     Shapefiles are downloaded from Natural Earth Data.
-    By default, the class download a 10m resolution "admin" shapefile for all countries in the world.
+    By default, the class download a 50m resolution "admin" shapefile for all countries in the world.
 
     Attributes:
         shapefiles_content (bytes): downloaded shapefile
@@ -55,11 +55,11 @@ class ShapefilesDownloader:
     def __init__(
         self: ShapefilesDownloader,
         dst_dir: str | None = None,
-        resolution: str = "10m",
+        resolution: str = "50m",
         map_type: str = "cultural",
         info_type: str = "admin",
         depth: int = 0,
-        instance: str = "countries",
+        instance: str = "map_subunits",
         timeout: int = 10,
     ):  # pylint: disable=too-many-arguments
         self.dst_dir = (

@@ -40,7 +40,7 @@ ghg_data_variable_var_name_mapping = {
     k: [
         var["var_name"]
         for var in v["surface_flux"]["monthly_mean"]
-        if var["var_name"] != "area"
+        if "area" not in var["var_name"]
     ]
     for k, v in ghg_config["variables"].items()
 }
@@ -48,7 +48,7 @@ ghg_data_variable_default_plot_title_mapping = {
     k: [
         var["long_name"]
         for var in v["surface_flux"]["monthly_mean"]
-        if var["var_name"] != "area"
+        if "area" not in var["var_name"]
     ]
     for k, v in ghg_config["variables"].items()
 }

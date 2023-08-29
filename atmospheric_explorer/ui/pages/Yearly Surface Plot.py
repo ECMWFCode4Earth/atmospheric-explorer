@@ -77,6 +77,8 @@ def _vars_filter():
             label="Include satellite observations",
             value=st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE],
         )
+    elif st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "nitrous_oxide":
+        st.warning("Please be aware that nitrous_oxide dataset is missing the cell area, so values will be shown as average flux (kg m-2) instead of total amount (kg)")
 
 
 def _filters():
@@ -103,6 +105,7 @@ def _filters():
     return v_name, title
 
 
+# Page
 _init()
 var_name, plot_title = _filters()
 build_sidebar()
@@ -142,7 +145,10 @@ if st.button("Generate plot"):
                     title=plot_title,
                     var_name=var_name,
                     shapes=shapes.dataframe,
-                    add_satellite_observations=add_satellite_observations,
+                    add_satellite_observations=(
+                        add_satellite_observations
+                        and data_variable == "carbon_dioxide"
+                    ),
                 ),
                 use_container_width=True,
             )

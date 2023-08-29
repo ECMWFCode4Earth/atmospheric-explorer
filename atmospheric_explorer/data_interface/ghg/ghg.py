@@ -10,8 +10,10 @@ import zipfile
 from datetime import datetime
 from glob import glob
 
+import numpy as np
 import xarray as xr
 
+from atmospheric_explorer.config import crs
 from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder
@@ -47,7 +49,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     def __init__(
         self: InversionOptimisedGreenhouseGas,
-        data_variables: str | set[str] | list[str],
+        data_variables: str,
         quantity: str,
         input_observations: str,
         time_aggregation: str,
@@ -150,48 +152,54 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         os.remove(zip_filename)
         logger.info("Removed %s", zip_filename)
 
-    def _read_dataset_no_time_coord(
+    @staticmethod
+    def _align_dims(dataset: xr.Dataset, dim: str, values: list) -> xr.Dataset:
+        if dim not in dataset.dims:
+            return dataset.expand_dims({dim: values})
+        return dataset
+
+    def _simplify_dataset(self: InversionOptimisedGreenhouseGas, dataset: xr.Dataset):
+        if self.data_variables == "methane":
+            dataset = dataset.drop(
+                ["longitude_bounds", "latitude_bounds", "time_bounds"]
+            )
+            dataset = dataset.rename({"cell_area": "area"})
+        dataset = InversionOptimisedGreenhouseGas._align_dims(
+            dataset,
+            "time_aggregation",
+            np.array([self.time_aggregation], dtype="object"),
+        )
+        dataset = InversionOptimisedGreenhouseGas._align_dims(
+            dataset,
+            "input_observations",
+            np.array([self.input_observations], dtype="object"),
+        )
+        return dataset.rio.write_crs(crs)
+
+    def read_dataset(
         self: InversionOptimisedGreenhouseGas,
     ) -> xr.Dataset:
         """\
         Returns data as an xarray.Dataset.
 
         This function reads multi-file datasets where each file corresponds to a time variable,
-        but the file themselves have no time variable inside. It adds a time variable for each file
-        and concat all files into a dataset.
+        but the file themselves may miss the time dimension. It adds a time dimension for each file
+        that's missing it and concats all files into a dataset.
         """
+        logger.debug("Reading files iteratively from path %s", self.file_full_path)
         # Create dataset from first file
         files = sorted(glob(self.file_full_path))
+        dataset = xr.open_dataset(files[0])
         date_index = datetime.strptime(files[0].split("_")[-1].split(".")[0], "%Y%m")
-        data_frame = xr.open_dataset(files[0])
-        data_frame = data_frame.expand_dims({"time": [date_index]})
+        dataset = self._align_dims(dataset, "time", [date_index])
         for file in files[1:]:
             # Merge remaining files
             # ! This loop replaces xr.open_mfdataset(surface_data.file_full_path) that does not work
             # (because time coordinate is not included in dataframe)
+            temp = xr.open_dataset(file)
             date_index = datetime.strptime(file.split("_")[-1].split(".")[0], "%Y%m")
-            temp = xr.open_dataset(file).expand_dims({"time": [date_index]})
-            data_frame = xr.combine_by_coords(
-                [data_frame, temp], combine_attrs="override"
-            )
-        data_frame = data_frame.expand_dims(
-            {
-                "input_observations": [self.input_observations],
-                "time_aggregation": [self.time_aggregation],
-            }
-        )
-        if isinstance(data_frame, xr.DataArray):
-            data_frame = data_frame.to_dataset()
-        return data_frame
-
-    def read_dataset(self: InversionOptimisedGreenhouseGas) -> xr.Dataset:
-        """Returns data as an xarray.Dataset"""
-        # Dataset MUST have time dimension
-        # Read first file to check dimensions
-        files = sorted(glob(self.file_full_path))
-        data_frame = xr.open_dataset(files[0])
-        if "time" in data_frame.dims:
-            logger.debug("Reading files using xarray.open_mfdataset")
-            return xr.open_mfdataset(self.file_full_path)
-        logger.debug("Reading files iteratively")
-        return self._read_dataset_no_time_coord()
+            temp = self._align_dims(temp, "time", [date_index])
+            dataset = xr.combine_by_coords([dataset, temp], combine_attrs="override")
+        if isinstance(dataset, xr.DataArray):
+            dataset = dataset.to_dataset()
+        return self._simplify_dataset(dataset)

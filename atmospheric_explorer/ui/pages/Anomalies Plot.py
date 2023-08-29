@@ -97,6 +97,7 @@ def _filters():
     return v_name, title
 
 
+# Page
 _init()
 var_name, plot_title = _filters()
 build_sidebar()

@@ -95,7 +95,7 @@ variables:
     surface_flux:
       monthly_mean:
         - var_name: cell_area
-          short_name: cell_area
+          short_name: area
           conversion: *grid_box_area
           long_name: Cell area
         - var_name: ch4_emis_wetlands

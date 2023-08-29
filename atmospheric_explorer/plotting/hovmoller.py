@@ -187,11 +187,10 @@ def eac4_hovmoeller_plot(
     )
     fig.update_layout(
         title={
-            "text": f"{title} [{df_converted.attrs['units']}]",
-            "x": 0.45,
-            "y": 0.95,
-            "automargin": True,
-            "yref": "container",
+            "text": title,
+            "x": 0.5,
+            "xanchor": "center",
+            "xref": "paper",
             "font": {"size": 19},
         },
         coloraxis={"colorscale": colorscale, "colorbar": colorbar},

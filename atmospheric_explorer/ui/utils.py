@@ -6,7 +6,8 @@ from pathlib import Path
 import streamlit as st
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.shape_selection import ShapeSelection
+from atmospheric_explorer.ui.interactive_map.map_config import MapLevels
+from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -26,31 +27,40 @@ def page_init():
     local_css(Path(__file__).resolve().parent.joinpath("style.css"))
     if GeneralSessionStateKeys.LAST_OBJECT_CLICKED not in st.session_state:
         st.session_state[GeneralSessionStateKeys.LAST_OBJECT_CLICKED] = [42, 13]
+    if GeneralSessionStateKeys.SELECT_ENTITIES not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = True
+    if GeneralSessionStateKeys.MAP_LEVEL not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = MapLevels.CONTINENTS
     if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
-        ] = ShapeSelection.from_countries_list(["Italy"])
-    if GeneralSessionStateKeys.SELECT_COUNTRIES not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES] = False
+        ] = EntitySelection.from_entities_list(
+            ["Europe"], st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+        )
+    if GeneralSessionStateKeys.SELECTED_SHAPES_LABELS not in st.session_state:
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = ["Europe"]
 
 
 def build_sidebar():
     """Build sidebar"""
     logger.info("Building sidebar")
+    level_name = st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+    if level_name == MapLevels.ORGANIZATIONS:
+        level_name = MapLevels.COUNTRIES
     with st.sidebar:
         if st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES) is not None:
             shapes = set(
                 st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
             )
             if len(shapes) > 3:
-                selected_shapes_text = f"{len(shapes)} countries"
+                selected_shapes_text = f"{len(shapes)} {level_name.lower()}"
             else:
                 selected_shapes_text = "<br>" + "<br>".join(
                     st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES).labels
                 )
             descr = (
-                f"Selected countries: {selected_shapes_text}"
-                if st.session_state[GeneralSessionStateKeys.SELECT_COUNTRIES]
+                f"Selected {level_name.lower()}: {selected_shapes_text}"
+                if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]
                 else "Selected generic shape"
             )
             st.write(descr, unsafe_allow_html=True)
