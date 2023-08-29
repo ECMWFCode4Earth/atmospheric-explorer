@@ -3,11 +3,9 @@ APIs for generating dynamic and static plots
 """
 from __future__ import annotations
 
-from math import log10
 from textwrap import dedent
 
 import geopandas as gpd
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
@@ -18,56 +16,9 @@ from atmospheric_explorer.data_transformations import (
     shifting_long,
 )
 from atmospheric_explorer.loggers import get_logger
+from atmospheric_explorer.plotting.plot_utils import sequential_colorscale_bar
 
 logger = get_logger("atmexp")
-
-
-def _sequential_colorscale_bar(
-    values: list[float] | list[int], colors: list[str]
-) -> tuple[list, dict]:
-    """Compute a sequential colorscale and colorbar form a list of values and a list of colors"""
-    vals = np.array(values)
-    vals.sort()
-    separators = np.linspace(vals.min(), vals.max(), len(colors) + 1)
-    separators_scaled = np.linspace(0, 1, len(colors) + 1)
-    color_scale_custom = []
-    for i, color in enumerate(colors):
-        color_scale_custom.append([separators_scaled[i], color])
-        color_scale_custom.append([separators_scaled[i + 1], color])
-    tickvals = [
-        np.mean(separators[k : k + 2]) for k in range(len(separators) - 1)
-    ]  # position of tick text
-    logger.debug("Separators for colorbar: %s", separators)
-    if (separators.max() - separators.min()) < (len(separators) - 1):
-        n_decimals = int(
-            round(1 - log10(separators.max() / (len(separators) - 1)), 0)
-        )  # number of decimals needed to distinguish color levels
-        logger.debug("Colorbar decimals: %i", n_decimals)
-        ticktext = (
-            [f"<{separators[1]:.{n_decimals}f}"]
-            + [
-                f"{separators[k]:.{n_decimals}f}-{separators[k+1]:.{n_decimals}f}"
-                for k in range(1, len(separators) - 2)
-            ]
-            + [f">{separators[-2]:.{n_decimals}f}"]
-        )
-    else:
-        logger.debug("Colorbar decimals: 0")
-        ticktext = (
-            [f"<{separators[1]:.0f}"]
-            + [
-                f"{separators[k]:.0f}-{separators[k+1]:.0f}"
-                for k in range(1, len(separators) - 2)
-            ]
-            + [f">{separators[-2]:.0f}"]
-        )
-    colorbar_custom = {
-        "thickness": 25,
-        "tickvals": tickvals,
-        "ticktext": ticktext,
-        "xpad": 0,
-    }
-    return color_scale_custom, colorbar_custom
 
 
 def _eac4_hovmoeller_data(
@@ -182,7 +133,7 @@ def eac4_hovmoeller_plot(
         fig.update_yaxes(title="Latitude [degrees]")
         if base_colorscale is None:
             base_colorscale = px.colors.sequential.Turbo
-    colorscale, colorbar = _sequential_colorscale_bar(
+    colorscale, colorbar = sequential_colorscale_bar(
         df_converted.values.flatten(), base_colorscale
     )
     fig.update_layout(

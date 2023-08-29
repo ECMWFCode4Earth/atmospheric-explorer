@@ -8,9 +8,8 @@ from __future__ import annotations
 import os
 
 import xarray as xr
-import rioxarray
-from atmospheric_explorer.config import crs
 
+from atmospheric_explorer.config import crs
 from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import create_folder
@@ -19,7 +18,6 @@ logger = get_logger("atmexp")
 
 
 class EAC4Instance(CAMSDataInterface):
-    # TODO: add multilevel variable parameters  # pylint: disable=fixme
     # pylint: disable=line-too-long
     # pylint: disable=too-many-instance-attributes
     """\
