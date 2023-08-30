@@ -48,29 +48,21 @@ def _init():
 
 def _dates_filters():
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
-    ] = start_date_col.date_input(
+    start_date_col.date_input(
         label="Start date",
-        value=st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE],
+        key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE,
     )
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
-    ] = end_date_col.date_input(
+    end_date_col.date_input(
         label="End date",
-        value=st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE],
+        key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE,
     )
 
 
 def _times_filters():
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = sorted(
-        st.multiselect(
-            label="Times",
-            options=eac4_times,
-            default=st.session_state[
-                EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES
-            ],
-        )
+    st.multiselect(
+        label="Times",
+        options=eac4_times,
+        key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES,
     )
 
 
@@ -79,9 +71,11 @@ def _filters():
         logger.info("Adding filters")
         _dates_filters()
         _times_filters()
-        st.session_state[
-            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-        ] = st.selectbox(label="Data variable", options=eac4_sl_data_variables)
+        st.selectbox(
+            label="Data variable",
+            options=eac4_sl_data_variables,
+            key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE,
+        )
         v_name = eac4_sl_data_variable_var_name_mapping[
             st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
         ]

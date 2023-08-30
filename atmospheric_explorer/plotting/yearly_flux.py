@@ -94,6 +94,8 @@ def _ghg_surface_satellite_yearly_data(
     # Clip countries
     if shapes is not None:
         df_total = clip_and_concat_shapes(df_total, shapes)
+    else:
+        df_total = df_total.expand_dims({"label": [""]})
     with xr.set_options(keep_attrs=True):
         if data_variable != "nitrous_oxide":
             # Multiply fluxes over full area

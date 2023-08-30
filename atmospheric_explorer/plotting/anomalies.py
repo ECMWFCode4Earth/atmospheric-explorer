@@ -39,6 +39,8 @@ def _eac4_anomalies_data(
     df_down = shifting_long(df_down)
     if shapes is not None:
         df_down = clip_and_concat_shapes(df_down, shapes)
+    else:
+        df_down = df_down.expand_dims({"label": [""]})
     df_agg = (
         df_down.mean(dim=["latitude", "longitude"])
         .resample(time=resampling, restore_coord_dims=True)

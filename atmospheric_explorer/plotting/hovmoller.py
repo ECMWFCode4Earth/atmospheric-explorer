@@ -32,29 +32,15 @@ def _eac4_hovmoeller_data(
     model_level: list[str] | None = None,
 ) -> xr.Dataset:
     # pylint: disable=too-many-arguments
-    if pressure_level is not None:
-        data = EAC4Instance(
-            data_variables=data_variable,
-            pressure_level=pressure_level,
-            dates_range=dates_range,
-            time_values=time_values,
-        )
-    elif model_level is not None:
-        data = EAC4Instance(
-            data_variables=data_variable,
-            model_level=model_level,
-            dates_range=dates_range,
-            time_values=time_values,
-        )
-    else:
-        data = EAC4Instance(
-            data_variables=data_variable,
-            dates_range=dates_range,
-            time_values=time_values,
-        )
+    data = EAC4Instance(
+        data_variables=data_variable,
+        dates_range=dates_range,
+        time_values=time_values,
+        pressure_level=pressure_level,
+        model_level=model_level,
+    )
     data.download()
     df_down = data.read_dataset()
-    df_down = df_down.rio.write_crs("EPSG:4326")
     df_down = shifting_long(df_down)
     if shapes is not None:
         df_down = clip_and_concat_shapes(df_down, shapes).sel(
@@ -83,8 +69,8 @@ def eac4_hovmoeller_plot(
     pressure_level: list[str] | None = None,
     model_level: list[str] | None = None,
     resampling: str = "1MS",
-    base_colorscale: list[str] = None,
-    shapes: gpd.GeoDataFrame = None,
+    base_colorscale: list[str] | None = None,
+    shapes: gpd.GeoDataFrame | None = None,
 ) -> go.Figure:
     """Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset."""
     # pylint: disable=too-many-arguments
