@@ -53,7 +53,7 @@ class Selection(ABC):
     def labels(self) -> list[str]:
         """Selection labels, useful when countries are selected."""
         if not self.empty():
-            return self.dataframe["label"].unique()
+            return list(self.dataframe["label"].unique())
         return []
 
     @staticmethod

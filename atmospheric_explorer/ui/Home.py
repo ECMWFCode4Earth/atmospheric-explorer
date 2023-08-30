@@ -23,68 +23,54 @@ def _init():
     page_init()
     if "used_form" not in st.session_state:
         st.session_state["used_form"] = False
+    if "select_entities_helper" not in st.session_state:
+        st.session_state["select_entities_helper"] = st.session_state[
+            GeneralSessionStateKeys.SELECT_ENTITIES
+        ]
+    if "map_level_helper" not in st.session_state:
+        st.session_state["map_level_helper"] = st.session_state[
+            GeneralSessionStateKeys.MAP_LEVEL
+        ]
+    if "selected_shapes_labels" not in st.session_state:
+        st.session_state["selected_shapes_labels"] = st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES
+        ].labels
 
 
 def _selectors_org():
     org = st.selectbox(
-        st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+        st.session_state["map_level_helper"],
         options=organizations.keys(),
     )
     st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
     ] = EntitySelection.from_entities_list(organizations[org])
-    st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = st.session_state[
+    st.session_state["selected_shapes_labels"] = st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
     ].labels
 
 
 def _selectors_no_org():
-    sh_all_labels = shapefile_dataframe(
-        st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-    )["label"].unique()
-    prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
-    if not isinstance(prev_sel, EntitySelection) or (
-        isinstance(prev_sel, EntitySelection)
-        and prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-    ):
-        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES] = EntitySelection()
-        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = []
     if st.session_state["used_form"]:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
         ] = EntitySelection.from_entities_list(
-            st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS]
+            st.session_state["selected_shapes_labels"]
         )
     else:
-        st.session_state[
-            GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-        ] = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
+        st.session_state["selected_shapes_labels"] = st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES
+        ].labels
     st.session_state["used_form"] = False
-    prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
-    if (
-        not isinstance(prev_sel, EntitySelection)
-        or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-    ):
-        st.session_state[
-            GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-        ] = st.multiselect(
-            st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-            options=sh_all_labels,
-            default=[],
-        )
-    else:
-        st.session_state[
-            GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-        ] = st.multiselect(
-            st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-            options=sh_all_labels,
-            default=st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS],
-        )
-    st.session_state[
-        GeneralSessionStateKeys.SELECTED_SHAPES
-    ] = EntitySelection.from_entities_list(
-        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS]
+    sh_all_labels = shapefile_dataframe(st.session_state["map_level_helper"])[
+        "label"
+    ].unique()
+    st.multiselect(
+        st.session_state["map_level_helper"],
+        options=sh_all_labels,
+        key="selected_shapes_labels",
     )
+    st.write(st.session_state["selected_shapes_labels"])
 
 
 def selectors():
@@ -94,23 +80,30 @@ def selectors():
         st.session_state["used_form"] = True
 
     with st.form("selectors"):
-        st.checkbox(
+        st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = st.checkbox(
             label="Select entities",
-            key=GeneralSessionStateKeys.SELECT_ENTITIES,
+            key="select_entities_helper",
             help="Switch to the selection of political or geographical entities such as continents and countries",
         )
-        if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
-            st.selectbox(
+        if st.session_state["select_entities_helper"]:
+            if (
+                st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+                != st.session_state["map_level_helper"]
+            ):
+                st.session_state[
+                    GeneralSessionStateKeys.SELECTED_SHAPES
+                ] = EntitySelection()
+                st.session_state["selected_shapes_labels"] = []
+            st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = st.selectbox(
                 label="Entity level",
                 options=list(MapLevels),
-                index=0,
-                key=GeneralSessionStateKeys.MAP_LEVEL,
+                key="map_level_helper",
                 help="""\
                 Switch between continents, countries etc.
                 After selecting the level, click the "Update Selection" button to make the selection effective.
                 """,
             )
-            if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
+            if st.session_state["map_level_helper"] == "Organizations":
                 _selectors_org()
             else:
                 _selectors_no_org()
