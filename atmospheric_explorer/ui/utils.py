@@ -39,19 +39,23 @@ def build_sidebar():
     """Build sidebar"""
     logger.info("Building sidebar")
     level_name = st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-    if level_name == MapLevels.ORGANIZATIONS:
-        level_name = MapLevels.COUNTRIES
     with st.sidebar:
         if not st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].empty():
-            shapes = set(
-                st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
-            )
-            if len(shapes) > 3:
-                selected_shapes_text = f"{len(shapes)} {level_name.lower()}"
-            else:
-                selected_shapes_text = "<br>" + "<br>".join(
-                    st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES).labels
+            if (
+                st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+                == MapLevels.ORGANIZATIONS
+            ):
+                labels = set(
+                    [st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION]]
                 )
+            else:
+                labels = set(
+                    st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
+                )
+            if len(labels) > 3:
+                selected_shapes_text = f"{len(labels)} {level_name.lower()}"
+            else:
+                selected_shapes_text = "<br>" + "<br>".join(labels)
             descr = (
                 f"Selected {level_name.lower()}: {selected_shapes_text}"
                 if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]

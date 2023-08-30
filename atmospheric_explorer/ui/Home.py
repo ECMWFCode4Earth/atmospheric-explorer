@@ -38,13 +38,15 @@ def _init():
 
 
 def _selectors_org():
-    org = st.selectbox(
+    st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION] = st.selectbox(
         st.session_state["map_level_helper"],
         options=organizations.keys(),
     )
     st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
-    ] = EntitySelection.from_entities_list(organizations[org])
+    ] = EntitySelection.from_entities_list(
+        organizations[st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION]]
+    )
     st.session_state["selected_shapes_labels"] = st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
     ].labels
@@ -114,6 +116,7 @@ def selectors():
             if st.session_state["map_level_helper"] == "Organizations":
                 _selectors_org()
             else:
+                st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION] = None
                 _selectors_no_org()
         st.form_submit_button(
             "Update Selection",

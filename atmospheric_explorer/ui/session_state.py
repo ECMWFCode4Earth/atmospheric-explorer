@@ -12,6 +12,7 @@ class GeneralSessionStateKeys(Enum):
     SELECT_ENTITIES = "select_entities"
     LAST_ACTIVE_DRAWING = "last_active_drawing"
     MAP_LEVEL = "map_level"
+    SELECTED_ORGANIZATION = "selected_organization"
 
 
 class EAC4AnomaliesSessionStateKeys(Enum):
