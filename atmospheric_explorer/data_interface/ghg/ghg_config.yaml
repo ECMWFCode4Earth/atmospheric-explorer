@@ -1,0 +1,135 @@
+inst_flux: &inst_flux
+  conversion_factor: 1
+  convert_unit: kg m-2 s-1
+month_flux: &month_flux
+  conversion_factor: 1
+  convert_unit: kg m-2 month-1
+area: &grid_box_area
+  conversion_factor: 1
+  convert_unit: m2
+variables:
+  carbon_dioxide:
+    mean_column:
+      instantaneous:
+        - var_name: XCO2
+          short_name: XCO2
+          conversion:
+            conversion_factor: 28.97 / 44.01 * 1e6
+            convert_unit: ppmv
+          long_name: CO2 total column dry mole fraction
+    surface_flux:
+      instantaneous:
+        - var_name: area
+          short_name: area
+          conversion: *grid_box_area
+          long_name: Grid box area
+        - var_name: flux_apri
+          short_name: flux_apri
+          conversion: *inst_flux
+          long_name: Prior surface upward mass flux of carbon (including fossile)
+        - var_name: flux_apos
+          short_name: flux_apos
+          conversion: *inst_flux
+          long_name: Posterior surface upward mass flux of carbon (including fossile)
+        - var_name: flux_foss
+          short_name: flux_foss
+          conversion: *inst_flux
+          long_name: Fossile emissions of carbon for the whole grid box
+      monthly_mean:
+        - var_name: area
+          short_name: area
+          conversion: *grid_box_area
+          long_name: Grid box area
+        - var_name: flux_apri_bio
+          short_name: flux_apri_bio
+          conversion: *month_flux
+          long_name: Prior land surface upward mass flux of carbon for the whole grid box and the whole month without fossile
+        - var_name: flux_apri_ocean
+          short_name: flux_apri_ocean
+          conversion: *month_flux
+          long_name: Prior ocean surface upward mass flux of carbon for the whole grid box and the whole month without fossile
+        - var_name: flux_apos_bio
+          short_name: flux_apos_bio
+          conversion: *month_flux
+          long_name: Posterior land surface upward mass flux of carbon for the whole grid box and the whole month without fossile
+        - var_name: flux_apos_ocean
+          short_name: flux_apos_ocean
+          conversion: *month_flux
+          long_name: Posterior ocean surface upward mass flux of carbon for the whole grid box and the whole month without fossile
+        - var_name: flux_foss
+          short_name: flux_foss
+          conversion: *month_flux
+          long_name: Fossile emissions of carbon for the whole grid box and the whole month
+    concentration:
+      instantaneous:
+        - var_name: CO2
+          short_name: CO2
+          conversion:
+            conversion_factor: 1
+            convert_unit: mol mol-1
+          long_name: CO2 dry mole fraction
+  nitrous_oxide:
+    surface_flux:
+      monthly_mean:
+        - var_name: N2O
+          short_name: N2O
+          conversion: *month_flux
+          long_name: Surface upward mass flux of nitrogen for the whole grid box and the whole month
+    concentration:
+      instantaneous:
+        - var_name: N2O
+          short_name: N2O
+          conversion:
+            conversion_factor: 28.97 / 46.1 * 1e9
+            convert_unit: ppbv
+          long_name: N2O dry mole fraction
+  methane:
+    mean_column:
+      instantaneous:
+        - var_name: CH4
+          short_name: CH4
+          conversion:
+            conversion_factor: 28.97 / 16.044 * 1e9
+            convert_unit: ppbv
+          long_name: Ch4
+    surface_flux:
+      monthly_mean:
+        - var_name: cell_area
+          short_name: area
+          conversion: *grid_box_area
+          long_name: Cell area
+        - var_name: ch4_emis_wetlands
+          short_name: ch4_emis_wetlands
+          conversion: *month_flux
+          long_name: Surface upward mass flux of methane from wetlands sources
+        - var_name: ch4_emis_rice
+          short_name: ch4_emis_rice
+          conversion: *month_flux
+          long_name: Surface upward mass flux of methane from rice sources
+        - var_name: ch4_emis_biomass_burning
+          short_name: ch4_emis_biomass_burning
+          conversion: *month_flux
+          long_name: Surface upward mass flux of methane from biomass-burning sources
+        - var_name: ch4_emis_other
+          short_name: ch4_emis_other
+          conversion: *month_flux
+          long_name: Surface upward mass flux of methane from other sources
+        - var_name: ch4_emis_total
+          short_name: ch4_emis_total
+          conversion: *month_flux
+          long_name: Surface upward mass flux of methane
+    concentration:
+      instantaneous:
+        - var_name: CH4
+          short_name: CH4
+          conversion:
+            conversion_factor: 28.97 / 16.044 * 1e9
+            convert_unit: ppbv
+          long_name: Mole fraction of methane in (humid) air
+      daily_mean:
+        - var_name: CH4
+          short_name: CH4
+          conversion:
+            conversion_factor: 28.97 / 16.044 * 1e9
+            convert_unit: ppbv
+          long_name: Mole fraction of methane in (humid) air

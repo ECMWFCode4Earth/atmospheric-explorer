@@ -3,41 +3,33 @@ Data transformations needed for the plotting api
 """
 from functools import singledispatch
 
+import geopandas as gpd
 import numpy as np
 import statsmodels.stats.api as sms
 import xarray as xr
 from shapely.geometry import mapping
 
-from atmospheric_explorer.shapefile import ShapefilesDownloader
 
-
-def clip_and_concat_countries(
-    data_frame: xr.Dataset, countries: list[str]
+def clip_and_concat_shapes(
+    data_frame: xr.Dataset, shapes_df: gpd.GeoDataFrame
 ) -> xr.Dataset:
-    """Clips data_frame keeping only countries specified. Countries must be a list of country names"""
+    """Clips data_frame keeping only shapes specified. Shapes_df must be a GeoDataFrame."""
     # Download shapefile
-    sh_downloader = ShapefilesDownloader(resolution="10m", instance="countries")
-    sh_dataframe = sh_downloader.get_as_dataframe()
+
     # all_touched=True questo parametro include tutti i pixel toccati dal poligono definito
     # se False include solo i pixel il cui centro è incluso nel poligono
     # approvato all_touched=True
-    df_clipped_concat = data_frame.rio.clip(
-        sh_dataframe[sh_dataframe["ADMIN"] == countries[0]].geometry.apply(mapping),
-        sh_dataframe.crs,
-        drop=True,
-        all_touched=True,
-    )
-    df_clipped_concat = df_clipped_concat.expand_dims({"admin": [countries[0]]})
-    for country in countries[1:]:
+    df_clipped_concat = xr.Dataset(coords={"label": []})
+    for _, row in shapes_df.iterrows():
+        labels, shapes = row
         df_clipped = data_frame.rio.clip(
-            sh_dataframe[sh_dataframe["ADMIN"] == country].geometry.apply(mapping),
-            sh_dataframe.crs,
+            [mapping(shapes)],
             drop=True,
-            all_touched=True,
+            all_touched=True
         )
-        df_clipped = df_clipped.expand_dims({"admin": [country]})
+        df_clipped = df_clipped.expand_dims({"label": [labels]})
         df_clipped_concat = xr.concat(
-            [df_clipped_concat, df_clipped], dim="admin", combine_attrs="override"
+            [df_clipped_concat, df_clipped], dim="label", combine_attrs="override"
         )
     return df_clipped_concat
 
