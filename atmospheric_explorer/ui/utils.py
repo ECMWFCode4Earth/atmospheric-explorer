@@ -32,13 +32,7 @@ def page_init():
     if GeneralSessionStateKeys.MAP_LEVEL not in st.session_state:
         st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = MapLevels.CONTINENTS
     if GeneralSessionStateKeys.SELECTED_SHAPES not in st.session_state:
-        st.session_state[
-            GeneralSessionStateKeys.SELECTED_SHAPES
-        ] = EntitySelection.from_entities_list(
-            ["Europe"], st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-        )
-    if GeneralSessionStateKeys.SELECTED_SHAPES_LABELS not in st.session_state:
-        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = ["Europe"]
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES] = EntitySelection()
 
 
 def build_sidebar():
@@ -48,7 +42,7 @@ def build_sidebar():
     if level_name == MapLevels.ORGANIZATIONS:
         level_name = MapLevels.COUNTRIES
     with st.sidebar:
-        if st.session_state.get(GeneralSessionStateKeys.SELECTED_SHAPES) is not None:
+        if not st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].empty():
             shapes = set(
                 st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
             )
@@ -64,3 +58,5 @@ def build_sidebar():
                 else "Selected generic shape"
             )
             st.write(descr, unsafe_allow_html=True)
+        else:
+            st.write("No selection")

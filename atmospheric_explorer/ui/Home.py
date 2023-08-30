@@ -19,80 +19,119 @@ from atmospheric_explorer.ui.utils import build_sidebar, page_init
 logger = get_logger("atmexp")
 
 
-page_init()
+def _init():
+    page_init()
+    if "used_form" not in st.session_state:
+        st.session_state["used_form"] = False
+
+
+def _selectors_org():
+    org = st.selectbox(
+        st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+        options=organizations.keys(),
+    )
+    st.session_state[
+        GeneralSessionStateKeys.SELECTED_SHAPES
+    ] = EntitySelection.from_entities_list(organizations[org])
+    st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = st.session_state[
+        GeneralSessionStateKeys.SELECTED_SHAPES
+    ].labels
+
+
+def _selectors_no_org():
+    sh_all_labels = shapefile_dataframe(
+        st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+    )["label"].unique()
+    prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+    if not isinstance(prev_sel, EntitySelection) or (
+        isinstance(prev_sel, EntitySelection)
+        and prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+    ):
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES] = EntitySelection()
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS] = []
+    if st.session_state["used_form"]:
+        st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES
+        ] = EntitySelection.from_entities_list(
+            st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS]
+        )
+    else:
+        st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
+        ] = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
+    st.session_state["used_form"] = False
+    prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+    if (
+        not isinstance(prev_sel, EntitySelection)
+        or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+    ):
+        st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
+        ] = st.multiselect(
+            st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+            options=sh_all_labels,
+            default=[],
+        )
+    else:
+        st.session_state[
+            GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
+        ] = st.multiselect(
+            st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+            options=sh_all_labels,
+            default=st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS],
+        )
+    st.session_state[
+        GeneralSessionStateKeys.SELECTED_SHAPES
+    ] = EntitySelection.from_entities_list(
+        st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES_LABELS]
+    )
+
+
+def selectors():
+    """Selectors for the Home page."""
+
+    def _used_form():
+        st.session_state["used_form"] = True
+
+    with st.form("selectors"):
+        st.checkbox(
+            label="Select entities",
+            key=GeneralSessionStateKeys.SELECT_ENTITIES,
+            help="Switch to the selection of political or geographical entities such as continents and countries",
+        )
+        if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
+            st.selectbox(
+                label="Entity level",
+                options=list(MapLevels),
+                index=0,
+                key=GeneralSessionStateKeys.MAP_LEVEL,
+                help="""\
+                Switch between continents, countries etc.
+                After selecting the level, click the "Update Selection" button to make the selection effective.
+                """,
+            )
+            if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
+                _selectors_org()
+            else:
+                _selectors_no_org()
+        st.form_submit_button(
+            "Update Selection",
+            help="""\
+            Update both the map and the form.
+            Click to make any change in the form effective.
+            """,
+            on_click=_used_form,
+        )
+
+
+_init()
 logger.info("Starting streamlit app")
 progress_bar = st.progress(0.0, "Starting app")
 st.title("Atmospheric Explorer")
 st.subheader("Geographical selection")
 logger.info("Checking session state")
 progress_bar.progress(0.2, "Building selectors")
-with st.form("selection"):
-    st.checkbox(
-        label="Select entities",
-        key=GeneralSessionStateKeys.SELECT_ENTITIES,
-        help="Switch to the selection of political or geographical entities such as continents and countries",
-    )
-    if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
-        st.selectbox(
-            label="Entity level",
-            options=list(MapLevels),
-            index=0,
-            key=GeneralSessionStateKeys.MAP_LEVEL,
-            help="""\
-            Switch between continents, countries etc.
-            After selecting the level, click the "Update Selection" button to make the selection effective.
-            """,
-        )
-        if st.session_state[GeneralSessionStateKeys.MAP_LEVEL] == "Organizations":
-            org = st.selectbox(
-                st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                options=organizations.keys(),
-            )
-            st.session_state[
-                GeneralSessionStateKeys.SELECTED_SHAPES
-            ] = EntitySelection.from_entities_list(organizations[org])
-            st.session_state[
-                GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-            ] = organizations[org]
-        else:
-            sh_all_labels = shapefile_dataframe(
-                st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            )["label"].unique()
-            prev_sel = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
-            if (
-                not isinstance(prev_sel, EntitySelection)
-                or prev_sel.level != st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            ):
-                new_labels = EntitySelection.convert_selection(prev_sel).labels
-                st.multiselect(
-                    st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                    options=sh_all_labels,
-                    default=new_labels,
-                    key=GeneralSessionStateKeys.SELECTED_SHAPES_LABELS,
-                )
-            else:
-                st.multiselect(
-                    st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
-                    options=sh_all_labels,
-                    default=st.session_state[
-                        GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-                    ],
-                    key=GeneralSessionStateKeys.SELECTED_SHAPES_LABELS,
-                )
-            st.session_state[
-                GeneralSessionStateKeys.SELECTED_SHAPES
-            ] = EntitySelection.from_entities_list(
-                entities=st.session_state[
-                    GeneralSessionStateKeys.SELECTED_SHAPES_LABELS
-                ]
-            )
-    st.form_submit_button(
-        "Update Selection",
-        help="""\
-        Update both the map and the form.
-        Click to make any change in the form effective.
-        """,
-    )
+selectors()
 progress_bar.progress(0.4, "Building side bar")
 build_sidebar()
 progress_bar.progress(0.6, "Building map")
