@@ -70,7 +70,6 @@ def _selectors_no_org():
         options=sh_all_labels,
         key="selected_shapes_labels",
     )
-    st.write(st.session_state["selected_shapes_labels"])
 
 
 def selectors():
@@ -80,29 +79,38 @@ def selectors():
         st.session_state["used_form"] = True
 
     with st.form("selectors"):
+        convert = (
+            st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]
+            != st.session_state["select_entities_helper"]
+        ) or (
+            st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+            != st.session_state["map_level_helper"]
+        )
         st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES] = st.checkbox(
             label="Select entities",
             key="select_entities_helper",
             help="Switch to the selection of political or geographical entities such as continents and countries",
         )
         if st.session_state["select_entities_helper"]:
-            if (
-                st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-                != st.session_state["map_level_helper"]
-            ):
-                st.session_state[
-                    GeneralSessionStateKeys.SELECTED_SHAPES
-                ] = EntitySelection()
-                st.session_state["selected_shapes_labels"] = []
             st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = st.selectbox(
                 label="Entity level",
                 options=list(MapLevels),
+                index=list(MapLevels).index(st.session_state["map_level_helper"]),
                 key="map_level_helper",
                 help="""\
                 Switch between continents, countries etc.
                 After selecting the level, click the "Update Selection" button to make the selection effective.
                 """,
             )
+            if convert:
+                st.session_state[
+                    GeneralSessionStateKeys.SELECTED_SHAPES
+                ] = EntitySelection.convert_selection(
+                    st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+                )
+                st.session_state["selected_shapes_labels"] = st.session_state[
+                    GeneralSessionStateKeys.SELECTED_SHAPES
+                ].labels
             if st.session_state["map_level_helper"] == "Organizations":
                 _selectors_org()
             else:
