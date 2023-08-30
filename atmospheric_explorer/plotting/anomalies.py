@@ -13,6 +13,7 @@ from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
 from atmospheric_explorer.data_transformations import (
     clip_and_concat_shapes,
     shifting_long,
+    split_time_dim,
 )
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.plotting.plot_utils import line_with_ci_subplots
@@ -41,18 +42,12 @@ def _eac4_anomalies_data(
         df_down = clip_and_concat_shapes(df_down, shapes)
     else:
         df_down = df_down.expand_dims({"label": [""]})
-    df_agg = (
-        df_down.mean(dim=["latitude", "longitude"])
-        .resample(time=resampling, restore_coord_dims=True)
-        .mean(dim="time")
+    df_agg = df_down.mean(dim=["latitude", "longitude"])
+    df_agg = split_time_dim(df_agg, "time")
+    df_agg = df_agg.resample(dates=resampling, restore_coord_dims=True).mean(
+        dim="dates"
     )
-    reference_value = df_agg.mean(dim="time")
-    df_converted = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
-    reference_value = df_converted.mean().values
-    with xr.set_options(keep_attrs=True):
-        df_anomalies = df_converted - reference_value
-        df_anomalies.attrs = df_converted.attrs
-    return df_anomalies
+    return EAC4Config.convert_units_array(df_agg[var_name], data_variable)
 
 
 def eac4_anomalies_plot(
@@ -61,6 +56,7 @@ def eac4_anomalies_plot(
     dates_range: str,
     time_values: str,
     title: str,
+    reference_dates_range: str | None = None,
     resampling: str = "1MS",
     shapes: gpd.GeoDataFrame | None = None,
 ) -> go.Figure:
@@ -92,12 +88,25 @@ def eac4_anomalies_plot(
         resampling=resampling,
         shapes=shapes,
     )
+    if reference_dates_range is not None:
+        reference_value = _eac4_anomalies_data(
+            data_variable=data_variable,
+            var_name=var_name,
+            dates_range=reference_dates_range,
+            time_values=time_values,
+            resampling=resampling,
+            shapes=shapes,
+        ).mean(dim="dates")
+        with xr.set_options(keep_attrs=True):
+            dataset_final = dataset - reference_value
+            dataset_final.attrs = dataset.attrs
+    else:
+        dataset_final = dataset
     # Pandas is easier to use for plotting
     df_pandas = (
-        dataset.to_dataframe()
-        .reset_index(["label"])
-        .assign(color="anomalies")
-        .rename({var_name: "value"}, axis=1)
+        dataset_final.to_dataframe()
+        .reset_index(["label", "times"])
+        .rename({var_name: "value", "times": "color"}, axis=1)
     )
     return line_with_ci_subplots(
         dataset=df_pandas, unit=dataset.attrs["units"], title=title

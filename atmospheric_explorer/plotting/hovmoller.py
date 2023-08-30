@@ -43,9 +43,7 @@ def _eac4_hovmoeller_data(
     df_down = data.read_dataset()
     df_down = shifting_long(df_down)
     if shapes is not None:
-        df_down = clip_and_concat_shapes(df_down, shapes).sel(
-            label=shapes.iloc[0]["label"]
-        )
+        df_down = clip_and_concat_shapes(df_down, shapes)
     df_agg = (
         df_down[var_name]
         .resample(time=resampling, restore_coord_dims=True)

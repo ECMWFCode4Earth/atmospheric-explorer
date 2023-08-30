@@ -5,9 +5,18 @@ from functools import singledispatch
 
 import geopandas as gpd
 import numpy as np
+import pandas as pd
 import statsmodels.stats.api as sms
 import xarray as xr
 from shapely.geometry import mapping
+
+
+def split_time_dim(dataset: xr.Dataset, time_dim: str):
+    """Split datetime dimension into times and dates."""
+    times = dataset[f"{time_dim}.time"].values
+    dates = np.array(dataset[time_dim].values, dtype="datetime64[D]")
+    ind = pd.MultiIndex.from_arrays((times, dates), names=("times", "dates"))
+    return dataset.assign(**{f"{time_dim}": ind}).unstack(time_dim)
 
 
 def clip_and_concat_shapes(
@@ -22,11 +31,7 @@ def clip_and_concat_shapes(
     df_clipped_concat = xr.Dataset(coords={"label": []})
     for _, row in shapes_df.iterrows():
         labels, shapes = row
-        df_clipped = data_frame.rio.clip(
-            [mapping(shapes)],
-            drop=True,
-            all_touched=True
-        )
+        df_clipped = data_frame.rio.clip([mapping(shapes)], drop=True, all_touched=True)
         df_clipped = df_clipped.expand_dims({"label": [labels]})
         df_clipped_concat = xr.concat(
             [df_clipped_concat, df_clipped], dim="label", combine_attrs="override"
