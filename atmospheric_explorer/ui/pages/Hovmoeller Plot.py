@@ -56,7 +56,7 @@ def _year_filters():
 
 def _times_filter():
     st.selectbox(
-        label="Times",
+        label="Time",
         options=eac4_times,
         key=HovmSessionStateKeys.HOVM_TIME,
     )
