@@ -35,9 +35,9 @@ def _init():
     if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
     if HovmSessionStateKeys.HOVM_END_DATE not in st.session_state:
-        st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 12, 31)
-    if HovmSessionStateKeys.HOVM_TIMES not in st.session_state:
-        st.session_state[HovmSessionStateKeys.HOVM_TIMES] = ["00:00"]
+        st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 4, 1)
+    if HovmSessionStateKeys.HOVM_TIME not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_TIME] = "00:00"
     if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
     if HovmSessionStateKeys.HOVM_P_LEVELS not in st.session_state:
@@ -55,10 +55,10 @@ def _year_filters():
 
 
 def _times_filter():
-    st.multiselect(
+    st.selectbox(
         label="Times",
         options=eac4_times,
-        key=HovmSessionStateKeys.HOVM_TIMES,
+        key=HovmSessionStateKeys.HOVM_TIME,
     )
 
 
@@ -129,7 +129,7 @@ if st.button("Generate plot"):
     start_date = st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
     end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
-    time_values = st.session_state[HovmSessionStateKeys.HOVM_TIMES]
+    time_values = st.session_state[HovmSessionStateKeys.HOVM_TIME]
     shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     data_variable = st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
     with st.container():

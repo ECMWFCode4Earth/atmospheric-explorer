@@ -34,7 +34,7 @@ class HovmSessionStateKeys(Enum):
 
     HOVM_START_DATE = "hovm_start_date"
     HOVM_END_DATE = "hovm_end_date"
-    HOVM_TIMES = "hovm_times"
+    HOVM_TIME = "hovm_time"
     HOVM_YAXIS = "hovm_yaxis"
     HOVM_P_LEVELS = "hovm_p_levels"
     HOVM_M_LEVELS = "hovm_m_levels"

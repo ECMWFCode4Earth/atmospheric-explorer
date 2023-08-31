@@ -47,7 +47,8 @@ def _eac4_anomalies_data(
     df_agg = df_agg.resample(dates=resampling, restore_coord_dims=True).mean(
         dim="dates"
     )
-    return EAC4Config.convert_units_array(df_agg[var_name], data_variable)
+    df_agg = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
+    return df_agg.rename({"dates": "Month"})
 
 
 def eac4_anomalies_plot(
@@ -96,7 +97,7 @@ def eac4_anomalies_plot(
             time_values=time_values,
             resampling=resampling,
             shapes=shapes,
-        ).mean(dim="dates")
+        ).mean(dim="Month")
         with xr.set_options(keep_attrs=True):
             dataset_final = dataset - reference_value
             dataset_final.attrs = dataset.attrs

@@ -28,7 +28,7 @@ def _init():
     page_init()
     # Set default SessionState values
     if EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE not in st.session_state:
-        st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE] = False
+        st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE] = True
     if EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_START_DATE not in st.session_state:
         st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_START_DATE

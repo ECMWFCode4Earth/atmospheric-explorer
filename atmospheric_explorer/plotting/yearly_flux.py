@@ -106,7 +106,7 @@ def _ghg_surface_satellite_yearly_data(
                 df_total[var_name]
                 .resample(time="YS")
                 .map(confidence_interval, dim="time")
-                .rename({"time": "Year", "input_observations": "color"})
+                .rename({"time": "Year"})
             )
             da_converted_agg.name = var_name
             da_converted_agg.attrs = df_total[var_name].attrs
@@ -117,7 +117,7 @@ def _ghg_surface_satellite_yearly_data(
                 df_total[var_name]
                 .resample(time="YS")
                 .map(confidence_interval, dim="time")
-                .rename({"time": "Year", "input_observations": "color"})
+                .rename({"time": "Year"})
             )
             da_converted_agg.name = var_name
             da_converted_agg.attrs = df_total[var_name].attrs
@@ -180,9 +180,13 @@ def ghg_surface_satellite_yearly_plot(
         da_converted_agg.to_dataframe()
         .unstack("ci")
         .droplevel(axis=1, level=0)
-        .reset_index(["label", "color"])
+        .reset_index(["label", "input_observations"])
         .rename({"mean": "value"}, axis=1)
     )
     return line_with_ci_subplots(
-        df_pandas, da_converted_agg.attrs["units"], title, add_ci=True
+        df_pandas,
+        da_converted_agg.attrs["units"],
+        title,
+        add_ci=True,
+        color="input_observations",
     )

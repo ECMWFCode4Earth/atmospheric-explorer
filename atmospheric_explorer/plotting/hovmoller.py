@@ -6,7 +6,6 @@ from __future__ import annotations
 from textwrap import dedent
 
 import geopandas as gpd
-import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
@@ -16,7 +15,7 @@ from atmospheric_explorer.data_transformations import (
     shifting_long,
 )
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.plotting.plot_utils import sequential_colorscale_bar
+from atmospheric_explorer.plotting.plot_utils import hovmoeller_plot
 
 logger = get_logger("atmexp")
 
@@ -55,6 +54,7 @@ def _eac4_hovmoeller_data(
         df_agg = df_agg.assign_coords(
             {"level": [str(c) for c in df_agg.coords["level"].values]}
         )
+    df_agg = df_agg.rename({"time": "Month" if resampling == "1MS" else "Year"})
     return EAC4Config.convert_units_array(df_agg, data_variable)
 
 
@@ -101,33 +101,10 @@ def eac4_hovmoeller_plot(
         pressure_level=pressure_level,
         model_level=model_level,
     )
-    fig = px.imshow(df_converted.T, origin="lower")
-    fig.update_xaxes(title="Month")
-    if pressure_level is not None:
-        fig.update_yaxes(
-            autorange="reversed", title="Pressure Level [hPa]", type="category"
-        )
-        if base_colorscale is None:
-            base_colorscale = px.colors.sequential.RdBu_r
-    elif model_level is not None:
-        fig.update_yaxes(autorange="reversed", title="Model Level", type="category")
-        if base_colorscale is None:
-            base_colorscale = px.colors.sequential.RdBu_r
-    else:
-        fig.update_yaxes(title="Latitude [degrees]")
-        if base_colorscale is None:
-            base_colorscale = px.colors.sequential.Turbo
-    colorscale, colorbar = sequential_colorscale_bar(
-        df_converted.values.flatten(), base_colorscale
+    return hovmoeller_plot(
+        df_converted,
+        title=title,
+        pressure_level=pressure_level,
+        model_level=model_level,
+        base_colorscale=base_colorscale,
     )
-    fig.update_layout(
-        title={
-            "text": title,
-            "x": 0.5,
-            "xanchor": "center",
-            "xref": "paper",
-            "font": {"size": 19},
-        },
-        coloraxis={"colorscale": colorscale, "colorbar": colorbar},
-    )
-    return fig

@@ -10,11 +10,20 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import xarray as xr
 
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.utils import hex_to_rgb
 
 logger = get_logger("atmexp")
+
+
+def _base_height(n_plots):
+    return 250 if n_plots >= 3 else 300
+
+
+def _row_spacing(n_plots):
+    return 0.25 if n_plots > 3 else 0.3
 
 
 def _add_ci(
@@ -101,7 +110,7 @@ def line_with_ci_subplots(
             facet_col="label",
             facet_col_wrap=(2 if len(labels) >= 2 else 1),
             facet_col_spacing=0.04,
-            facet_row_spacing=0.15 if len(labels) > 3 else 0.2,
+            facet_row_spacing=_row_spacing(len(labels)),
             color_discrete_sequence=px.colors.qualitative.D3,
             category_orders={f"{color}": colors, "label": labels},
         )
@@ -121,10 +130,11 @@ def line_with_ci_subplots(
     fig.update_yaxes(title=unit, col=1)
     fig.update_yaxes(showticklabels=True, matches=None)
     fig.update_xaxes(showticklabels=True, matches=None)
+    x_title = fig.layout["xaxis"]["title"]
     total_rows = ceil(len(labels) / 2)
     if len(labels) % 2 != 0:
-        fig.update_xaxes(title="Year", col=2, row=total_rows)
-    base_height = 220 if len(labels) >= 3 else 300
+        fig.update_xaxes(title=x_title, col=2, row=total_rows)
+
     fig.update_layout(
         title={
             "text": title,
@@ -133,7 +143,7 @@ def line_with_ci_subplots(
             "xref": "paper",
             "font": {"size": 19},
         },
-        height=base_height * total_rows,
+        height=_base_height(len(labels)) * total_rows,
         hovermode="closest",
     )
     fig.update_traces(mode="lines+markers")
@@ -142,7 +152,7 @@ def line_with_ci_subplots(
             lambda tr: _add_ci(
                 fig,
                 tr,
-                dataset[dataset["color"] == tr.legendgroup],
+                dataset[dataset[color] == tr.legendgroup],
                 labels,
             )
         )
@@ -157,7 +167,7 @@ def sequential_colorscale_bar(
     values: list[float] | list[int], colors: list[str]
 ) -> tuple[list, dict]:
     """Compute a sequential colorscale and colorbar form a list of values and a list of colors"""
-    vals = np.array(values)
+    vals = np.array(list(filter(lambda v: not (np.isnan(v)), values)))
     vals.sort()
     separators = np.linspace(vals.min(), vals.max(), len(colors) + 1)
     separators_scaled = np.linspace(0, 1, len(colors) + 1)
@@ -199,3 +209,84 @@ def sequential_colorscale_bar(
         "xpad": 0,
     }
     return color_scale_custom, colorbar_custom
+
+
+def hovmoeller_plot(
+    dataset: xr.Dataset,
+    title: str,
+    pressure_level: list[str] | None = None,
+    model_level: list[str] | None = None,
+    base_colorscale: list[str] | None = None,
+):
+    """\
+    Hovmoeller plot on countries/administrative entinties.
+
+    Parameters:
+        dataset (xr.Dataset): xarray dataset with (at least) dimension 'label'
+        title (str): plot title
+        pressure_level (list[str] | None): pressure levels, cannot be specified together with model_level
+        model_level (list[str] | None): model levels, cannot be specified together with pressure_level
+        base_colorscale (list[str] | None): color scale to be used for the z axis
+    """
+    labels = set(dataset.coords["label"].values)
+    mapping = {c: i for i, c in enumerate(labels)}
+    mapping_inv = dict(enumerate(labels))
+    # imshow need a int label for the facet plot
+    dataset = dataset.assign_coords(label=[mapping[c] for c in labels])
+    if len(labels) > 1:
+        fig = px.imshow(
+            img=dataset.T,
+            facet_col="label",
+            facet_col_wrap=2,
+            facet_col_spacing=0.04,
+            facet_row_spacing=_row_spacing(len(labels)),
+            origin="lower",
+        )
+        fig.for_each_annotation(
+            lambda a: a.update(
+                text=mapping_inv[int(a.text.split("label=")[-1])], font={"size": 14}
+            )
+        )
+        fig.update_yaxes(showticklabels=True, matches=None)
+        fig.update_xaxes(showticklabels=True, matches=None)
+    else:
+        fig = px.imshow(dataset.T, origin="lower")
+    if (pressure_level or model_level) is not None:
+        fig.update_yaxes(autorange="reversed", type="category")
+        fig.update_yaxes(
+            title="Pressure Level [hPa]"
+            if pressure_level is not None
+            else "Model Level",
+            col=1,
+        )
+        if base_colorscale is None:
+            base_colorscale = px.colors.sequential.RdBu_r
+    else:
+        fig.update_yaxes(title="Latitude [degrees]", col=1)
+        if base_colorscale is None:
+            base_colorscale = px.colors.sequential.Turbo
+    colorscale, colorbar = sequential_colorscale_bar(
+        dataset.values.flatten(), base_colorscale
+    )
+    total_rows = ceil(len(labels) / 2)
+    if len(labels) % 2 != 0:
+        fig.update_xaxes(title=fig.layout["xaxis"]["title"], col=2, row=total_rows)
+    fig.update_layout(
+        title={
+            "text": title,
+            "x": 0.5,
+            "xanchor": "center",
+            "xref": "paper",
+            "font": {"size": 19},
+        },
+        height=_base_height(len(labels)) * total_rows,
+        coloraxis={"colorscale": colorscale, "colorbar": colorbar},
+    )
+    # Remove NANs from data inside the plot so that y axes are different
+    for data in fig.data:
+        z_coord = data["z"]
+        mask = ~np.apply_along_axis(
+            lambda z: np.array([np.isnan(a) for a in z]).all(), 1, z_coord
+        )
+        data.update(**{"z": z_coord[mask], "y": data["y"][mask]})
+    return fig
