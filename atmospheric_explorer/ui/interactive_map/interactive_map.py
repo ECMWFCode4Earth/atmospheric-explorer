@@ -7,7 +7,7 @@ import streamlit as st
 from folium.plugins import Draw
 from streamlit_folium import st_folium
 
-from atmospheric_explorer.loggers import get_logger
+from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.ui.interactive_map.shape_selection import (
     EntitySelection,
     GenericShapeSelection,

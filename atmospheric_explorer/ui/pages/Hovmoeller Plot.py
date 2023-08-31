@@ -7,8 +7,8 @@ from textwrap import dedent
 
 import streamlit as st
 
-from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.plotting.hovmoller import eac4_hovmoeller_plot
+from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.plotting.hovmoller import eac4_hovmoeller_plot
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
     HovmSessionStateKeys,

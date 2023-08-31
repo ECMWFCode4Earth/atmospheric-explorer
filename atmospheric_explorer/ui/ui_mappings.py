@@ -1,8 +1,8 @@
 """\
 Module to keep all mapping of data variables for the Streamlit application.
 """
-from atmospheric_explorer.data_interface.eac4 import EAC4Config
-from atmospheric_explorer.data_interface.ghg import GHGConfig
+from atmospheric_explorer.api.data_interface.eac4 import EAC4Config
+from atmospheric_explorer.api.data_interface.ghg import GHGConfig
 
 # EAC4 mappings and data variables list
 eac4_config = EAC4Config.get_config()

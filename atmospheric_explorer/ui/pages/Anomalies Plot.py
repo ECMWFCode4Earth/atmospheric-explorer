@@ -7,8 +7,8 @@ from textwrap import dedent
 
 import streamlit as st
 
-from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.plotting.anomalies import eac4_anomalies_plot
+from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.plotting.anomalies import eac4_anomalies_plot
 from atmospheric_explorer.ui.session_state import (
     EAC4AnomaliesSessionStateKeys,
     GeneralSessionStateKeys,

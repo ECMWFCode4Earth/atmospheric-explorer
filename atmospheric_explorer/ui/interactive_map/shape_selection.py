@@ -10,8 +10,8 @@ import streamlit as st
 from shapely.geometry import shape
 from shapely.ops import unary_union
 
-from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.shapefile import ShapefilesDownloader
+from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.shapefile import ShapefilesDownloader
 from atmospheric_explorer.ui.interactive_map.map_config import (
     map_level_shapefile_mapping,
 )

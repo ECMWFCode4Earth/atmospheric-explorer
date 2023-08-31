@@ -5,7 +5,7 @@ Main UI page
 
 import streamlit as st
 
-from atmospheric_explorer.loggers import get_logger
+from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.ui.interactive_map.interactive_map import (
     shapefile_dataframe,
     show_folium_map,
