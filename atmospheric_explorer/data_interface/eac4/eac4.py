@@ -12,7 +12,7 @@ import xarray as xr
 from atmospheric_explorer.config import crs
 from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.utils import create_folder
+from atmospheric_explorer.os_manager import create_folder, remove_folder
 
 logger = get_logger("atmexp")
 
@@ -44,6 +44,7 @@ class EAC4Instance(CAMSDataInterface):
             See documentation linked above for all possible values.
     """
     _dataset_name: str = "cams-global-reanalysis-eac4"
+    _dataset_dir: str = os.path.join(CAMSDataInterface._data_folder, _dataset_name)
     _file_format = "netcdf"
     _file_ext = "nc"
 
@@ -64,9 +65,9 @@ class EAC4Instance(CAMSDataInterface):
         self.pressure_level = pressure_level
         self.model_level = model_level
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
-        self.files_dir_path = os.path.join(
-            self._data_folder, self._dataset_name, self.files_dirname
-        )
+        self.files_dir_path = os.path.join(self._dataset_dir, self.files_dirname)
+        if os.path.exists(self._dataset_dir):
+            remove_folder(self._dataset_dir)
         create_folder(self.files_dir_path)
         logger.info("Created folder %s", self.files_dir_path)
 

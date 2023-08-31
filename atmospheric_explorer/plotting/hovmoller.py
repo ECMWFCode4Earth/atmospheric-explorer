@@ -9,11 +9,11 @@ import geopandas as gpd
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
-from atmospheric_explorer.data_transformations import (
+from atmospheric_explorer.data_interface.data_transformations import (
     clip_and_concat_shapes,
     shifting_long,
 )
+from atmospheric_explorer.data_interface.eac4 import EAC4Config, EAC4Instance
 from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.plotting.plot_utils import hovmoeller_plot
 

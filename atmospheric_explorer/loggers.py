@@ -5,7 +5,7 @@ import logging
 import logging.config
 import os
 
-from .utils import get_local_folder
+from atmospheric_explorer.os_manager import create_folder, get_local_folder
 
 
 class LoggersMeta(type):
@@ -47,8 +47,7 @@ class LoggersMeta(type):
     }
 
     def __init__(cls, *args, **kwargs):
-        if not os.path.exists(cls._logs_root_dir):
-            os.makedirs(cls._logs_root_dir)
+        create_folder(cls._logs_root_dir)
         logging.config.dictConfig(cls._logging_config)
         super().__init__(*args, **kwargs)
 
