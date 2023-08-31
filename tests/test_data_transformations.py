@@ -6,7 +6,7 @@
 import numpy as np
 import xarray as xr
 
-from atmospheric_explorer.data_transformations import confidence_interval
+from atmospheric_explorer.data_interface.data_transformations import confidence_interval
 
 
 def test_conf_interval_array():

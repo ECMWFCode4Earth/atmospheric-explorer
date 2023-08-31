@@ -8,8 +8,8 @@ import os
 import pytest
 import requests.exceptions
 
+from atmospheric_explorer.os_manager import get_local_folder
 from atmospheric_explorer.shapefile import ShapefilesDownloader
-from atmospheric_explorer.utils import get_local_folder
 
 
 def test__init():

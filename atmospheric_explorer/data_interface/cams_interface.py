@@ -7,13 +7,12 @@ from __future__ import annotations
 
 import os
 from abc import ABC, abstractmethod
-from glob import glob
 from itertools import count
 
 import cdsapi
 
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.utils import create_folder, get_local_folder
+from atmospheric_explorer.os_manager import create_folder, get_local_folder
 
 logger = get_logger("atmexp")
 
@@ -33,7 +32,7 @@ class CAMSDataInterface(ABC):
     _dataset_name: str | None = None
     _data_folder: str = os.path.join(get_local_folder(), "data")
     _instances: list[CAMSDataInterface] = []
-    _ids: count = count(len(glob(os.path.join(_data_folder, "*"))))
+    _ids: count = count(0)
     _file_format = None
     _file_ext = None
 

@@ -13,8 +13,8 @@ import geopandas as gpd
 import requests
 import requests.utils
 
-from .loggers import get_logger
-from .utils import create_folder, get_local_folder
+from atmospheric_explorer.loggers import get_logger
+from atmospheric_explorer.os_manager import create_folder, get_local_folder
 
 logger = get_logger("atmexp")
 

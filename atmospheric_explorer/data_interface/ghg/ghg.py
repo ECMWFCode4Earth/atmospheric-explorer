@@ -16,7 +16,7 @@ import xarray as xr
 from atmospheric_explorer.config import crs
 from atmospheric_explorer.data_interface import CAMSDataInterface
 from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.utils import create_folder
+from atmospheric_explorer.os_manager import create_folder, remove_folder
 
 logger = get_logger("atmexp")
 
@@ -44,6 +44,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     """
 
     _dataset_name: str = "cams-global-greenhouse-gas-inversion"
+    _dataset_dir: str = os.path.join(CAMSDataInterface._data_folder, _dataset_name)
     _file_format = "zip"
     _file_ext = "zip"
 
@@ -66,9 +67,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self.month = month
         self.version = version
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
-        self.files_dir_path = os.path.join(
-            self._data_folder, self._dataset_name, self.files_dirname
-        )
+        self.files_dir_path = os.path.join(self._dataset_dir, self.files_dirname)
+        if os.path.exists(self._dataset_dir):
+            remove_folder(self._dataset_dir)
         self.file_full_path = self.files_dirname
         create_folder(self.files_dir_path)
         logger.info("Created folder %s", self.files_dir_path)
