@@ -74,7 +74,11 @@ def _add_ci(
 
 
 def line_with_ci_subplots(
-    dataset: pd.DataFrame, unit: str, title: str, add_ci: bool = False
+    dataset: pd.DataFrame,
+    unit: str,
+    title: str,
+    add_ci: bool = False,
+    color: str | None = None,
 ) -> go.Figure:
     """\
     Facet line plot on countries/administrative entinties.
@@ -88,26 +92,26 @@ def line_with_ci_subplots(
         title (str): plot title
     """
     labels = sorted(dataset["label"].unique())
-    colors = sorted(dataset["color"].unique())
+    colors = sorted(dataset[color].unique())
     if len(labels) > 1:
         fig = px.line(
             data_frame=dataset,
             y="value",
-            color="color",
+            color=color,
             facet_col="label",
             facet_col_wrap=(2 if len(labels) >= 2 else 1),
             facet_col_spacing=0.04,
             facet_row_spacing=0.15 if len(labels) > 3 else 0.2,
             color_discrete_sequence=px.colors.qualitative.D3,
-            category_orders={"color": colors, "label": labels},
+            category_orders={f"{color}": colors, "label": labels},
         )
     else:
         fig = px.line(
             data_frame=dataset,
             y="value",
-            color="color",
+            color=color,
             color_discrete_sequence=px.colors.qualitative.D3,
-            category_orders={"color": colors},
+            category_orders={f"{color}": colors},
         )
     if len(colors) <= 1:
         fig.update_layout(showlegend=False)

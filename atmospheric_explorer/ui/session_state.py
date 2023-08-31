@@ -24,6 +24,9 @@ class EAC4AnomaliesSessionStateKeys(Enum):
     EAC4_ANOMALIES_DATA_VARIABLE = "eac4_anomalies_data_variable"
     EAC4_ANOMALIES_VAR_NAME = "eac4_anomalies_var_name"
     EAC4_ANOMALIES_PLOT_TITLE = "eac4_anomalies_title"
+    EAC4_USE_REFERENCE = "eac4_use_reference"
+    EAC4_REFERENCE_START_DATE = "eac4_reference_start_date"
+    EAC4_REFERENCE_END_DATE = "eac4_reference_end_date"
 
 
 class HovmSessionStateKeys(Enum):

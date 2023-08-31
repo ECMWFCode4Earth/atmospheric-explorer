@@ -106,8 +106,8 @@ def eac4_anomalies_plot(
     df_pandas = (
         dataset_final.to_dataframe()
         .reset_index(["label", "times"])
-        .rename({var_name: "value", "times": "color"}, axis=1)
+        .rename({var_name: "value"}, axis=1)
     )
     return line_with_ci_subplots(
-        dataset=df_pandas, unit=dataset.attrs["units"], title=title
+        dataset=df_pandas, unit=dataset.attrs["units"], title=title, color="times"
     )
