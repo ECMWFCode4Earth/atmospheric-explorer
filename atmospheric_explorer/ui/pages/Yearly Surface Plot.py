@@ -42,25 +42,19 @@ def _init():
 
 def _year_filter():
     start_year_col, end_year_col, _ = st.columns([1, 1, 3])
-    st.session_state[GHGSessionStateKeys.GHG_START_YEAR] = start_year_col.number_input(
-        "Start year", value=st.session_state[GHGSessionStateKeys.GHG_START_YEAR], step=1
+    start_year_col.number_input(
+        "Start year", key=GHGSessionStateKeys.GHG_START_YEAR, step=1
     )
-    st.session_state[GHGSessionStateKeys.GHG_END_YEAR] = end_year_col.number_input(
-        "End year", value=st.session_state[GHGSessionStateKeys.GHG_END_YEAR], step=1
-    )
+    end_year_col.number_input("End year", key=GHGSessionStateKeys.GHG_END_YEAR, step=1)
 
 
 def _months_filter():
-    st.session_state[GHGSessionStateKeys.GHG_ALL_MONTHS] = st.checkbox(
-        label="All Months", value=st.session_state[GHGSessionStateKeys.GHG_ALL_MONTHS]
-    )
+    st.checkbox(label="All Months", key=GHGSessionStateKeys.GHG_ALL_MONTHS)
     if not st.session_state[GHGSessionStateKeys.GHG_ALL_MONTHS]:
-        st.session_state[GHGSessionStateKeys.GHG_MONTHS] = sorted(
-            st.multiselect(
-                label="Months",
-                options=[f"{m:02}" for m in range(1, 13)],
-                default=st.session_state[GHGSessionStateKeys.GHG_MONTHS],
-            )
+        st.multiselect(
+            label="Months",
+            options=[f"{m:02}" for m in range(1, 13)],
+            key=GHGSessionStateKeys.GHG_MONTHS,
         )
     else:
         st.session_state[GHGSessionStateKeys.GHG_MONTHS] = [
@@ -69,16 +63,21 @@ def _months_filter():
 
 
 def _vars_filter():
-    st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] = st.selectbox(
-        label="Data variable", options=ghg_data_variables
+    st.selectbox(
+        label="Data variable",
+        options=ghg_data_variables,
+        key=GHGSessionStateKeys.GHG_DATA_VARIABLE,
     )
     if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
-        st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE] = st.checkbox(
+        st.checkbox(
             label="Include satellite observations",
-            value=st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE],
+            key=GHGSessionStateKeys.GHG_ADD_SATELLITE,
         )
     elif st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "nitrous_oxide":
-        st.warning("Please be aware that nitrous_oxide dataset is missing the cell area, so values will be shown as average flux (kg m-2) instead of total amount (kg)")
+        st.warning(
+            "Please be aware that nitrous_oxide dataset is missing the cell area,\
+            so values will be shown as average flux (kg m-2) instead of total amount (kg)"
+        )
 
 
 def _filters():
@@ -146,8 +145,7 @@ if st.button("Generate plot"):
                     var_name=var_name,
                     shapes=shapes.dataframe,
                     add_satellite_observations=(
-                        add_satellite_observations
-                        and data_variable == "carbon_dioxide"
+                        add_satellite_observations and data_variable == "carbon_dioxide"
                     ),
                 ),
                 use_container_width=True,

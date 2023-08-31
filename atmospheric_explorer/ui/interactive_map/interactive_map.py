@@ -11,6 +11,7 @@ from atmospheric_explorer.loggers import get_logger
 from atmospheric_explorer.ui.interactive_map.shape_selection import (
     EntitySelection,
     GenericShapeSelection,
+    from_out_event,
     shapefile_dataframe,
 )
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
@@ -75,7 +76,8 @@ def build_folium_map():
         world_polygon(st.session_state[GeneralSessionStateKeys.MAP_LEVEL]).add_to(
             folium_map
         )
-    selected_shapes_fgroup().add_to(folium_map)
+    if not st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].empty():
+        selected_shapes_fgroup().add_to(folium_map)
     return folium_map
 
 
@@ -106,7 +108,9 @@ def update_session_map_click(out_event):
         ]
     if out_event.get("last_active_drawing") is not None:
         if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
-            selected_countries = EntitySelection.from_out_event(out_event)
+            selected_countries = EntitySelection.convert_selection(
+                from_out_event(out_event)
+            )
             sel_countries = set(selected_countries.labels)
             prev_selection = set(
                 st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].labels
@@ -119,7 +123,9 @@ def update_session_map_click(out_event):
                 ] = selected_countries
                 st.experimental_rerun()
         else:
-            selected_shape = GenericShapeSelection.from_out_event(out_event)
+            selected_shape = GenericShapeSelection.convert_selection(
+                from_out_event(out_event)
+            )
             prev_selection = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
             if selected_shape != prev_selection:
                 st.session_state[

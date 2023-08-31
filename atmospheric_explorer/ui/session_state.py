@@ -12,7 +12,7 @@ class GeneralSessionStateKeys(Enum):
     SELECT_ENTITIES = "select_entities"
     LAST_ACTIVE_DRAWING = "last_active_drawing"
     MAP_LEVEL = "map_level"
-    SELECTED_SHAPES_LABELS = "selected_shapes_labels"
+    SELECTED_ORGANIZATION = "selected_organization"
 
 
 class EAC4AnomaliesSessionStateKeys(Enum):
@@ -24,6 +24,9 @@ class EAC4AnomaliesSessionStateKeys(Enum):
     EAC4_ANOMALIES_DATA_VARIABLE = "eac4_anomalies_data_variable"
     EAC4_ANOMALIES_VAR_NAME = "eac4_anomalies_var_name"
     EAC4_ANOMALIES_PLOT_TITLE = "eac4_anomalies_title"
+    EAC4_USE_REFERENCE = "eac4_use_reference"
+    EAC4_REFERENCE_START_DATE = "eac4_reference_start_date"
+    EAC4_REFERENCE_END_DATE = "eac4_reference_end_date"
 
 
 class HovmSessionStateKeys(Enum):
@@ -31,7 +34,7 @@ class HovmSessionStateKeys(Enum):
 
     HOVM_START_DATE = "hovm_start_date"
     HOVM_END_DATE = "hovm_end_date"
-    HOVM_TIMES = "hovm_times"
+    HOVM_TIME = "hovm_time"
     HOVM_YAXIS = "hovm_yaxis"
     HOVM_P_LEVELS = "hovm_p_levels"
     HOVM_M_LEVELS = "hovm_m_levels"

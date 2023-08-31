@@ -27,6 +27,16 @@ logger = get_logger("atmexp")
 def _init():
     page_init()
     # Set default SessionState values
+    if EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE not in st.session_state:
+        st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE] = True
+    if EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_START_DATE not in st.session_state:
+        st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_START_DATE
+        ] = datetime(2022, 1, 1)
+    if EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_END_DATE not in st.session_state:
+        st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_END_DATE
+        ] = datetime(2022, 4, 1)
     if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE not in st.session_state:
         st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
@@ -34,7 +44,7 @@ def _init():
     if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE not in st.session_state:
         st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
-        ] = datetime(2022, 12, 31)
+        ] = datetime(2022, 4, 1)
     if EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES not in st.session_state:
         st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = ["00:00"]
     if (
@@ -48,29 +58,37 @@ def _init():
 
 def _dates_filters():
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
-    ] = start_date_col.date_input(
+    start_date_col.date_input(
         label="Start date",
-        value=st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE],
+        key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE,
     )
-    st.session_state[
-        EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
-    ] = end_date_col.date_input(
+    end_date_col.date_input(
         label="End date",
-        value=st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE],
+        key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE,
     )
+    with st.container():
+        st.checkbox(
+            "Use reference period",
+            key=EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE,
+            help="Show relative values respect to a reference period",
+        )
+        if st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE]:
+            ref_start_date_col, ref_end_date_col, _ = st.columns([1, 1, 3])
+            ref_start_date_col.date_input(
+                label="Reference start date",
+                key=EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_START_DATE,
+            )
+            ref_end_date_col.date_input(
+                label="Reference end date",
+                key=EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_END_DATE,
+            )
 
 
 def _times_filters():
-    st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES] = sorted(
-        st.multiselect(
-            label="Times",
-            options=eac4_times,
-            default=st.session_state[
-                EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES
-            ],
-        )
+    st.multiselect(
+        label="Times",
+        options=eac4_times,
+        key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES,
     )
 
 
@@ -79,9 +97,11 @@ def _filters():
         logger.info("Adding filters")
         _dates_filters()
         _times_filters()
-        st.session_state[
-            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
-        ] = st.selectbox(label="Data variable", options=eac4_sl_data_variables)
+        st.selectbox(
+            label="Data variable",
+            options=eac4_sl_data_variables,
+            key=EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE,
+        )
         v_name = eac4_sl_data_variable_var_name_mapping[
             st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
         ]
@@ -112,6 +132,18 @@ if st.button("Generate plot"):
     data_variable = st.session_state[
         EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
     ]
+    if st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_USE_REFERENCE]:
+        ref_start_date = st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_START_DATE
+        ]
+        ref_end_date = st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_END_DATE
+        ]
+        reference_dates_range = (
+            f"{ref_start_date.strftime('%Y-%m-%d')}/{ref_end_date.strftime('%Y-%m-%d')}"
+        )
+    else:
+        reference_dates_range = None
     with st.container():
         with st.spinner("Downloading data and building plot"):
             logger.debug(
@@ -135,6 +167,7 @@ if st.button("Generate plot"):
                     time_values=time_values,
                     title=plot_title,
                     shapes=shapes.dataframe,
+                    reference_dates_range=reference_dates_range,
                 ),
                 use_container_width=True,
             )

@@ -35,9 +35,9 @@ def _init():
     if HovmSessionStateKeys.HOVM_START_DATE not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = datetime(2022, 1, 1)
     if HovmSessionStateKeys.HOVM_END_DATE not in st.session_state:
-        st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 12, 31)
-    if HovmSessionStateKeys.HOVM_TIMES not in st.session_state:
-        st.session_state[HovmSessionStateKeys.HOVM_TIMES] = ["00:00"]
+        st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = datetime(2022, 4, 1)
+    if HovmSessionStateKeys.HOVM_TIME not in st.session_state:
+        st.session_state[HovmSessionStateKeys.HOVM_TIME] = "00:00"
     if HovmSessionStateKeys.HOVM_YAXIS not in st.session_state:
         st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = "Latitude"
     if HovmSessionStateKeys.HOVM_P_LEVELS not in st.session_state:
@@ -50,54 +50,41 @@ def _init():
 
 def _year_filters():
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
-    st.session_state[HovmSessionStateKeys.HOVM_START_DATE] = start_date_col.date_input(
-        "Start date", value=st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
-    )
-    st.session_state[HovmSessionStateKeys.HOVM_END_DATE] = end_date_col.date_input(
-        "End date", value=st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
-    )
+    start_date_col.date_input("Start date", key=HovmSessionStateKeys.HOVM_START_DATE)
+    end_date_col.date_input("End date", key=HovmSessionStateKeys.HOVM_END_DATE)
 
 
 def _times_filter():
-    st.session_state[HovmSessionStateKeys.HOVM_TIMES] = sorted(
-        st.multiselect(
-            label="Times",
-            options=eac4_times,
-            default=st.session_state[HovmSessionStateKeys.HOVM_TIMES],
-        )
+    st.selectbox(
+        label="Time",
+        options=eac4_times,
+        key=HovmSessionStateKeys.HOVM_TIME,
     )
 
 
 def _y_axis_filter():
-    st.session_state[HovmSessionStateKeys.HOVM_YAXIS] = st.radio(
+    st.radio(
         "Vertical axis",
         ["Latitude", "Pressure Level", "Model Level"],
         index=0,
         horizontal=True,
+        key=HovmSessionStateKeys.HOVM_YAXIS,
         help="Select one of the level types",
     )
     match st.session_state[HovmSessionStateKeys.HOVM_YAXIS]:
         case "Latitude":
             pass
         case "Pressure Level":
-            st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS] = sorted(
-                st.multiselect(
-                    label="Pressure Level",
-                    options=eac4_pressure_levels,
-                    default=st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS]
-                    or [1, 2],
-                ),
-                key=int,
+            st.multiselect(
+                label="Pressure Level",
+                options=eac4_pressure_levels,
+                key=HovmSessionStateKeys.HOVM_P_LEVELS,
             )
         case "Model Level":
-            st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS] = sorted(
-                st.multiselect(
-                    label="Model Level",
-                    options=eac4_model_levels,
-                    default=st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS]
-                    or [1, 2],
-                ),
-                key=int,
+            st.multiselect(
+                label="Model Level",
+                options=eac4_model_levels,
+                key=HovmSessionStateKeys.HOVM_M_LEVELS,
             )
 
 
@@ -110,9 +97,10 @@ def _var_filters():
         all_vars = eac4_ml_data_variables
         vars_mapping = eac4_ml_data_variable_var_name_mapping
         title_mapping = eac4_ml_data_variable_default_plot_title_mapping
-    st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE] = st.selectbox(
+    st.selectbox(
         label="Data variable",
         options=all_vars,
+        key=HovmSessionStateKeys.HOVM_DATA_VARIABLE,
     )
     v_name = vars_mapping[st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]]
     st.text(f"Var name: {v_name}")
@@ -141,7 +129,7 @@ if st.button("Generate plot"):
     start_date = st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
     end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
     dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
-    time_values = st.session_state[HovmSessionStateKeys.HOVM_TIMES]
+    time_values = st.session_state[HovmSessionStateKeys.HOVM_TIME]
     shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
     data_variable = st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]
     with st.container():
@@ -169,6 +157,7 @@ if st.button("Generate plot"):
                             dates_range=dates_range,
                             time_values=time_values,
                             title=plot_title,
+                            shapes=shapes.dataframe,
                         ),
                         use_container_width=True,
                     )
