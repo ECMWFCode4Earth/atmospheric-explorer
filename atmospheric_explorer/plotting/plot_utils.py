@@ -18,11 +18,11 @@ logger = get_logger("atmexp")
 
 
 def _base_height(n_plots):
-    return 250 if n_plots >= 3 else 300
+    return 250 if n_plots >= 3 else 500
 
 
 def _row_spacing(n_plots):
-    return 0.25 if n_plots > 3 else 0.3
+    return 0.22 if n_plots >= 3 else 0.28
 
 
 def hex_to_rgb(hex_color: str) -> tuple:
@@ -267,6 +267,7 @@ def hovmoeller_plot(
         fig.update_yaxes(showticklabels=True, matches=None)
         fig.update_xaxes(showticklabels=True, matches=None)
     else:
+        dataset = dataset.squeeze()
         fig = px.imshow(dataset.T, origin="lower")
     if (pressure_level or model_level) is not None:
         fig.update_yaxes(autorange="reversed", type="category")
