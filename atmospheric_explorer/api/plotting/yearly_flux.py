@@ -128,10 +128,10 @@ def _ghg_surface_satellite_yearly_data(
 
 def ghg_surface_satellite_yearly_plot(
     data_variable: str,
+    var_name: str,
     years: list[str],
     months: list[str],
     title: str,
-    var_name: str = "flux_foss",
     shapes: Selection = Selection(),
     add_satellite_observations: bool = True,
 ) -> go.Figure:
@@ -142,18 +142,18 @@ def ghg_surface_satellite_yearly_plot(
     Parameters:
         data_variable (str): data variable (greenhouse gas) to be plotted.
             Can be one among: 'carbon_dioxide', 'methane, 'nitrous_oxide'
-        countries (list[str]): list of country names to plot the data for
         years (list[str]): list of years (in YYYY format) to plot the data for
         months (list[str]): list of month (in MM format) to plot the data for
-        title (str): plot title
         var_name (str | list[str]): use a single var_name if the plot only
             shows one input_observations category ('surface').
             Use a list with values corresponding respectively to 'surface'
             and 'satellite' if add_satellite_observations is true.
             Example: ['flux_apos', 'flux_apos_bio']
+        title (str): plot title
+        shapes (Selection): GenericShapeSelection or EntitySelection with
         add_satellite_observations (bool): show 'satellite' input_observations
             data along with 'surface' (only available for carbon_dioxide data
-            variable). ! CURRENTLY NOT WORKING, so we leave it False by default
+            variable).
     """
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals

@@ -72,7 +72,9 @@ def eac4_hovmoeller_plot(
     resampling: str = "1MS",
     base_colorscale: list[str] | None = None,
 ) -> go.Figure:
-    """Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset."""
+    """\
+    Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.
+    """
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
     # pylint: disable=dangerous-default-value

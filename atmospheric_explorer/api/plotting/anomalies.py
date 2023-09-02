@@ -61,10 +61,8 @@ def eac4_anomalies_plot(
     reference_dates_range: str | None = None,
     resampling: str = "1MS",
 ) -> go.Figure:
-    """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
-
-    TODO: pass reference period as parameter. We are currently considering the
-    same date range for data as reference period.
+    """\
+    Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
     """
     # pylint: disable=too-many-arguments
     logger.debug(
