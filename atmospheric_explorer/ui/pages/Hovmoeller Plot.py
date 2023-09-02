@@ -157,7 +157,7 @@ if st.button("Generate plot"):
                             dates_range=dates_range,
                             time_values=time_values,
                             title=plot_title,
-                            shapes=shapes.dataframe,
+                            shapes=shapes,
                         ),
                         use_container_width=True,
                     )
@@ -187,7 +187,7 @@ if st.button("Generate plot"):
                                 time_values=time_values,
                                 pressure_level=levels,
                                 title=plot_title,
-                                shapes=shapes.dataframe,
+                                shapes=shapes,
                             ),
                             use_container_width=True,
                         )
@@ -217,7 +217,7 @@ if st.button("Generate plot"):
                                 time_values=time_values,
                                 model_level=levels,
                                 title=plot_title,
-                                shapes=shapes.dataframe,
+                                shapes=shapes,
                             ),
                             use_container_width=True,
                         )

@@ -3,39 +3,34 @@ Module to manage selections done on the folium map.
 """
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-
 import geopandas as gpd
-import streamlit as st
 from shapely.geometry import shape
 from shapely.ops import unary_union
 
+from atmospheric_explorer.api.config import CRS
 from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.shapefile import ShapefilesDownloader
-from atmospheric_explorer.ui.interactive_map.map_config import (
+from atmospheric_explorer.api.shape_selection.config import (
+    SelectionLevel,
     map_level_shapefile_mapping,
 )
-from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
+from atmospheric_explorer.api.shape_selection.shapefile import (
+    ShapefilesDownloader,
+    dissolve_shapefile_level,
+)
 
 logger = get_logger("atmexp")
 
 
-@st.cache_data(show_spinner="Fetching shapefile...")
-def shapefile_dataframe(level: str) -> gpd.GeoDataFrame:
-    """Get and cache the shapefile"""
-    col = map_level_shapefile_mapping[level]
-    sh_df = ShapefilesDownloader(instance="map_subunits")
-    sh_df = sh_df.get_as_dataframe()[[col, "geometry"]].rename({col: "label"}, axis=1)
-    return sh_df.dissolve(by="label").reset_index()
-
-
-class Selection(ABC):
+class Selection:
     """Selection interface"""
 
-    crs = "EPSG:4326"
-
-    def __init__(self, dataframe: gpd.GeoDataFrame | None = None):
+    def __init__(
+        self,
+        dataframe: gpd.GeoDataFrame | None = None,
+        level: SelectionLevel | None = None,
+    ):
         self.dataframe = dataframe
+        self.level = level
 
     def empty(self) -> bool:
         """Return True if the selection is empty."""
@@ -46,8 +41,10 @@ class Selection(ABC):
 
     def __eq__(self, other: Selection) -> bool:
         if not self.empty():
-            return self.dataframe.equals(other.dataframe)
-        return self.dataframe == other.dataframe
+            return (
+                self.dataframe.equals(other.dataframe)
+            ) and self.level == other.level
+        return self.dataframe == other.dataframe and self.level == other.level
 
     @property
     def labels(self) -> list[str]:
@@ -64,20 +61,25 @@ class Selection(ABC):
                 return out_event["last_active_drawing"]["properties"].get("label")
         return None
 
-    @classmethod
-    @abstractmethod
-    def convert_selection(cls, shape_selection: Selection):
-        """Conversion between selection types."""
-        raise NotImplementedError("A selection must have a convert_selection method!")
-
 
 class GenericShapeSelection(Selection):
     """Class to manage generic shape selections on the interactive map."""
 
+    def __init__(self, dataframe: gpd.GeoDataFrame | None = None):
+        super().__init__(dataframe, None)
+        if dataframe is not None:
+            self.level = SelectionLevel.GENERIC
+        logger.debug(
+            """\
+        Created GenericShapeSelection with dataframe %s
+        """,
+            dataframe,
+        )
+
     @classmethod
     def convert_selection(cls, shape_selection: Selection) -> GenericShapeSelection:
         """Converts selections between types (shape vs entity)."""
-        if isinstance(shape_selection, EntitySelection):
+        if not isinstance(shape_selection, GenericShapeSelection):
             return cls(dataframe=shape_selection.dataframe)
         return shape_selection
 
@@ -86,27 +88,35 @@ class EntitySelection(Selection):
     """Class to manage entity selections on the interactive map."""
 
     def __init__(
-        self, dataframe: gpd.GeoDataFrame | None = None, level: str | None = None
+        self,
+        dataframe: gpd.GeoDataFrame | None = None,
+        level: SelectionLevel | None = None,
     ):
-        super().__init__(dataframe)
-        self.level = level
+        super().__init__(dataframe, level)
+        if self.level == SelectionLevel.GENERIC:
+            raise ValueError("EntitySelection cannot have level SelectionLevel.GENERIC")
+        logger.debug(
+            """\
+        Created EntitySelection with dataframe %s and level %s
+        """,
+            dataframe,
+            level,
+        )
 
     @classmethod
     def from_entities_list(
-        cls, entities: list[str], level: str | None = None
+        cls, entities: list[str], level: SelectionLevel
     ) -> EntitySelection:
         """Generate an EntitySelection object from a list of entities, shapes are taken from the shapefile."""
         if entities:
-            if level is None:
-                level = st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            sh_df = shapefile_dataframe(level)
+            sh_df = dissolve_shapefile_level(level)
             sh_df = sh_df[sh_df["label"].isin(entities)]
             return cls(dataframe=sh_df, level=level)
         return cls()
 
     @classmethod
     def entities_from_generic_shape(
-        cls, shape_selection: GenericShapeSelection, level: str | None = None
+        cls, shape_selection: GenericShapeSelection, level: SelectionLevel
     ) -> EntitySelection:
         """\
         Generate an EntitySelection object encompassing entitities that are touched by
@@ -117,9 +127,7 @@ class EntitySelection(Selection):
         if not shape_selection.empty():
             if not isinstance(shape_selection, GenericShapeSelection):
                 raise ValueError("Selection must be a generic shape selection")
-            if level is None:
-                level = st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
-            shapefile = shapefile_dataframe(level)
+            shapefile = dissolve_shapefile_level(level)
             selected_geometry = unary_union(shape_selection.dataframe["geometry"])
             return cls(
                 dataframe=(
@@ -132,10 +140,11 @@ class EntitySelection(Selection):
         return cls()
 
     @classmethod
-    def convert_selection(cls, shape_selection: Selection) -> EntitySelection:
+    def convert_selection(
+        cls, shape_selection: Selection, level: SelectionLevel
+    ) -> EntitySelection:
         """Converts selections between levels and types (shape vs entity)."""
         if not shape_selection.empty():
-            level = st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
             if isinstance(shape_selection, EntitySelection):
                 col_from = map_level_shapefile_mapping[shape_selection.level]
                 col_to = map_level_shapefile_mapping[level]
@@ -157,7 +166,7 @@ class EntitySelection(Selection):
         return cls()
 
 
-def from_out_event(out_event) -> Selection:
+def from_out_event(out_event, level: SelectionLevel) -> Selection:
     """Generate a GenericShapeSelection/EntitySelection object from an output event generated by streamlit_folium."""
     admin = Selection.get_event_label(out_event)
     if admin is not None:
@@ -167,9 +176,9 @@ def from_out_event(out_event) -> Selection:
                     "label": [admin] if admin is not None else ["generic shape"],
                     "geometry": [shape(out_event["last_active_drawing"]["geometry"])],
                 },
-                crs=Selection.crs,
+                crs=CRS,
             ),
-            level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
+            level=level,
         )
     return GenericShapeSelection(
         dataframe=gpd.GeoDataFrame(
@@ -177,6 +186,6 @@ def from_out_event(out_event) -> Selection:
                 "label": ["generic shape"],
                 "geometry": [shape(out_event["last_active_drawing"]["geometry"])],
             },
-            crs=Selection.crs,
+            crs=CRS,
         )
     )

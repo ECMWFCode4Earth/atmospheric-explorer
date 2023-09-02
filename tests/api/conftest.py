@@ -11,15 +11,6 @@ from __future__ import annotations
 import pytest
 import requests.exceptions
 
-from atmospheric_explorer.api.data_interface import CAMSDataInterface
-
-
-class CAMSDataInterfaceTesting(CAMSDataInterface):
-    """Mock class used to instantiate CAMSDataInterface so that it can be tested"""
-
-    def read_dataset(self: CAMSDataInterface):
-        pass
-
 
 @pytest.fixture
 def mock_get_timeout(monkeypatch):

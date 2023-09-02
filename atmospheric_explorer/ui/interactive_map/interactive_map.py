@@ -8,12 +8,12 @@ from folium.plugins import Draw
 from streamlit_folium import st_folium
 
 from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.ui.interactive_map.shape_selection import (
+from atmospheric_explorer.api.shape_selection.shape_selection import (
     EntitySelection,
     GenericShapeSelection,
     from_out_event,
-    shapefile_dataframe,
 )
+from atmospheric_explorer.api.shape_selection.shapefile import dissolve_shapefile_level
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 logger = get_logger("atmexp")
@@ -34,7 +34,7 @@ def world_polygon(level: str) -> folium.GeoJson:
     """Return a folium GeoJson object that adds colored polygons over all countries"""
     logger.info("Fetch world polygon")
     return folium.GeoJson(
-        shapefile_dataframe(level),
+        dissolve_shapefile_level(level),
         name="world_polygon",
         highlight_function=_country_hover_style,
         zoom_on_click=False,
@@ -107,9 +107,13 @@ def update_session_map_click(out_event):
             "last_object_clicked"
         ]
     if out_event.get("last_active_drawing") is not None:
+        sel = from_out_event(
+            out_event, level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
+        )
         if st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]:
             selected_countries = EntitySelection.convert_selection(
-                from_out_event(out_event)
+                shape_selection=sel,
+                level=st.session_state[GeneralSessionStateKeys.MAP_LEVEL],
             )
             sel_countries = set(selected_countries.labels)
             prev_selection = set(
@@ -124,7 +128,7 @@ def update_session_map_click(out_event):
                 st.experimental_rerun()
         else:
             selected_shape = GenericShapeSelection.convert_selection(
-                from_out_event(out_event)
+                shape_selection=sel
             )
             prev_selection = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
             if selected_shape != prev_selection:

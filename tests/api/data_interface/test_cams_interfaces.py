@@ -4,7 +4,14 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 
-from ..conftest import CAMSDataInterfaceTesting
+from atmospheric_explorer.api.data_interface.cams_interface import CAMSDataInterface
+
+
+class CAMSDataInterfaceTesting(CAMSDataInterface):
+    """Mock class used to instantiate CAMSDataInterface so that it can be tested"""
+
+    def read_dataset(self: CAMSDataInterface):
+        pass
 
 
 def test__init():

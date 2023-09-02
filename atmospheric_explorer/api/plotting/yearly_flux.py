@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-import geopandas as gpd
 import plotly.graph_objects as go
 import xarray as xr
 
@@ -19,6 +18,7 @@ from atmospheric_explorer.api.data_interface.ghg import (
 )
 from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.api.plotting.plot_utils import line_with_ci_subplots
+from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 
 logger = get_logger("atmexp")
 
@@ -36,7 +36,7 @@ def _ghg_surface_satellite_yearly_data(
     years: list[str],
     months: list[str],
     var_name: str,
-    shapes: gpd.GeoDataFrame | None,
+    shapes: Selection = Selection(),
     add_satellite_observations: bool = False,
 ) -> xr.DataArray | xr.Dataset:
     # pylint: disable=too-many-arguments
@@ -92,7 +92,7 @@ def _ghg_surface_satellite_yearly_data(
         df_total["time.year"].isin([int(y) for y in years]), drop=True
     ).where(df_total["time.month"].isin([int(m) for m in months]), drop=True)
     # Clip countries
-    if shapes is not None:
+    if not shapes.empty():
         df_total = clip_and_concat_shapes(df_total, shapes)
     else:
         df_total = df_total.expand_dims({"label": [""]})
@@ -132,7 +132,7 @@ def ghg_surface_satellite_yearly_plot(
     months: list[str],
     title: str,
     var_name: str = "flux_foss",
-    shapes: gpd.GeoDataFrame | None = None,
+    shapes: Selection = Selection(),
     add_satellite_observations: bool = True,
 ) -> go.Figure:
     """\

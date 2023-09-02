@@ -5,9 +5,10 @@ Mappings and configs for the interactive map.
 from enum import StrEnum
 
 
-class MapLevels(StrEnum):
-    """Levels for the interactive map"""
+class SelectionLevel(StrEnum):
+    """Levels for the shape selection"""
 
+    GENERIC = "Generic"
     CONTINENTS = "Continents"
     ORGANIZATIONS = "Organizations"
     COUNTRIES = "Countries"
@@ -15,10 +16,10 @@ class MapLevels(StrEnum):
 
 
 map_level_shapefile_mapping = {
-    MapLevels.CONTINENTS: "CONTINENT",
-    MapLevels.ORGANIZATIONS: "SUBUNIT",
-    MapLevels.COUNTRIES: "ADMIN",
-    MapLevels.COUNTRIES_SUB: "SUBUNIT",
+    SelectionLevel.CONTINENTS: "CONTINENT",
+    SelectionLevel.ORGANIZATIONS: "SUBUNIT",
+    SelectionLevel.COUNTRIES: "ADMIN",
+    SelectionLevel.COUNTRIES_SUB: "SUBUNIT",
 }
 
 

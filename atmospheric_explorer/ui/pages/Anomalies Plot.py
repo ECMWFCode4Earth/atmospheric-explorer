@@ -166,7 +166,7 @@ if st.button("Generate plot"):
                     dates_range=dates_range,
                     time_values=time_values,
                     title=plot_title,
-                    shapes=shapes.dataframe,
+                    shapes=shapes,
                     reference_dates_range=reference_dates_range,
                 ),
                 use_container_width=True,

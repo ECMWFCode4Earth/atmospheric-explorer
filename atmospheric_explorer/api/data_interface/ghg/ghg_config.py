@@ -27,6 +27,16 @@ class GHGConfig(metaclass=ConfigMeta, filename="ghg/ghg_config.yaml"):
         return cls().config
 
     @classmethod
+    def get_var_names(
+        cls, data_variable: str, quantity: str, time_aggregation: str
+    ) -> list[str]:
+        """Columns names for a specific data variable, quantity and time aggregation selection"""
+        config = cls.get_config()["variables"][data_variable][quantity][
+            time_aggregation
+        ]
+        return [v["var_name"] for v in config if "area" not in v["var_name"]]
+
+    @classmethod
     def convert_units_array(
         cls,
         array: xr.DataArray,

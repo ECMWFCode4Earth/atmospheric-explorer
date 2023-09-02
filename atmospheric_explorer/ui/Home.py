@@ -6,13 +6,16 @@ Main UI page
 import streamlit as st
 
 from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.shape_selection.config import (
+    SelectionLevel,
+    organizations,
+)
+from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
+from atmospheric_explorer.api.shape_selection.shapefile import dissolve_shapefile_level
 from atmospheric_explorer.ui.interactive_map.interactive_map import (
-    shapefile_dataframe,
     show_folium_map,
     update_session_map_click,
 )
-from atmospheric_explorer.ui.interactive_map.map_config import MapLevels, organizations
-from atmospheric_explorer.ui.interactive_map.shape_selection import EntitySelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
 
@@ -45,7 +48,10 @@ def _selectors_org():
     st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
     ] = EntitySelection.from_entities_list(
-        organizations[st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION]]
+        entities=organizations[
+            st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION]
+        ],
+        level=st.session_state["map_level_helper"],
     )
     st.session_state["selected_shapes_labels"] = st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
@@ -57,14 +63,15 @@ def _selectors_no_org():
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
         ] = EntitySelection.from_entities_list(
-            st.session_state["selected_shapes_labels"]
+            entities=st.session_state["selected_shapes_labels"],
+            level=st.session_state["map_level_helper"],
         )
     else:
         st.session_state["selected_shapes_labels"] = st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
         ].labels
     st.session_state["used_form"] = False
-    sh_all_labels = shapefile_dataframe(st.session_state["map_level_helper"])[
+    sh_all_labels = dissolve_shapefile_level(st.session_state["map_level_helper"])[
         "label"
     ].unique()
     st.multiselect(
@@ -96,8 +103,11 @@ def selectors():
         if st.session_state["select_entities_helper"]:
             st.session_state[GeneralSessionStateKeys.MAP_LEVEL] = st.selectbox(
                 label="Entity level",
-                options=list(MapLevels),
-                index=list(MapLevels).index(st.session_state["map_level_helper"]),
+                options=list(v for v in SelectionLevel if v != SelectionLevel.GENERIC),
+                index=(
+                    list(v for v in SelectionLevel if v != SelectionLevel.GENERIC)
+                    .index(st.session_state["map_level_helper"])
+                ),
                 key="map_level_helper",
                 help="""\
                 Switch between continents, countries etc.
@@ -108,7 +118,10 @@ def selectors():
                 st.session_state[
                     GeneralSessionStateKeys.SELECTED_SHAPES
                 ] = EntitySelection.convert_selection(
-                    st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+                    shape_selection=st.session_state[
+                        GeneralSessionStateKeys.SELECTED_SHAPES
+                    ],
+                    level=st.session_state["map_level_helper"],
                 )
                 st.session_state["selected_shapes_labels"] = st.session_state[
                     GeneralSessionStateKeys.SELECTED_SHAPES

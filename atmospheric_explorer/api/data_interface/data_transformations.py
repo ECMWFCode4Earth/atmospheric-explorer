@@ -3,12 +3,13 @@ Data transformations needed for the plotting api
 """
 from functools import singledispatch
 
-import geopandas as gpd
 import numpy as np
 import pandas as pd
 import statsmodels.stats.api as sms
 import xarray as xr
 from shapely.geometry import mapping
+
+from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 
 
 def split_time_dim(dataset: xr.Dataset, time_dim: str):
@@ -19,9 +20,7 @@ def split_time_dim(dataset: xr.Dataset, time_dim: str):
     return dataset.assign(**{f"{time_dim}": ind}).unstack(time_dim)
 
 
-def clip_and_concat_shapes(
-    data_frame: xr.Dataset, shapes_df: gpd.GeoDataFrame
-) -> xr.Dataset:
+def clip_and_concat_shapes(data_frame: xr.Dataset, shapes: Selection) -> xr.Dataset:
     """Clips data_frame keeping only shapes specified. Shapes_df must be a GeoDataFrame."""
     # Download shapefile
 
@@ -29,7 +28,7 @@ def clip_and_concat_shapes(
     # se False include solo i pixel il cui centro è incluso nel poligono
     # approvato all_touched=True
     df_clipped_concat = xr.Dataset(coords={"label": []})
-    for _, row in shapes_df.iterrows():
+    for _, row in shapes.dataframe.iterrows():
         labels, shapes = row
         df_clipped = data_frame.rio.clip([mapping(shapes)], drop=True, all_touched=True)
         df_clipped = df_clipped.expand_dims({"label": [labels]})

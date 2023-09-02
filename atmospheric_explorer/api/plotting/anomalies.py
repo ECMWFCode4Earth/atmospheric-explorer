@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from textwrap import dedent
 
-import geopandas as gpd
 import plotly.graph_objects as go
 import xarray as xr
 
@@ -17,6 +16,7 @@ from atmospheric_explorer.api.data_interface.data_transformations import (
 from atmospheric_explorer.api.data_interface.eac4 import EAC4Config, EAC4Instance
 from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.api.plotting.plot_utils import line_with_ci_subplots
+from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 
 logger = get_logger("atmexp")
 
@@ -26,8 +26,8 @@ def _eac4_anomalies_data(
     var_name: str,
     dates_range: str,
     time_values: str,
+    shapes: Selection = Selection(),
     resampling: str = "1MS",
-    shapes: gpd.GeoDataFrame | None = None,
 ) -> xr.Dataset:
     # pylint: disable=too-many-arguments
     data = EAC4Instance(
@@ -38,7 +38,7 @@ def _eac4_anomalies_data(
     data.download()
     df_down = data.read_dataset()
     df_down = shifting_long(df_down)
-    if shapes is not None:
+    if not shapes.empty():
         df_down = clip_and_concat_shapes(df_down, shapes)
     else:
         df_down = df_down.expand_dims({"label": [""]})
@@ -57,9 +57,9 @@ def eac4_anomalies_plot(
     dates_range: str,
     time_values: str,
     title: str,
+    shapes: Selection = Selection(),
     reference_dates_range: str | None = None,
     resampling: str = "1MS",
-    shapes: gpd.GeoDataFrame | None = None,
 ) -> go.Figure:
     """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
 

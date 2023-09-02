@@ -15,6 +15,7 @@ import requests.utils
 
 from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.api.os_manager import create_folder, get_local_folder
+from atmospheric_explorer.api.shape_selection.config import map_level_shapefile_mapping
 
 logger = get_logger("atmexp")
 
@@ -27,21 +28,21 @@ class ShapefilesDownloader:
     By default, the class download a 50m resolution "admin" shapefile for all countries in the world.
 
     Attributes:
-        shapefiles_content (bytes): downloaded shapefile
-        dst_dir (str): directory where the downloaded shapefile will be saved
         resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
+        map_type (str): map type, e.g. cultural, physical or raster
         info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
                          values depending on the resolution on the webpage below
         depth (int): different info_type shapefiles can have different values.
                      Use 0 for administrative shapefiles (countries)
         instance (str): the specific shapefile to be downloaded. Example: countries_ita
-
+        timeout (int): timeout fot the GET call to Natural Earth Data
+        dst_dir (str): destination diractory for the donwloaded shapefile
 
     See some more details here: https://www.naturalearthdata.com/downloads/
     """
 
     # pylint: disable=line-too-long
-    _BASE_URL = (
+    _BASE_URL: str = (
         "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
     )
     _HEADERS = requests.utils.default_headers()
@@ -50,48 +51,127 @@ class ShapefilesDownloader:
             "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0",  # noqa: E501
         }
     )
-    _ROOT_DIR = "shapefiles"
+    _ROOT_DIR: str = "shapefiles"
+    _cache: list[ShapefilesDownloader] = []
+
+    @classmethod
+    def find_cache(
+        cls: ShapefilesDownloader,
+        resolution: str = "50m",
+        map_type: str = "cultural",
+        info_type: str = "admin",
+        depth: int = 0,
+        instance: str = "map_subunits",
+    ) -> ShapefilesDownloader | None:
+        for sd_obj in cls._cache:
+            if (
+                sd_obj.resolution == resolution
+                and sd_obj.map_type == map_type
+                and sd_obj.info_type == info_type
+                and sd_obj.depth == depth
+                and sd_obj.instance == instance
+            ):
+                logger.debug("Found cached shapefile object")
+                return sd_obj
+        return None
+
+    @classmethod
+    def is_cached(cls, obj: ShapefilesDownloader) -> bool:
+        return obj in cls._cache
+
+    @classmethod
+    def cache(cls, obj: ShapefilesDownloader):
+        ShapefilesDownloader._cache.append(obj)
+
+    @classmethod
+    def clear_cache(cls):
+        cls._cache = []
+
+    def __new__(
+        cls: ShapefilesDownloader,
+        resolution: str = "50m",
+        map_type: str = "cultural",
+        info_type: str = "admin",
+        depth: int = 0,
+        instance: str = "map_subunits",
+        **kwargs,
+    ):
+        logger.debug(
+            dedent(
+                """\
+                Attempting to create ShapefilesDownloader object with attributes
+                resolution: %s
+                map_type: %s
+                info_type: %s
+                depth: %s
+                instance: %s
+                """
+            ),
+            resolution,
+            map_type,
+            info_type,
+            depth,
+            instance,
+        )
+        cached_obj = ShapefilesDownloader.find_cache(
+            resolution=resolution,
+            map_type=map_type,
+            info_type=info_type,
+            depth=depth,
+            instance=instance,
+        )
+        if cached_obj is not None:
+            return cached_obj
+        return super(ShapefilesDownloader, cls).__new__(cls)
 
     def __init__(
         self: ShapefilesDownloader,
-        dst_dir: str | None = None,
         resolution: str = "50m",
         map_type: str = "cultural",
         info_type: str = "admin",
         depth: int = 0,
         instance: str = "map_subunits",
         timeout: int = 10,
+        dst_dir: str | None = None,
     ):  # pylint: disable=too-many-arguments
-        self.dst_dir = (
-            dst_dir
-            if dst_dir is not None
-            else os.path.join(get_local_folder(), self._ROOT_DIR)
-        )
+        if ShapefilesDownloader.is_cached(self):
+            return
         self.resolution = resolution
         self.map_type = map_type
         self.info_type = info_type
         self.depth = depth
         self.instance = instance
         self.timeout = timeout
+        self.dst_dir = (
+            dst_dir
+            if dst_dir is not None
+            else os.path.join(get_local_folder(), self._ROOT_DIR)
+        )
+        self._downloaded = False
+        create_folder(self.dst_dir)
+        logger.info("Created folder %s to save shapefiles", self.dst_dir)
+        ShapefilesDownloader.cache(self)
         logger.debug(
             dedent(
                 """\
                 Created ShapefilesDownloader object with attributes
-                dst_dir: %s
                 resolution: %s
+                map_type: %s
                 info_type: %s
                 depth: %s
                 instance: %s
+                timeout: %s
+                dst_dir: %s
                 """
             ),
+            resolution,
+            map_type,
+            info_type,
+            depth,
+            instance,
+            self.timeout,
             self.dst_dir,
-            self.resolution,
-            self.info_type,
-            self.depth,
-            self.instance,
         )
-        create_folder(self.dst_dir)
-        logger.info("Created folder %s to save shapefiles", self.dst_dir)
 
     @property
     def shapefile_name(self: ShapefilesDownloader) -> str:
@@ -149,7 +229,7 @@ class ShapefilesDownloader:
         """Save shapefiles to zip file"""
         with open(self.shapefile_dir + ".zip", "wb") as file_zip:
             file_zip.write(self._download_shapefile())
-            logger.info("Shapefiles downloaded to file %s", file_zip.name)
+            logger.info("Shapefiles saved into file %s", file_zip.name)
 
     def _extract_to_folder(self: ShapefilesDownloader):
         """\
@@ -169,6 +249,7 @@ class ShapefilesDownloader:
         """Download and extracts shapefiles"""
         self._download_shapefile_to_zip()
         self._extract_to_folder()
+        self._downloaded = True
 
     def _read_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
         """Return shapefile as geopandas dataframe"""
@@ -177,9 +258,20 @@ class ShapefilesDownloader:
 
     def get_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
         """Return shapefile as geopandas dataframe, also downloads shapefile if needed"""
-        if not os.path.exists(self.shapefile_full_path):
-            logger.info("Shapefile not found, downloading it from Natural Earth Data")
+        if not self._downloaded:
+            logger.info(
+                "Shapefile not downloaded, downloading it from Natural Earth Data"
+            )
             self.download()
         else:
-            logger.info("Found shapefile %s, reading it", self.shapefile_full_path)
+            logger.info("Shapefile already downloaded in %s", self.shapefile_full_path)
         return self._read_as_dataframe()
+
+
+def dissolve_shapefile_level(level: str) -> gpd.GeoDataFrame:
+    """Get shapefile and dissolve it on a selection level"""
+    logger.debug("Dissolve shapefile to level %s", level)
+    col = map_level_shapefile_mapping[level]
+    sh_df = ShapefilesDownloader(instance="map_subunits").get_as_dataframe()
+    sh_df = sh_df[[col, "geometry"]].rename({col: "label"}, axis=1)
+    return sh_df.dissolve(by="label").reset_index()

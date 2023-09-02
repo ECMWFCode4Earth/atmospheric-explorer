@@ -145,7 +145,7 @@ if st.button("Generate plot"):
                     months=months,
                     title=plot_title,
                     var_name=var_name,
-                    shapes=shapes.dataframe,
+                    shapes=shapes,
                     add_satellite_observations=(
                         add_satellite_observations and data_variable == "carbon_dioxide"
                     ),
