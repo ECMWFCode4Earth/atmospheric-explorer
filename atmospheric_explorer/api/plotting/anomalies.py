@@ -25,7 +25,7 @@ def _eac4_anomalies_data(
     data_variable: str,
     var_name: str,
     dates_range: str,
-    time_values: str,
+    time_values: str | list[str],
     shapes: Selection = Selection(),
     resampling: str = "1MS",
 ) -> xr.Dataset:
@@ -48,6 +48,8 @@ def _eac4_anomalies_data(
         dim="dates"
     )
     df_agg = EAC4Config.convert_units_array(df_agg[var_name], data_variable)
+    if resampling == "YS":
+        return df_agg.rename({"dates": "Year"})
     return df_agg.rename({"dates": "Month"})
 
 
@@ -55,7 +57,7 @@ def eac4_anomalies_plot(
     data_variable: str,
     var_name: str,
     dates_range: str,
-    time_values: str,
+    time_values: str | list[str],
     title: str,
     shapes: Selection = Selection(),
     reference_dates_range: str | None = None,
@@ -88,16 +90,19 @@ def eac4_anomalies_plot(
         shapes=shapes,
     )
     if reference_dates_range is not None:
-        reference_value = _eac4_anomalies_data(
+        reference_data = _eac4_anomalies_data(
             data_variable=data_variable,
             var_name=var_name,
             dates_range=reference_dates_range,
             time_values=time_values,
             resampling=resampling,
             shapes=shapes,
-        ).mean(dim="Month")
+        )
+        if resampling == "YS":
+            reference_data = reference_data.mean(dim="Year")
+        reference_data = reference_data.mean(dim="Month")
         with xr.set_options(keep_attrs=True):
-            dataset_final = dataset - reference_value
+            dataset_final = dataset - reference_data
             dataset_final.attrs = dataset.attrs
     else:
         dataset_final = dataset

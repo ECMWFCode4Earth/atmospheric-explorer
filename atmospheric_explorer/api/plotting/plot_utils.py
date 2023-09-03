@@ -21,8 +21,12 @@ def _base_height(n_plots):
     return 250 if n_plots >= 3 else 500
 
 
-def _row_spacing(n_plots):
-    return 0.22 if n_plots >= 3 else 0.28
+def _base_width():
+    return 1000
+
+
+def _row_spacing(rows):
+    return 1 / (rows * 2.8)
 
 
 def hex_to_rgb(hex_color: str) -> tuple:
@@ -119,6 +123,7 @@ def line_with_ci_subplots(
     """
     labels = sorted(dataset["label"].unique())
     colors = sorted(dataset[color].unique())
+    total_rows = ceil(len(labels) / 2)
     if len(labels) > 1:
         fig = px.line(
             data_frame=dataset,
@@ -127,7 +132,7 @@ def line_with_ci_subplots(
             facet_col="label",
             facet_col_wrap=(2 if len(labels) >= 2 else 1),
             facet_col_spacing=0.04,
-            facet_row_spacing=_row_spacing(len(labels)),
+            facet_row_spacing=_row_spacing(total_rows),
             color_discrete_sequence=px.colors.qualitative.D3,
             category_orders={f"{color}": colors, "label": labels},
         )
@@ -147,11 +152,9 @@ def line_with_ci_subplots(
     fig.update_yaxes(title=unit, col=1)
     fig.update_yaxes(showticklabels=True, matches=None)
     fig.update_xaxes(showticklabels=True, matches=None)
-    x_title = fig.layout["xaxis"]["title"]
-    total_rows = ceil(len(labels) / 2)
     if len(labels) % 2 != 0:
-        fig.update_xaxes(title=x_title, col=2, row=total_rows)
-
+        x_title = fig.layout["xaxis"]["title"]
+        fig.update_xaxes(title=x_title, col=2, row=2)
     fig.update_layout(
         title={
             "text": title,
@@ -161,6 +164,7 @@ def line_with_ci_subplots(
             "font": {"size": 19},
         },
         height=_base_height(len(labels)) * total_rows,
+        width=_base_width(),
         hovermode="closest",
     )
     fig.update_traces(mode="lines+markers")
@@ -250,13 +254,14 @@ def hovmoeller_plot(
     mapping_inv = dict(enumerate(labels))
     # imshow need a int label for the facet plot
     dataset = dataset.assign_coords(label=[mapping[c] for c in labels])
+    total_rows = ceil(len(labels) / 2)
     if len(labels) > 1:
         fig = px.imshow(
             img=dataset.T,
             facet_col="label",
             facet_col_wrap=2,
             facet_col_spacing=0.04,
-            facet_row_spacing=_row_spacing(len(labels)),
+            facet_row_spacing=_row_spacing(total_rows),
             origin="lower",
         )
         fig.for_each_annotation(
@@ -286,9 +291,8 @@ def hovmoeller_plot(
     colorscale, colorbar = sequential_colorscale_bar(
         dataset.values.flatten(), base_colorscale
     )
-    total_rows = ceil(len(labels) / 2)
     if len(labels) % 2 != 0:
-        fig.update_xaxes(title=fig.layout["xaxis"]["title"], col=2, row=total_rows)
+        fig.update_xaxes(title=fig.layout["xaxis"]["title"], col=2, row=2)
     fig.update_layout(
         title={
             "text": title,
@@ -298,6 +302,7 @@ def hovmoeller_plot(
             "font": {"size": 19},
         },
         height=_base_height(len(labels)) * total_rows,
+        width=_base_width(),
         coloraxis={"colorscale": colorscale, "colorbar": colorbar},
     )
     # Remove NANs from data inside the plot so that y axes are different
