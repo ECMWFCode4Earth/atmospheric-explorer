@@ -17,9 +17,9 @@ class CAMSDataInterfaceTesting(CAMSDataInterface):
 def test__init():
     obj = CAMSDataInterfaceTesting({"a", "b", "c"})
     assert obj._data_variables == {"a", "b", "c"}
-    assert obj._file_format is None
-    assert obj._file_ext is None
-    assert obj._dataset_name is None
+    assert obj.file_format is None
+    assert obj.file_ext is None
+    assert obj.dataset_name is None
     assert obj._id == 0
 
 

@@ -15,15 +15,15 @@ class LoggersMeta(type):
     the logger config is loaded only once.
     """
     _instances = {}
-    _logs_root_dir = os.path.join(get_local_folder(), "logs")
-    _logging_config = {
+    logs_root_dir = os.path.join(get_local_folder(), "logs")
+    logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
         "loggers": {
             "root": {"handlers": logging.root.handlers, "level": "WARNING"},
             "atmexp": {
                 "handlers": ["console", "rotatingfile"],
-                "level": "DEBUG",
+                "level": "INFO",
                 "propagate": 0,
                 "qualname": "atmexp",
             },
@@ -35,7 +35,7 @@ class LoggersMeta(type):
                 "formatter": "verbose",
                 "maxBytes": 51200,
                 "backupCount": 20,
-                "filename": os.path.join(_logs_root_dir, "logconfig.log"),
+                "filename": os.path.join(logs_root_dir, "logconfig.log"),
             },
         },
         "formatters": {
@@ -47,8 +47,8 @@ class LoggersMeta(type):
     }
 
     def __init__(cls, *args, **kwargs):
-        create_folder(cls._logs_root_dir)
-        logging.config.dictConfig(cls._logging_config)
+        create_folder(cls.logs_root_dir)
+        logging.config.dictConfig(cls.logging_config)
         super().__init__(*args, **kwargs)
 
     def __call__(cls, *args, **kwargs):

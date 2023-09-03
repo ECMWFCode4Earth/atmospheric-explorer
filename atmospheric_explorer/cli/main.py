@@ -8,10 +8,13 @@ import click
 from streamlit.web.bootstrap import run
 
 from atmospheric_explorer.cli.os_manager import data, logs
+from atmospheric_explorer.cli.plotting.plots import plot
 
 
 @click.group()
 def main():
+    # pylint: disable=unnecessary-pass
+    """Main entry point"""
     pass
 
 
@@ -28,6 +31,4 @@ def run_app():
 
 main.add_command(data)
 main.add_command(logs)
-
-if __name__ == "__main__":
-    main()
+main.add_command(plot)

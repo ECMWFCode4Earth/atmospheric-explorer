@@ -18,7 +18,7 @@ def test__init():
         files_dir="test",
     )
     assert obj._data_variables == {"a", "b", "c"}
-    assert obj._file_format == "netcdf"
+    assert obj.file_format == "netcdf"
     assert obj.dates_range == "2021-01-01/2022-01-01"
     assert obj.time_values == "00:00"
     assert obj.area == [0, 0, 0, 0]

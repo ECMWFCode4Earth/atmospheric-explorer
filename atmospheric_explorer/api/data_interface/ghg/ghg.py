@@ -43,10 +43,10 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         version (str): version of the dataset, default is 'latest'
     """
 
-    _dataset_name: str = "cams-global-greenhouse-gas-inversion"
-    _dataset_dir: str = os.path.join(CAMSDataInterface._data_folder, _dataset_name)
-    _file_format = "zip"
-    _file_ext = "zip"
+    dataset_name: str = "cams-global-greenhouse-gas-inversion"
+    dataset_dir: str = os.path.join(CAMSDataInterface.data_folder, dataset_name)
+    file_format = "zip"
+    file_ext = "zip"
 
     def __init__(
         self: InversionOptimisedGreenhouseGas,
@@ -67,9 +67,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self.month = month
         self.version = version
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
-        self.files_dir_path = os.path.join(self._dataset_dir, self.files_dirname)
-        if os.path.exists(self._dataset_dir):
-            remove_folder(self._dataset_dir)
+        self.files_dir_path = os.path.join(self.dataset_dir, self.files_dirname)
+        if os.path.exists(self.dataset_dir):
+            remove_folder(self.dataset_dir)
         self.file_full_path = self.files_dirname
         create_folder(self.files_dir_path)
         logger.info("Created folder %s", self.files_dir_path)
@@ -83,7 +83,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     def file_full_path(self: InversionOptimisedGreenhouseGas, filename: str) -> None:
         """Name of the saved file"""
         self._file_full_path = os.path.join(
-            self.files_dir_path, f"{filename}.{self._file_ext}"
+            self.files_dir_path, f"{filename}.{self.file_ext}"
         )
 
     @property
@@ -139,8 +139,8 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         # We must extract it
         zip_filename = self.file_full_path
         with zipfile.ZipFile(zip_filename, "r") as zip_ref:
-            self._file_format = "netcdf"
-            self._file_ext = "nc"
+            self.file_format = "netcdf"
+            self.file_ext = "nc"
             zip_ref.extractall(self.files_dir_path)
             logger.info(
                 "Extracted file %s to folder %s",

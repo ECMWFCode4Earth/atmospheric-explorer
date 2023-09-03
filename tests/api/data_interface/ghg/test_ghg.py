@@ -18,7 +18,7 @@ def test__init():
         files_dir="test",
     )
     assert obj._data_variables == {"a", "b", "c"}
-    assert obj._file_format == "zip"
+    assert obj.file_format == "zip"
     assert obj.quantity == "quantity"
     assert obj.input_observations == "input_observations"
     assert obj.time_aggregation == "time_aggregation"

@@ -26,19 +26,19 @@ class CAMSDataInterface(ABC):
         data_variables (str | list[str]): data varaibles to be downloaded from CAMS, depend on the dataset
     """
 
-    _dataset_name: str | None = None
-    _data_folder: str = os.path.join(get_local_folder(), "data")
+    dataset_name: str | None = None
+    data_folder: str = os.path.join(get_local_folder(), "data")
     _instances: list[CAMSDataInterface] = []
     _ids: count = count(0)
-    _file_format = None
-    _file_ext = None
+    file_format = None
+    file_ext = None
 
     def __init__(self: CAMSDataInterface, data_variables: str | set[str] | list[str]):
         self._id = next(self._ids)
         self._instances.append(self)
         self.data_variables = data_variables
-        create_folder(self._data_folder)
-        logger.info("Created folder %s", self._data_folder)
+        create_folder(self.data_folder)
+        logger.info("Created folder %s", self.data_folder)
 
     @property
     def data_variables(self: CAMSDataInterface) -> str | list[str]:
@@ -59,7 +59,7 @@ class CAMSDataInterface(ABC):
 
     def _build_call_body(self: CAMSDataInterface) -> dict:
         """Build the CDSAPI call body"""
-        return {"format": self._file_format, "variable": self.data_variables}
+        return {"format": self.file_format, "variable": self.data_variables}
 
     def _download(self: CAMSDataInterface, file_fullpath: str) -> None:
         """\
@@ -69,7 +69,7 @@ class CAMSDataInterface(ABC):
         client = cdsapi.Client()
         body = self._build_call_body()
         logger.debug("Calling cdsapi with body %s", body)
-        client.retrieve(self._dataset_name, body, file_fullpath)
+        client.retrieve(self.dataset_name, body, file_fullpath)
         logger.info("Finished downloading file %s", file_fullpath)
 
     @abstractmethod

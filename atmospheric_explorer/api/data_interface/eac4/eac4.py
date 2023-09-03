@@ -43,10 +43,10 @@ class EAC4Instance(CAMSDataInterface):
             Can be a single level or a list of levels, chosen in a range from 1 to 60.
             See documentation linked above for all possible values.
     """
-    _dataset_name: str = "cams-global-reanalysis-eac4"
-    _dataset_dir: str = os.path.join(CAMSDataInterface._data_folder, _dataset_name)
-    _file_format = "netcdf"
-    _file_ext = "nc"
+    dataset_name: str = "cams-global-reanalysis-eac4"
+    dataset_dir: str = os.path.join(CAMSDataInterface.data_folder, dataset_name)
+    file_format = "netcdf"
+    file_ext = "nc"
 
     def __init__(
         self,
@@ -65,9 +65,9 @@ class EAC4Instance(CAMSDataInterface):
         self.pressure_level = pressure_level
         self.model_level = model_level
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
-        self.files_dir_path = os.path.join(self._dataset_dir, self.files_dirname)
-        if os.path.exists(self._dataset_dir):
-            remove_folder(self._dataset_dir)
+        self.files_dir_path = os.path.join(self.dataset_dir, self.files_dirname)
+        if os.path.exists(self.dataset_dir):
+            remove_folder(self.dataset_dir)
         create_folder(self.files_dir_path)
         logger.info("Created folder %s", self.files_dir_path)
 
@@ -75,7 +75,7 @@ class EAC4Instance(CAMSDataInterface):
     def file_full_path(self: EAC4Instance) -> str:
         """Name of the saved file"""
         return os.path.join(
-            self.files_dir_path, f"{self.files_dirname}.{self._file_ext}"
+            self.files_dir_path, f"{self.files_dirname}.{self.file_ext}"
         )
 
     @property
