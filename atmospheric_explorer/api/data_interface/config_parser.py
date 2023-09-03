@@ -95,12 +95,11 @@ class ConfigMeta(type):
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         with open(filepath, "r", encoding="utf-8") as file:
             cls.config = yaml.safe_load(file)
-        logger.info("Loaded config from file %s", filename)
         # Convert formulas inside configuration to floats
-        logger.info("Evaluating arithmetic formulas in config")
+        logger.debug("Evaluating arithmetic formulas in config")
         cls._parse_factors(cls.config["variables"])
-        logger.info("Finished loading config from file")
         super().__init__(*args, **kwargs)
+        logger.debug("Loaded config from file %s", filename)
 
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:

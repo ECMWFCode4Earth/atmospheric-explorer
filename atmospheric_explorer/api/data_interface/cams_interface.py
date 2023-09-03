@@ -7,12 +7,17 @@ from __future__ import annotations
 
 import os
 from abc import ABC, abstractmethod
+from glob import glob
 from itertools import count
 
 import cdsapi
 
 from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.os_manager import create_folder, get_local_folder
+from atmospheric_explorer.api.os_manager import (
+    create_folder,
+    get_local_folder,
+    remove_folder,
+)
 
 logger = get_logger("atmexp")
 
@@ -71,6 +76,17 @@ class CAMSDataInterface(ABC):
         logger.debug("Calling cdsapi with body %s", body)
         client.retrieve(self.dataset_name, body, file_fullpath)
         logger.info("Finished downloading file %s", file_fullpath)
+
+    @classmethod
+    def list_data_files(cls) -> list:
+        """List all files inside data folder."""
+        return glob(os.path.join(CAMSDataInterface.data_folder, "**"), recursive=True)
+
+    @classmethod
+    def clear_data_files(cls) -> None:
+        """Clear all files inside data folder."""
+        logger.info("Removed data folder.")
+        remove_folder(CAMSDataInterface.data_folder)
 
     @abstractmethod
     def read_dataset(self: CAMSDataInterface):

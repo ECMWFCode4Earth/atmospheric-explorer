@@ -4,8 +4,13 @@ Module to manage logging.
 import logging
 import logging.config
 import os
+from glob import glob
 
-from atmospheric_explorer.api.os_manager import create_folder, get_local_folder
+from atmospheric_explorer.api.os_manager import (
+    create_folder,
+    get_local_folder,
+    remove_folder,
+)
 
 
 class LoggersMeta(type):
@@ -34,7 +39,7 @@ class LoggersMeta(type):
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "verbose",
                 "maxBytes": 51200,
-                "backupCount": 20,
+                "backupCount": 100,
                 "filename": os.path.join(logs_root_dir, "logconfig.log"),
             },
         },
@@ -67,8 +72,18 @@ class Loggers(metaclass=LoggersMeta):
 
     @classmethod
     def get_logger(cls, logger: str):
-        """Function to get a logger"""
+        """Function to get a logger."""
         return logging.getLogger(logger)
+
+    @classmethod
+    def list_logs(cls) -> list:
+        """List all log files."""
+        return glob(os.path.join(Loggers.logs_root_dir, "**"), recursive=True)
+
+    @classmethod
+    def clear_logs(cls) -> list:
+        """Clear all log files."""
+        remove_folder(Loggers.logs_root_dir)
 
 
 # pylint: disable=unused-argument
