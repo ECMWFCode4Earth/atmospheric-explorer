@@ -9,14 +9,11 @@ import pytest
 import requests.exceptions
 
 from atmospheric_explorer.api.os_manager import get_local_folder
-from atmospheric_explorer.api.shape_selection.shapefile import ShapefilesDownloader
-
-
-@pytest.fixture(autouse=True)
-def clear_cache():
-    ShapefilesDownloader.clear_cache()
-    yield
-    ShapefilesDownloader.clear_cache()
+from atmospheric_explorer.api.shape_selection.config import SelectionLevel
+from atmospheric_explorer.api.shape_selection.shapefile import (
+    ShapefilesDownloader,
+    dissolve_shapefile_level,
+)
 
 
 def test_cache():
@@ -75,7 +72,7 @@ def test_clear_cache():
     assert not ShapefilesDownloader._cache
 
 
-def test__init():
+def test_init():
     sh_down = ShapefilesDownloader()
     assert sh_down.dst_dir == os.path.join(get_local_folder(), sh_down._ROOT_DIR)
     assert not sh_down._downloaded
@@ -99,8 +96,8 @@ def test_obj_creation():
 
 
 def test_timeout(mock_get_timeout):
-    sh_down = ShapefilesDownloader()
     with pytest.raises(requests.exceptions.Timeout):
+        sh_down = ShapefilesDownloader()
         sh_down.download()
 
 
@@ -108,3 +105,19 @@ def test_wrong_url():
     sh_down = ShapefilesDownloader(instance="cont")
     with pytest.raises(requests.exceptions.InvalidURL):
         sh_down.download()
+
+
+def test_dissolve_shapefile_level():
+    sh_df = dissolve_shapefile_level(SelectionLevel.CONTINENTS)
+    assert len(sh_df) == 8
+    assert sorted(sh_df.columns) == ["geometry", "label"]
+    assert sorted(sh_df["label"]) == [
+        "Africa",
+        "Antarctica",
+        "Asia",
+        "Europe",
+        "North America",
+        "Oceania",
+        "Seven seas (open ocean)",
+        "South America",
+    ]

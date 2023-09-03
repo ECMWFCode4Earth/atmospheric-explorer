@@ -48,9 +48,7 @@ def _selectors_org():
     st.session_state[
         GeneralSessionStateKeys.SELECTED_SHAPES
     ] = EntitySelection.from_entities_list(
-        entities=organizations[
-            st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION]
-        ],
+        organizations[st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION]],
         level=st.session_state["map_level_helper"],
     )
     st.session_state["selected_shapes_labels"] = st.session_state[
@@ -63,7 +61,7 @@ def _selectors_no_org():
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
         ] = EntitySelection.from_entities_list(
-            entities=st.session_state["selected_shapes_labels"],
+            st.session_state["selected_shapes_labels"],
             level=st.session_state["map_level_helper"],
         )
     else:
@@ -105,8 +103,9 @@ def selectors():
                 label="Entity level",
                 options=list(v for v in SelectionLevel if v != SelectionLevel.GENERIC),
                 index=(
-                    list(v for v in SelectionLevel if v != SelectionLevel.GENERIC)
-                    .index(st.session_state["map_level_helper"])
+                    list(
+                        v for v in SelectionLevel if v != SelectionLevel.GENERIC
+                    ).index(st.session_state["map_level_helper"])
                 ),
                 key="map_level_helper",
                 help="""\

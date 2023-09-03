@@ -127,9 +127,7 @@ def update_session_map_click(out_event):
                 ] = selected_countries
                 st.experimental_rerun()
         else:
-            selected_shape = GenericShapeSelection.convert_selection(
-                shape_selection=sel
-            )
+            selected_shape = GenericShapeSelection.convert_selection(sel)
             prev_selection = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
             if selected_shape != prev_selection:
                 st.session_state[
