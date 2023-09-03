@@ -182,3 +182,13 @@ def mock_get_timeout(monkeypatch):
         raise requests.exceptions.Timeout()
 
     monkeypatch.setattr(requests, "get", mock_get)
+
+
+@pytest.fixture
+def mock_get_invalid_url(monkeypatch):
+    def mock_get(*args, **kwargs):
+        resp = requests.Response()
+        resp.status_code = 400
+        return resp
+
+    monkeypatch.setattr(requests, "get", mock_get)

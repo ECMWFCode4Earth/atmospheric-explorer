@@ -101,23 +101,14 @@ def test_timeout(mock_get_timeout):
         sh_down.download()
 
 
-def test_wrong_url():
-    sh_down = ShapefilesDownloader(instance="cont")
+def test_wrong_url(mock_get_invalid_url):
     with pytest.raises(requests.exceptions.InvalidURL):
+        sh_down = ShapefilesDownloader(instance="cont")
         sh_down.download()
 
 
-def test_dissolve_shapefile_level():
+def test_dissolve_shapefile_level(mock_shapefile):
     sh_df = dissolve_shapefile_level(SelectionLevel.CONTINENTS)
-    assert len(sh_df) == 8
+    assert len(sh_df) == 2
     assert sorted(sh_df.columns) == ["geometry", "label"]
-    assert sorted(sh_df["label"]) == [
-        "Africa",
-        "Antarctica",
-        "Asia",
-        "Europe",
-        "North America",
-        "Oceania",
-        "Seven seas (open ocean)",
-        "South America",
-    ]
+    assert sorted(sh_df["label"]) == ["Africa", "Europe"]
