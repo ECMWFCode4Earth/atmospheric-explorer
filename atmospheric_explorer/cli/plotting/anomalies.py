@@ -27,10 +27,10 @@ logger = get_logger("atmexp")
     "--time-values",
     "-t",
     required=True,
-    type=click.Choice([f"{h:02}:00" for h in range(0, 24, 3)]),
+    type=click.Choice(EAC4Config.get_config()["time_values"]),
     multiple=True,
     help="""\
-    Time value. Multiple time values can be chosen calling this option multiple times, e.g. -t 00:00 -t 03:00
+    Time value. Multiple values can be chosen calling this option multiple times, e.g. -t 00:00 -t 03:00.
     """,
 )
 @click.option("--title", required=True, type=str, help="Plot title")
@@ -113,7 +113,7 @@ def anomalies(
     logger.debug(
         dedent(
             """\
-            Called yearly flux CLI with parameters
+            Called anomalies CLI with parameters
             data_variable: %s
             dates_range: %s
             time_values: %s

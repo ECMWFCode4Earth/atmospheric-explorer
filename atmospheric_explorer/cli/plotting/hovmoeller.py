@@ -24,10 +24,10 @@ logger = get_logger("atmexp")
     help="Start/End dates of range, using format YYYY-MM-DD",
 )
 @click.option(
-    "--time-values",
+    "--time-value",
     "-t",
     required=True,
-    type=click.Choice([f"{h:02}:00" for h in range(0, 24, 3)]),
+    type=click.Choice(EAC4Config.get_config()["time_values"]),
     help="Time value",
 )
 @click.option("--title", required=True, type=str, help="Plot title")
@@ -39,17 +39,25 @@ logger = get_logger("atmexp")
 )
 @click.option(
     "--pressure-levels",
+    "-p",
     required=False,
-    default="",
-    type=str,
-    help="Comma separated list of pressure levels. Cannot be provided together with model_levels",
+    multiple=True,
+    type=click.Choice([str(pl) for pl in EAC4Config.get_config()["pressure_levels"]]),
+    help="""\
+    Pressure levels. Multiple values can be chosen calling this option multiple times, e.g. -p 1 -p 2.
+    Cannot be provided together with model_levels\
+    """,
 )
 @click.option(
     "--model-levels",
+    "-m",
     required=False,
-    default="",
-    type=str,
-    help="Comma separated list of model levels. Cannot be provided together with pressure_levels",
+    multiple=True,
+    type=click.Choice([str(pl) for pl in EAC4Config.get_config()["model_levels"]]),
+    help="""\
+    Model levels. Multiple values can be chosen calling this option multiple times, e.g. -m 1 -m 2.
+    Cannot be provided together with pressure_levels\
+    """,
 )
 @click.option(
     "--entities",
@@ -93,7 +101,7 @@ logger = get_logger("atmexp")
 def hovmoeller(
     data_variable,
     dates_range,
-    time_values,
+    time_value,
     title,
     output_file,
     pressure_levels,
@@ -108,10 +116,6 @@ def hovmoeller(
     # pylint: disable=too-many-arguments
     """CLI command to generate hovmoeller plot."""
     entities = entities.strip().split(",") if len(entities) > 1 else []
-    pressure_levels = (
-        pressure_levels.strip().split(",") if len(pressure_levels) > 1 else None
-    )
-    model_levels = model_levels.strip().split(",") if len(model_levels) > 1 else None
     if entities and selection_level is None:
         raise ValueError(
             f"When specifying a selection,\
@@ -124,7 +128,7 @@ def hovmoeller(
     logger.debug(
         dedent(
             """\
-            Called yearly flux CLI with parameters
+            Called hovmoeller CLI with parameters
             data_variable: %s
             dates_range: %s
             time_values: %s
@@ -142,7 +146,7 @@ def hovmoeller(
         ),
         data_variable,
         dates_range,
-        time_values,
+        time_value,
         title,
         output_file,
         pressure_levels,
@@ -159,10 +163,10 @@ def hovmoeller(
         data_variable=data_variable,
         var_name=var_name,
         dates_range=dates_range,
-        time_values=time_values,
+        time_values=time_value,
         title=title,
-        pressure_level=pressure_levels,
-        model_level=model_levels,
+        pressure_level=pressure_levels if pressure_levels else None,
+        model_level=model_levels if model_levels else None,
         shapes=entities,
         resampling=resampling,
     )
