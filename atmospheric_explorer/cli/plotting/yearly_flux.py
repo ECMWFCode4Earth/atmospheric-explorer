@@ -61,7 +61,7 @@ def command_change_options():
     "-m",
     required=True,
     multiple=True,
-    type=click.Choice([f"{m:02}" for m in range(1, 13, 1)]),
+    type=click.Choice(GHGConfig.get_config()["months"]),
     help="""\
     Month. Multiple values can be chosen calling this option multiple times, e.g. -m 01 -m 02
     """,

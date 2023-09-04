@@ -133,3 +133,5 @@ variables:
             conversion_factor: 28.97 / 16.044 * 1e9
             convert_unit: ppbv
           long_name: Mole fraction of methane in (humid) air
+months:
+  ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]

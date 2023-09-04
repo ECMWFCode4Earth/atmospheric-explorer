@@ -24,10 +24,10 @@ logger = get_logger("atmexp")
     help="Start/End dates of range, using format YYYY-MM-DD",
 )
 @click.option(
-    "--time-values",
+    "--time-value",
     "-t",
     required=True,
-    type=click.Choice([f"{h:02}:00" for h in range(0, 24, 3)]),
+    type=click.Choice(EAC4Config.get_config()["time_values"]),
     help="Time value",
 )
 @click.option("--title", required=True, type=str, help="Plot title")
@@ -93,7 +93,7 @@ logger = get_logger("atmexp")
 def hovmoeller(
     data_variable,
     dates_range,
-    time_values,
+    time_value,
     title,
     output_file,
     pressure_levels,
@@ -124,7 +124,7 @@ def hovmoeller(
     logger.debug(
         dedent(
             """\
-            Called yearly flux CLI with parameters
+            Called hovmoeller CLI with parameters
             data_variable: %s
             dates_range: %s
             time_values: %s
@@ -142,7 +142,7 @@ def hovmoeller(
         ),
         data_variable,
         dates_range,
-        time_values,
+        time_value,
         title,
         output_file,
         pressure_levels,
@@ -159,7 +159,7 @@ def hovmoeller(
         data_variable=data_variable,
         var_name=var_name,
         dates_range=dates_range,
-        time_values=time_values,
+        time_values=time_value,
         title=title,
         pressure_level=pressure_levels,
         model_level=model_levels,
