@@ -10,6 +10,7 @@ from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.api.plotting.anomalies import eac4_anomalies_plot
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
+from atmospheric_explorer.cli.plotting.utils import comma_separated_list
 
 logger = get_logger("atmexp")
 
@@ -27,8 +28,8 @@ logger = get_logger("atmexp")
     "--time-values",
     "-t",
     required=True,
-    type=click.Choice(EAC4Config.get_config()["time_values"]),
     multiple=True,
+    type=click.Choice(EAC4Config.get_config()["time_values"]),
     help="""\
     Time value. Multiple values can be chosen calling this option multiple times, e.g. -t 00:00 -t 03:00.
     """,
@@ -57,6 +58,7 @@ logger = get_logger("atmexp")
     Comma separated list of entities to select, e.g. Italy,Spain,Germany or Europe,Africa
     """
     ),
+    callback=comma_separated_list,
 )
 @click.option(
     "--selection-level",
@@ -102,7 +104,6 @@ def anomalies(
 ):
     # pylint: disable=too-many-arguments
     """CLI command to generate anomalies plot."""
-    entities = entities.strip().split(",") if len(entities) > 1 else []
     if entities and selection_level is None:
         raise ValueError(
             f"When specifying a selection,\

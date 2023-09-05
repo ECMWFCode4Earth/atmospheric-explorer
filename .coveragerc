@@ -1,2 +1,2 @@
 [run]
-omit = venv/*,docs/*,atmospheric_explorer/ui/*,atmospheric_explorer/cli/*,atmospheric_explorer/api/plotting/*
+omit = venv/*,docs/*,atmospheric_explorer/ui/*,atmospheric_explorer/api/plotting/*

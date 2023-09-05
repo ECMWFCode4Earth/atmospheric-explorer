@@ -12,6 +12,7 @@ from atmospheric_explorer.api.plotting.yearly_flux import (
 )
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
+from atmospheric_explorer.cli.plotting.utils import comma_separated_list
 
 logger = get_logger("atmexp")
 
@@ -55,6 +56,7 @@ def command_change_options():
     required=True,
     type=str,
     help="Comma separated list of years, e.g. 2019,2020,2021",
+    callback=comma_separated_list,
 )
 @click.option(
     "--months",
@@ -81,6 +83,7 @@ def command_change_options():
     Comma separated list of entities to select, e.g. Italy,Spain,Germany or Europe,Africa
     """
     ),
+    callback=comma_separated_list,
 )
 @click.option(
     "--selection-level",
@@ -120,8 +123,6 @@ def yearly_flux(
 ):
     # pylint: disable=too-many-arguments
     """CLI command to generate yearly flux plot."""
-    entities = entities.strip().split(",") if len(entities) > 1 else []
-    years = years.strip().split(",") if len(years) > 1 else []
     if entities and selection_level is None:
         raise ValueError(
             dedent(
