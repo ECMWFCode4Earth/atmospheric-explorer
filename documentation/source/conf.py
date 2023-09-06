@@ -6,8 +6,10 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import sys
+from pathlib import Path
 
-sys.path.append("/home/luigi/projects/atmospheric-explorer/atmospheric_explorer")
+path = Path().resolve().parents[1].joinpath("atmospheric_explorer")
+sys.path.append(str(path))
 
 
 project = "Atmospheric Explorer"
@@ -18,7 +20,12 @@ release = "0.1.0.dev0"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.duration",
+    "sphinx.ext.doctest",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = []
