@@ -23,7 +23,17 @@ from atmospheric_explorer.api.shape_selection.shape_selection import (
 )
 from atmospheric_explorer.api.shape_selection.shapefile import ShapefilesDownloader
 
-TEST_GEODF = gpd.GeoDataFrame({"a": [1, 2, 3], "b": [1, 2, 3]})
+TEST_GEODF = gpd.GeoDataFrame(
+    {
+        "a": [1, 2, 3],
+        "geometry": [
+            shapely.geometry.Polygon(),
+            shapely.geometry.Polygon(),
+            shapely.geometry.Polygon(),
+        ],
+    },
+    crs=CRS,
+)
 TEST_LEVEL = SelectionLevel.CONTINENTS
 ENTITY_OUT_EVENT = {
     "last_active_drawing": {

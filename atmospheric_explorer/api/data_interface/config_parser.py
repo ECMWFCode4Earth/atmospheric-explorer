@@ -1,5 +1,6 @@
 """\
 Module to manage constants.
+
 This module defines a Singleton, in this way the file constants.cfg is loaded only once.
 The singleton pattern was taken from here
 https://refactoring.guru/design-patterns/singleton/python/example#example-0
@@ -22,12 +23,13 @@ logger = get_logger("atmexp")
 
 
 class OperationParser:
-    """\
-    Parser for arithmetic operations. Code for this class was taken
-    from https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval
-    """
-
     # pylint: disable=too-few-public-methods
+    """\
+    Parser for arithmetic operations.
+
+    Code for this class was taken from
+    https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval
+    """
 
     allowed_ops = {
         ast.Add: operator.add,
@@ -66,7 +68,8 @@ class OperationParser:
 
         return _eval(node.body)
 
-    @arithmetic_eval.register
+    @arithmetic_eval.register(int)
+    @arithmetic_eval.register(float)
     def _(self, operation: int | float) -> int | float:
         """Parse a number, i.e. returns it unchanged."""
         return operation
@@ -78,12 +81,9 @@ class OperationParser:
 
 
 class ConfigMeta(type):
-    """\
-    This meta class is needed to implement a singleton pattern so that
-    the config files are loaded only once.
-    """
-
     # pylint: disable=too-few-public-methods
+    """This meta class is needed to implement a singleton pattern so that the config files are loaded only once."""
+
     _instances = {}
     _parser = OperationParser()
 

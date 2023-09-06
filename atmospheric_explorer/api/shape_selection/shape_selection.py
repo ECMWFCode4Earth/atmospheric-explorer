@@ -6,6 +6,7 @@ from __future__ import annotations
 from functools import wraps
 
 import geopandas as gpd
+from geopandas.testing import assert_geodataframe_equal
 from shapely.geometry import shape
 from shapely.ops import unary_union
 
@@ -55,9 +56,11 @@ class Selection:
 
     def __eq__(self, other: Selection) -> bool:
         if not self.empty():
-            return (
-                self.dataframe.equals(other.dataframe)
-            ) and self.level == other.level
+            try:
+                assert_geodataframe_equal(self.dataframe, other.dataframe)
+            except AssertionError:
+                return False
+            return self.level == other.level
         return self.dataframe == other.dataframe and self.level == other.level
 
     @property

@@ -56,4 +56,4 @@ repos:
     rev: 07f6707e2c5612960347f7c00125620457f490a7
     hooks:
     -   id: pydocstyle
-        files: atmospheric_explorer/*
+        files: atmospheric_explorer/

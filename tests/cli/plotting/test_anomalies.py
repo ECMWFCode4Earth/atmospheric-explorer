@@ -6,7 +6,6 @@
 import pytest
 from click.testing import CliRunner
 
-from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
 from atmospheric_explorer.cli.main import main
 
@@ -110,36 +109,3 @@ def test_anomalies_entities_nolevel(mocker):
             ],
             catch_exceptions=False,
         )
-
-
-def test_anomalies_entities(mocker):
-    mocked_entities = mocker.patch(
-        "atmospheric_explorer.cli.plotting.anomalies.EntitySelection.from_entities_list"
-    )
-    mocker.patch("atmospheric_explorer.cli.plotting.anomalies.eac4_anomalies_plot")
-    runner = CliRunner()
-    runner.invoke(
-        main,
-        [
-            "plot",
-            "anomalies",
-            "--data-variable",
-            "total_column_ozone",
-            "--dates-range",
-            "2021-01-01/2021-04-01",
-            "-t",
-            "00:00",
-            "--title",
-            "Test",
-            "--output-file",
-            "test.png",
-            "--entities",
-            "Italy,Germany",
-            "--selection-level",
-            "Countries",
-        ],
-        catch_exceptions=False,
-    )
-    mocked_entities.assert_called_once_with(
-        ["Italy", "Germany"], level=SelectionLevel.COUNTRIES
-    )

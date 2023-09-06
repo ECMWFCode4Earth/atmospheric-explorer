@@ -16,6 +16,7 @@ from conftest import (
     TEST_GEODF,
     TEST_LEVEL,
 )
+from geopandas.testing import assert_geodataframe_equal
 
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import (
@@ -37,6 +38,7 @@ class TestSelection:
         sel1 = Selection(TEST_GEODF, SelectionLevel.GENERIC)
         assert sel1 == Selection(TEST_GEODF, SelectionLevel.GENERIC)
         assert sel1 != Selection(TEST_GEODF, SelectionLevel.CONTINENTS)
+        assert sel1 != Selection(CONTINENT_SELECTION.dataframe, SelectionLevel.GENERIC)
 
     def test_labels(self):
         df1 = gpd.GeoDataFrame({"a": [1, 2, 3], "b": [1, 2, 3], "label": [1, 2, 3]})
@@ -61,14 +63,14 @@ class TestGenericShapeSelection:
 
     def test_init_notempty(self):
         sel1 = GenericShapeSelection(TEST_GEODF)
-        assert sel1.dataframe.equals(TEST_GEODF)
+        assert_geodataframe_equal(sel1.dataframe, TEST_GEODF)
         assert sel1.level == SelectionLevel.GENERIC
 
     def test_convert_shape(self):
         sel = Selection(TEST_GEODF)
         sel_conv = GenericShapeSelection.convert_selection(sel)
         assert isinstance(sel_conv, GenericShapeSelection)
-        assert sel_conv.dataframe.equals(TEST_GEODF)
+        assert_geodataframe_equal(sel_conv.dataframe, TEST_GEODF)
 
     def test_convert_generic(self):
         sel2 = GenericShapeSelection(dataframe=TEST_GEODF)
@@ -79,14 +81,14 @@ class TestGenericShapeSelection:
         sel_entity = CONTINENT_SELECTION
         sel_conv = GenericShapeSelection.convert_selection(sel_entity)
         assert isinstance(sel_conv, GenericShapeSelection)
-        assert sel_conv.dataframe.equals(sel_entity.dataframe)
+        assert_geodataframe_equal(sel_conv.dataframe, sel_entity.dataframe)
         assert sel_conv.level == SelectionLevel.GENERIC
 
 
 class TestEntitySelection:
     def test_init(self):
         sel1 = EntitySelection(dataframe=TEST_GEODF, level=SelectionLevel.CONTINENTS)
-        assert sel1.dataframe.equals(TEST_GEODF)
+        assert_geodataframe_equal(sel1.dataframe, TEST_GEODF)
         assert sel1.level == SelectionLevel.CONTINENTS
 
     def test_init_nolevel(self):
@@ -141,7 +143,7 @@ class TestEntitySelection:
         ent_sel2 = EntitySelection.from_entity_selection(
             ent_sel1, level=SelectionLevel.COUNTRIES
         )
-        assert ent_sel2.dataframe.equals(ent_sel1.dataframe)
+        assert_geodataframe_equal(ent_sel2.dataframe, ent_sel1.dataframe)
         assert ent_sel2.level == SelectionLevel.COUNTRIES
 
     def test_from_entity_selection_samecol(self):
@@ -150,7 +152,7 @@ class TestEntitySelection:
         ent_sel2 = EntitySelection.from_entity_selection(
             ent_sel1, level=SelectionLevel.ORGANIZATIONS
         )
-        assert ent_sel2.dataframe.equals(ent_sel1.dataframe)
+        assert_geodataframe_equal(ent_sel2.dataframe, ent_sel1.dataframe)
         assert ent_sel2.level == SelectionLevel.ORGANIZATIONS
 
     def test_from_entity_selection(self, mocker, mock_shapefile):

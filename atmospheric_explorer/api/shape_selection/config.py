@@ -1,12 +1,10 @@
-"""\
-Mappings and configs for the interactive map.
-"""
+"""Mappings and configs for the interactive map."""
 
-from enum import StrEnum
+from enum import Enum
 
 
-class SelectionLevel(StrEnum):
-    """Levels for the shape selection"""
+class SelectionLevel(str, Enum):
+    """Levels for the shape selection."""
 
     GENERIC = "Generic"
     CONTINENTS = "Continents"

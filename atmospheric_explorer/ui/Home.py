@@ -73,7 +73,7 @@ def _selectors_no_org():
         "label"
     ].unique()
     st.multiselect(
-        st.session_state["map_level_helper"],
+        st.session_state["map_level_helper"].value,
         options=sh_all_labels,
         key="selected_shapes_labels",
     )
@@ -107,6 +107,7 @@ def selectors():
                         v for v in SelectionLevel if v != SelectionLevel.GENERIC
                     ).index(st.session_state["map_level_helper"])
                 ),
+                format_func=lambda v: v.value,
                 key="map_level_helper",
                 help="""\
                 Switch between continents, countries etc.
