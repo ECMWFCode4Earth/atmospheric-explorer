@@ -19,6 +19,7 @@ api.data\_interface.eac4.eac4\_config module
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: config
 
 Module contents
 ---------------

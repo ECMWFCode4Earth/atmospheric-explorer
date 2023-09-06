@@ -19,6 +19,7 @@ api.data\_interface.ghg.ghg\_config module
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: config
 
 Module contents
 ---------------

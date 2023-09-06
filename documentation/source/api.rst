@@ -37,6 +37,7 @@ api.loggers module
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: LoggersMeta
 
 api.os\_manager module
 ----------------------
