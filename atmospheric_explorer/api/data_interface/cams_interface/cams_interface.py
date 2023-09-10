@@ -16,6 +16,7 @@ from atmospheric_explorer.api.os_manager import (
     get_local_folder,
     remove_folder,
 )
+from atmospheric_explorer.api.data_interface.cams_interface.cams_parameters import CAMSParameters
 
 logger = get_logger("atmexp")
 
@@ -31,46 +32,26 @@ class CAMSDataInterface(ABC):
     file_format = None
     file_ext = None
 
-    def __init__(self: CAMSDataInterface, data_variables: str | set[str] | list[str]):
-        """Initializes CAMSDataInterface instance.
-
-        Attributes:
-            data_variables (str | list[str]): data variables to be downloaded from CAMS, depend on the dataset
-        """
+    def __init__(self: CAMSDataInterface):
+        """Initializes CAMSDataInterface instance."""
         self._id = next(self._ids)
         self._instances.append(self)
-        self.data_variables = data_variables
         create_folder(self.data_folder)
         logger.info("Created folder %s", self.data_folder)
 
-    @property
-    def data_variables(self: CAMSDataInterface) -> str | list[str]:
-        """Time values are internally represented as a set, use this property to set/get its value."""
-        return (
-            list(self._data_variables)
-            if isinstance(self._data_variables, set)
-            else self._data_variables
-        )
-
-    @data_variables.setter
-    def data_variables(
-        self: CAMSDataInterface, data_variables_input: str | set[str] | list[str]
-    ) -> None:
-        if isinstance(data_variables_input, list):
-            data_variables_input = set(data_variables_input)
-        self._data_variables = data_variables_input
-
-    def _build_call_body(self: CAMSDataInterface) -> dict:
+    def build_call_body(self: CAMSDataInterface, parameters: CAMSParameters):
         """Builds the CDS API call body."""
-        return {"format": self.file_format, "variable": self.data_variables}
+        call_body = parameters.build_call_body()
+        call_body['format'] = self.file_format
+        return call_body
 
-    def _download(self: CAMSDataInterface, file_fullpath: str) -> None:
-        """Downloads the dataset and saves it to file specified in filename.
+    def download(self: CAMSDataInterface, parameters: CAMSParameters, file_fullpath: str) -> None:
+        """Download the dataset and saves it to file specified in filename.
 
         Uses cdsapi to interact with CAMS ADS.
         """
         client = cdsapi.Client()
-        body = self._build_call_body()
+        body = self.build_call_body(parameters)
         logger.debug("Calling cdsapi with body %s", body)
         client.retrieve(self.dataset_name, body, file_fullpath)
         logger.info("Finished downloading file %s", file_fullpath)
