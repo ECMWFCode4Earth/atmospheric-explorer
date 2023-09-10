@@ -1,5 +1,5 @@
-"""\
-Module to manage shapefiles.
+"""Module to manage shapefiles.
+
 This module defines a class that donwloads, extracts and saves one or more shapefiles.
 """
 
@@ -21,27 +21,17 @@ logger = get_logger("atmexp")
 
 
 class ShapefilesDownloader:
-    """\
-    This class manages the download, extraction and saving on disk of
-    shapefiles. Shapefiles will be downloaded as zip files and then extracted into a folder.
-    Shapefiles are downloaded from Natural Earth Data.
-    By default, the class download a 50m resolution "admin" shapefile for all countries in the world.
+    """This class manages the download, extraction and saving on disk of \
+        shapefiles.
 
-    Attributes:
-        resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
-        map_type (str): map type, e.g. cultural, physical or raster
-        info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
-                         values depending on the resolution on the webpage below
-        depth (int): different info_type shapefiles can have different values.
-                     Use 0 for administrative shapefiles (countries)
-        instance (str): the specific shapefile to be downloaded. Example: countries_ita
-        timeout (int): timeout fot the GET call to Natural Earth Data
-        dst_dir (str): destination diractory for the donwloaded shapefile
-
-    See some more details here: https://www.naturalearthdata.com/downloads/
+    Shapefiles will be downloaded as zip files and then extracted into a
+    folder. Shapefiles are downloaded from Natural Earth Data.
+    By default, the class download a 50m resolution "admin" shapefile for all
+    countries in the world.
     """
 
     # pylint: disable=line-too-long
+    # pylint: disable=too-many-instance-attributes
     _BASE_URL: str = (
         "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download"
     )
@@ -63,6 +53,8 @@ class ShapefilesDownloader:
         depth: int = 0,
         instance: str = "map_subunits",
     ) -> ShapefilesDownloader | None:
+        # pylint: disable=too-many-arguments
+        """Finds shapefile object in cache."""
         for sd_obj in cls._cache:
             if (
                 sd_obj.resolution == resolution
@@ -77,14 +69,17 @@ class ShapefilesDownloader:
 
     @classmethod
     def is_cached(cls, obj: ShapefilesDownloader) -> bool:
+        """Checks if ShapefilesDownloader object is cached."""
         return obj in cls._cache
 
     @classmethod
     def cache(cls, obj: ShapefilesDownloader):
+        """Adds ShapefilesDownloader object to cache."""
         ShapefilesDownloader._cache.append(obj)
 
     @classmethod
     def clear_cache(cls):
+        """Clears cache."""
         cls._cache = []
 
     def __new__(
@@ -95,7 +90,8 @@ class ShapefilesDownloader:
         depth: int = 0,
         instance: str = "map_subunits",
         **kwargs,
-    ):
+    ):  # pylint: disable=too-many-arguments
+        """Returns new ShapefilesDownloader instance."""
         logger.debug(
             dedent(
                 """\
@@ -134,6 +130,21 @@ class ShapefilesDownloader:
         timeout: int = 10,
         dst_dir: str | None = None,
     ):  # pylint: disable=too-many-arguments
+        """Initializes ShapefilesDownloader instance.
+
+        Attributes:
+            resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
+            map_type (str): map type, e.g. cultural, physical or raster
+            info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
+                            values depending on the resolution on the webpage below
+            depth (int): different info_type shapefiles can have different values.
+                        Use 0 for administrative shapefiles (countries)
+            instance (str): the specific shapefile to be downloaded. Example: countries_ita
+            timeout (int): timeout fot the GET call to Natural Earth Data
+            dst_dir (str): destination diractory for the donwloaded shapefile
+
+        See some more details here: https://www.naturalearthdata.com/downloads/
+        """
         if ShapefilesDownloader.is_cached(self):
             return
         self.resolution = resolution
@@ -175,29 +186,29 @@ class ShapefilesDownloader:
 
     @property
     def shapefile_name(self: ShapefilesDownloader) -> str:
-        """Shapefile directory"""
+        """Shapefile file name."""
         if self.map_type == "physical":
             return f"ne_{self.resolution}_{self.info_type}"
         return f"ne_{self.resolution}_{self.info_type}_{self.depth}_{self.instance}"
 
     @property
     def shapefile_dir(self: ShapefilesDownloader) -> str:
-        """Shapefile directory"""
+        """Shapefile directory."""
         return os.path.join(self.dst_dir, self.shapefile_name)
 
     @property
     def shapefile_full_path(self: ShapefilesDownloader) -> str:
-        """Shapefile directory"""
+        """Shapefile full path."""
         return os.path.join(self.shapefile_dir, f"{self.shapefile_name}.shp")
 
     @property
     def shapefile_url(self: ShapefilesDownloader) -> str:
-        """Shapefile download url"""
+        """Shapefile download url."""
         # pylint: disable=line-too-long
         return f"{self._BASE_URL}/{self.resolution}/{self.map_type}/{self.shapefile_name}.zip"  # noqa: E501
 
     def _download_shapefile(self: ShapefilesDownloader) -> bytes:
-        """Download shapefiles and returns their content in bytes"""
+        """Downloads shapefiles and returns their content in bytes."""
         logger.info("Downloading shapefiles from %s", self.shapefile_url)
         try:
             response = requests.get(
@@ -226,15 +237,15 @@ class ShapefilesDownloader:
         return response.content
 
     def _download_shapefile_to_zip(self: ShapefilesDownloader) -> None:
-        """Save shapefiles to zip file"""
+        """Saves shapefiles to zip file."""
         with open(self.shapefile_dir + ".zip", "wb") as file_zip:
             file_zip.write(self._download_shapefile())
             logger.info("Shapefiles saved into file %s", file_zip.name)
 
     def _extract_to_folder(self: ShapefilesDownloader):
-        """\
-        Extracts shapefile zip to directory.
-        The directory will have the same name of the original zip file
+        """Extracts shapefile zip to directory.
+
+        The directory will have the same name of the original zip file.
         """
         # Unzip file to directory
         filepath = self.shapefile_dir + ".zip"
@@ -246,18 +257,18 @@ class ShapefilesDownloader:
         logger.info("Removed file %s", filepath)
 
     def download(self: ShapefilesDownloader) -> None:
-        """Download and extracts shapefiles"""
+        """Downloads and extracts shapefiles."""
         self._download_shapefile_to_zip()
         self._extract_to_folder()
         self._downloaded = True
 
     def _read_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
-        """Return shapefile as geopandas dataframe"""
+        """Returns shapefile as geopandas dataframe."""
         logger.debug("Reading %s as dataframe", self.shapefile_full_path)
         return gpd.read_file(self.shapefile_full_path)
 
     def get_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
-        """Return shapefile as geopandas dataframe, also downloads shapefile if needed"""
+        """Returns shapefile as geopandas dataframe, also downloads shapefile if needed."""
         if not self._downloaded:
             logger.info(
                 "Shapefile not downloaded, downloading it from Natural Earth Data"
@@ -269,7 +280,7 @@ class ShapefilesDownloader:
 
 
 def dissolve_shapefile_level(level: str) -> gpd.GeoDataFrame:
-    """Get shapefile and dissolve it on a selection level"""
+    """Gets shapefile and dissolves it on a selection level."""
     logger.debug("Dissolve shapefile to level %s", level)
     col = map_level_shapefile_mapping[level]
     sh_df = ShapefilesDownloader(instance="map_subunits").get_as_dataframe()
