@@ -1,6 +1,4 @@
-"""\
-This module collects classes to easily interact with data downloaded from CAMS ADS.
-"""
+"""This module collects classes to easily interact with EAC4 data downloaded from CAMS ADS."""
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 from __future__ import annotations
@@ -20,28 +18,10 @@ logger = get_logger("atmexp")
 class EAC4Instance(CAMSDataInterface):
     # pylint: disable=line-too-long
     # pylint: disable=too-many-instance-attributes
-    """\
-    Interface for CAMS global reanalysis (EAC4) and
-    CAMS global reanalysis (EAC4) monthly averaged fields datasets.
-    See https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
-    for a full list of parameters and more details about the dataset
+    """Interface for CAMS global reanalysis (EAC4) and CAMS global reanalysis (EAC4) monthly averaged fields datasets.
 
-    Attributes:
-        data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
-            see https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
-        file_format (str): format for the downloaded data, can be either 'netcdf' or 'grib'
-        dates_range (str): range of dates to consider, provided as a 'start/end' string with dates in ISO format
-        time_values (str | list[str]): time in 'HH:MM' format. One value or a list of values can be provided.
-            Accepted values are [00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00]
-        filename (str | None): file where to save the data. If not provided will be built using file_format and
-            with a dinamically generated name
-        area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
-            [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
-        pressure_level (str | list[str] | None): pressure levels to be considered for multilevel variables.
-            Can be a single level or a list of levels, see documentation linked above for all possible values.
-        model_level (str | list[str] | None): model levels to be considered for multilevel variables.
-            Can be a single level or a list of levels, chosen in a range from 1 to 60.
-            See documentation linked above for all possible values.
+    See https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
+    for a full list of parameters and more details about the dataset.
     """
     dataset_name: str = "cams-global-reanalysis-eac4"
     dataset_dir: str = os.path.join(CAMSDataInterface.data_folder, dataset_name)
@@ -58,6 +38,25 @@ class EAC4Instance(CAMSDataInterface):
         pressure_level: str | set[str] | list[str] | None = None,
         model_level: str | set[str] | list[str] | None = None,
     ):
+        """Initializes EAC4Instance instance.
+
+        Attributes:
+            data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
+                see https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
+            file_format (str): format for the downloaded data, can be either 'netcdf' or 'grib'
+            dates_range (str): range of dates to consider, provided as a 'start/end' string with dates in ISO format
+            time_values (str | list[str]): time in 'HH:MM' format. One value or a list of values can be provided.
+                Accepted values are [00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00]
+            filename (str | None): file where to save the data. If not provided will be built using file_format and
+                with a dinamically generated name
+            area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
+                [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
+            pressure_level (str | list[str] | None): pressure levels to be considered for multilevel variables.
+                Can be a single level or a list of levels, see documentation linked above for all possible values.
+            model_level (str | list[str] | None): model levels to be considered for multilevel variables.
+                Can be a single level or a list of levels, chosen in a range from 1 to 60.
+                See documentation linked above for all possible values.
+        """
         super().__init__(data_variables)
         self.dates_range = dates_range
         self.time_values = time_values
@@ -73,14 +72,14 @@ class EAC4Instance(CAMSDataInterface):
 
     @property
     def file_full_path(self: EAC4Instance) -> str:
-        """Name of the saved file"""
+        """Name of the saved file."""
         return os.path.join(
             self.files_dir_path, f"{self.files_dirname}.{self.file_ext}"
         )
 
     @property
     def time_values(self: EAC4Instance) -> str | list[str]:
-        """Time values are internally represented as a set, use this property to set/get its value"""
+        """Time values are internally represented as a set, use this property to set/get its value."""
         return (
             list(self._time_values)
             if isinstance(self._time_values, set)
@@ -97,7 +96,7 @@ class EAC4Instance(CAMSDataInterface):
 
     @property
     def pressure_level(self: EAC4Instance) -> str | list[str] | None:
-        """Pressure level is internally represented as a set, use this property to set/get its value"""
+        """Pressure level is internally represented as a set, use this property to set/get its value."""
         return (
             list(self._pressure_level)
             if isinstance(self._pressure_level, set)
@@ -114,7 +113,7 @@ class EAC4Instance(CAMSDataInterface):
 
     @property
     def model_level(self: EAC4Instance) -> str | list[str] | None:
-        """Model level is internally represented as a set, use this property to set/get its value"""
+        """Model level is internally represented as a set, use this property to set/get its value."""
         return (
             list(self._model_level)
             if isinstance(self._model_level, set)
@@ -130,7 +129,7 @@ class EAC4Instance(CAMSDataInterface):
         self._model_level = model_level
 
     def _build_call_body(self: EAC4Instance) -> dict:
-        """Build the CDSAPI call body"""
+        """Builds the CDS API call body."""
         call_body = super()._build_call_body()
         call_body["date"] = self.dates_range
         call_body["time"] = self.time_values
@@ -143,8 +142,8 @@ class EAC4Instance(CAMSDataInterface):
         return call_body
 
     def download(self: EAC4Instance) -> None:
-        """\
-        Download the dataset and saves it to file specified in filename.
+        """Downloads the dataset and saves it to file specified in filename.
+
         Uses cdsapi to interact with CAMS ADS.
         """
         return super()._download(self.file_full_path)
@@ -153,5 +152,5 @@ class EAC4Instance(CAMSDataInterface):
         return dataset.rio.write_crs(CRS)
 
     def read_dataset(self: EAC4Instance) -> xr.Dataset:
-        """Returns data as an xarray.Dataset"""
+        """Returns data as an xarray.Dataset."""
         return self._simplify_dataset(xr.open_dataset(self.file_full_path))

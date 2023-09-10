@@ -1,6 +1,4 @@
-"""\
-Module to manage logging.
-"""
+"""Module to manage logging."""
 import logging
 import logging.config
 import os
@@ -15,10 +13,8 @@ from atmospheric_explorer.api.os_manager import (
 
 class LoggersMeta(type):
     # pylint: disable=too-few-public-methods
-    """\
-    This meta class is needed to implement a singleton pattern so that
-    the logger config is loaded only once.
-    """
+    """This meta class is needed to implement a singleton pattern so that the logger config is loaded only once."""
+
     _instances = {}
     logs_root_dir = os.path.join(get_local_folder(), "logs")
     logging_config = {
@@ -52,11 +48,13 @@ class LoggersMeta(type):
     }
 
     def __init__(cls, *args, **kwargs):
+        """Initializes LoggersMeta instance."""
         create_folder(cls.logs_root_dir)
         logging.config.dictConfig(cls.logging_config)
         super().__init__(*args, **kwargs)
 
     def __call__(cls, *args, **kwargs):
+        """Enables calling LoggersMeta instance like a function."""
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
@@ -65,10 +63,7 @@ class LoggersMeta(type):
 
 class Loggers(metaclass=LoggersMeta):
     # pylint: disable=too-few-public-methods
-    """\
-    This class is needed to implement a singleton pattern so that
-    the logger config is loaded only once.
-    """
+    """This class is needed to implement a singleton pattern so that the logger config is loaded only once."""
 
     @classmethod
     def get_logger(cls, logger: str):
@@ -89,5 +84,5 @@ class Loggers(metaclass=LoggersMeta):
 # pylint: disable=unused-argument
 # ruff: noqa: F401
 def get_logger(logger: str):
-    """Function to get a logger"""
+    """Function to get a logger."""
     return Loggers.get_logger(logger)

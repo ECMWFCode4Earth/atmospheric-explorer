@@ -1,6 +1,4 @@
-"""\
-Module to gather custom exceptions.
-"""
+"""Module to gather custom exceptions."""
 # pylint: disable=unnecessary-pass
 
 

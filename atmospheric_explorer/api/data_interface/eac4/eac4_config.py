@@ -1,6 +1,4 @@
-"""\
-This module collects classes to easily interact with data downloaded from CAMS ADS.
-"""
+"""Config for EAC4 APIs."""
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 from __future__ import annotations
@@ -15,10 +13,7 @@ logger = get_logger("atmexp")
 
 class EAC4Config(metaclass=ConfigMeta, filename="eac4/eac4_config.yaml"):
     # pylint: disable=too-few-public-methods
-    """\
-    This class is needed to implement a singleton pattern so that
-    config is loaded only once.
-    """
+    """This class is needed to implement a singleton pattern so that config is loaded only once."""
 
     @classmethod
     def get_config(cls) -> dict:
@@ -30,10 +25,7 @@ class EAC4Config(metaclass=ConfigMeta, filename="eac4/eac4_config.yaml"):
     def convert_units_array(
         cls, array: xr.DataArray, data_variable: str
     ) -> xr.DataArray:
-        """\
-        Converts an xarray.DataArray from its original units
-        to the units specified in the constants.cfg file.
-        """
+        """Converts an xarray.DataArray from its original units to the units specified in the eac4_config.yaml file."""
         conf = cls.get_config()["variables"][data_variable]
         conv_f = float(conf["conversion"]["conversion_factor"])
         logger.debug(

@@ -1,6 +1,4 @@
-"""\
-This module collects classes to easily interact with data downloaded from CAMS ADS.
-"""
+"""This module collects classes to easily interact with data downloaded from CAMS ADS."""
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 from __future__ import annotations
@@ -24,12 +22,7 @@ logger = get_logger("atmexp")
 
 class CAMSDataInterface(ABC):
     # pylint: disable=too-many-instance-attributes
-    """\
-    Generic interface common to all CAMS datasets.
-
-    Attributes:
-        data_variables (str | list[str]): data varaibles to be downloaded from CAMS, depend on the dataset
-    """
+    """Generic interface common to all CAMS datasets."""
 
     dataset_name: str | None = None
     data_folder: str = os.path.join(get_local_folder(), "data")
@@ -39,6 +32,11 @@ class CAMSDataInterface(ABC):
     file_ext = None
 
     def __init__(self: CAMSDataInterface, data_variables: str | set[str] | list[str]):
+        """Initializes CAMSDataInterface instance.
+
+        Attributes:
+            data_variables (str | list[str]): data variables to be downloaded from CAMS, depend on the dataset
+        """
         self._id = next(self._ids)
         self._instances.append(self)
         self.data_variables = data_variables
@@ -47,7 +45,7 @@ class CAMSDataInterface(ABC):
 
     @property
     def data_variables(self: CAMSDataInterface) -> str | list[str]:
-        """Time values are internally represented as a set, use this property to set/get its value"""
+        """Time values are internally represented as a set, use this property to set/get its value."""
         return (
             list(self._data_variables)
             if isinstance(self._data_variables, set)
@@ -63,12 +61,12 @@ class CAMSDataInterface(ABC):
         self._data_variables = data_variables_input
 
     def _build_call_body(self: CAMSDataInterface) -> dict:
-        """Build the CDSAPI call body"""
+        """Builds the CDS API call body."""
         return {"format": self.file_format, "variable": self.data_variables}
 
     def _download(self: CAMSDataInterface, file_fullpath: str) -> None:
-        """\
-        Download the dataset and saves it to file specified in filename.
+        """Downloads the dataset and saves it to file specified in filename.
+
         Uses cdsapi to interact with CAMS ADS.
         """
         client = cdsapi.Client()
@@ -79,16 +77,16 @@ class CAMSDataInterface(ABC):
 
     @classmethod
     def list_data_files(cls) -> list:
-        """List all files inside data folder."""
+        """Lists all files inside data folder."""
         return glob(os.path.join(CAMSDataInterface.data_folder, "**"), recursive=True)
 
     @classmethod
     def clear_data_files(cls) -> None:
-        """Clear all files inside data folder."""
+        """Clears all files inside data folder."""
         logger.info("Removed data folder.")
         remove_folder(CAMSDataInterface.data_folder)
 
     @abstractmethod
     def read_dataset(self: CAMSDataInterface):
-        """Returns the files as an xarray.Dataset"""
+        """Returns the files as an xarray.Dataset."""
         raise NotImplementedError("Method not implemented")

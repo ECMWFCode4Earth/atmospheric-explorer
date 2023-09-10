@@ -1,6 +1,4 @@
-"""\
-This module collects classes to easily interact with data downloaded from CAMS ADS.
-"""
+"""This module collects classes to easily interact with GHG data downloaded from CAMS ADS."""
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 from __future__ import annotations
@@ -24,23 +22,10 @@ logger = get_logger("atmexp")
 class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     # pylint: disable=line-too-long
     # pylint: disable=too-many-instance-attributes
-    """\
-    Interface for CAMS global inversion-optimised greenhouse gas fluxes and concentrations dataset.
+    """Interface for CAMS global inversion-optimised greenhouse gas fluxes and concentrations dataset.
+
     See https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=overview
     for a full list of parameters and more details about the dataset
-
-    Attributes:
-        data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
-            see https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=overview
-        file_format (str): format for the downloaded data, can be either 'zip' or 'tar.gz'
-        quantity (str): quantity, can be one of ['mean_column', 'surface_flux', 'concentration']
-        input_observations (str): input observations, can be one of ['surface', 'satellite', 'surface_satellite']
-        time_aggregation (str): time aggregation, can be one of ['instantaneous', 'daily_mean', 'monthly_mean']
-        year (str | list[str]): single year or list of years, in 'YYYY' format
-        month (str | list[str]): single month or list of months, in 'MM' format
-        filename (str | None): file where to save the data. If not provided will be built using file_format and
-            with a dinamically generated name
-        version (str): version of the dataset, default is 'latest'
     """
 
     dataset_name: str = "cams-global-greenhouse-gas-inversion"
@@ -59,6 +44,21 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         files_dir: str | None = None,
         version: str = "latest",
     ):
+        """Initializes InversionOptimisedGreenhouseGas instance.
+
+        Attributes:
+            data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
+                see https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=overview
+            file_format (str): format for the downloaded data, can be either 'zip' or 'tar.gz'
+            quantity (str): quantity, can be one of ['mean_column', 'surface_flux', 'concentration']
+            input_observations (str): input observations, can be one of ['surface', 'satellite', 'surface_satellite']
+            time_aggregation (str): time aggregation, can be one of ['instantaneous', 'daily_mean', 'monthly_mean']
+            year (str | list[str]): single year or list of years, in 'YYYY' format
+            month (str | list[str]): single month or list of months, in 'MM' format
+            filename (str | None): file where to save the data. If not provided will be built using file_format and
+                with a dinamically generated name
+            version (str): version of the dataset, default is 'latest'
+        """
         super().__init__(data_variables)
         self.quantity = quantity
         self.input_observations = input_observations
@@ -76,19 +76,19 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     @property
     def file_full_path(self: InversionOptimisedGreenhouseGas) -> str:
-        """Name of the saved file"""
+        """Name of the saved file."""
         return self._file_full_path
 
     @file_full_path.setter
     def file_full_path(self: InversionOptimisedGreenhouseGas, filename: str) -> None:
-        """Name of the saved file"""
+        """Name of the saved file."""
         self._file_full_path = os.path.join(
             self.files_dir_path, f"{filename}.{self.file_ext}"
         )
 
     @property
     def year(self: InversionOptimisedGreenhouseGas) -> str | list[str]:
-        """Year is internally represented as a set, use this property to set/get its value"""
+        """Year is internally represented as a set, use this property to set/get its value."""
         return list(self._year) if isinstance(self._year, set) else self._year
 
     @year.setter
@@ -101,7 +101,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
 
     @property
     def month(self: InversionOptimisedGreenhouseGas) -> str | list[str]:
-        """Month is internally represented as a set, use this property to set/get its value"""
+        """Month is internally represented as a set, use this property to set/get its value."""
         return list(self._month) if isinstance(self._month, set) else self._month
 
     @month.setter
@@ -113,7 +113,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         self._month = month
 
     def _build_call_body(self: InversionOptimisedGreenhouseGas) -> dict:
-        """Build the CDSAPI call body"""
+        """Builds the CDS API call body."""
         call_body = super()._build_call_body()
         call_body.update(
             {
@@ -128,10 +128,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
         return call_body
 
     def download(self: InversionOptimisedGreenhouseGas) -> None:
-        """\
-        Download the dataset and saves it to file specified in filename.
-        Uses cdsapi to interact with CAMS ADS.
+        """Downloads the dataset and saves it to file specified in filename.
 
+        Uses cdsapi to interact with CAMS ADS.
         This function also extracts the netcdf file inside the zip file, which is then deleted.
         """
         super()._download(self.file_full_path)
@@ -180,8 +179,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface):
     def read_dataset(
         self: InversionOptimisedGreenhouseGas,
     ) -> xr.Dataset:
-        """\
-        Returns data as an xarray.Dataset.
+        """Returns data as an xarray.Dataset.
 
         This function reads multi-file datasets where each file corresponds to a time variable,
         but the file themselves may miss the time dimension. It adds a time dimension for each file

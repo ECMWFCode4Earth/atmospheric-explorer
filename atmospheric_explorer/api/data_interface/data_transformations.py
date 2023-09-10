@@ -1,6 +1,4 @@
-"""\
-Data transformations needed for the plotting api
-"""
+"""Data transformations needed for the plotting APIs."""
 from functools import singledispatch
 
 import numpy as np
@@ -22,15 +20,11 @@ def split_time_dim(dataset: xr.Dataset, time_dim: str):
 
 def clip_and_concat_shapes(data_frame: xr.Dataset, shapes: Selection) -> xr.Dataset:
     """Clips data_frame keeping only shapes specified. Shapes_df must be a GeoDataFrame."""
-    # Download shapefile
-
-    # all_touched=True questo parametro include tutti i pixel toccati dal poligono definito
-    # se False include solo i pixel il cui centro è incluso nel poligono
-    # approvato all_touched=True
     df_clipped_concat = xr.Dataset(coords={"label": []})
     for _, row in shapes.dataframe.iterrows():
         labels, shapes = row
         df_clipped = data_frame.rio.clip([mapping(shapes)], drop=True, all_touched=True)
+        # all_touched=True to include all pixels touched by polygon
         df_clipped = df_clipped.expand_dims({"label": [labels]})
         df_clipped_concat = xr.concat(
             [df_clipped_concat, df_clipped], dim="label", combine_attrs="override"
@@ -40,7 +34,7 @@ def clip_and_concat_shapes(data_frame: xr.Dataset, shapes: Selection) -> xr.Data
 
 @singledispatch
 def confidence_interval(array: list | np.ndarray) -> np.ndarray:
-    """Compute the confidence interval for an array of samples"""
+    """Compute the confidence interval for an array of samples."""
     if isinstance(array, list):
         array = np.array(array)
     array_nonan = array[~np.isnan(array)]
@@ -52,8 +46,8 @@ def confidence_interval(array: list | np.ndarray) -> np.ndarray:
 
 @confidence_interval.register
 def _(array: xr.DataArray, dim: str) -> xr.DataArray:
-    """\
-    Compute the confidence interval for an xarray.DataArray over a dimension.
+    """Compute the confidence interval for an xarray.DataArray over a dimension.
+
     This function preserves all other dimensions and can be used in resamples and groupby with map.
     """
     all_dims = list(array.dims)
@@ -68,7 +62,7 @@ def _(array: xr.DataArray, dim: str) -> xr.DataArray:
 
 
 def shifting_long(data_set=xr.Dataset) -> xr.Dataset:
-    """Shifts longitude to range -180+180"""
+    """Shifts longitude to range [-180, +180]."""
     return data_set.assign_coords(
         longitude=((data_set.longitude + 180) % 360) - 180
     ).sortby("longitude")

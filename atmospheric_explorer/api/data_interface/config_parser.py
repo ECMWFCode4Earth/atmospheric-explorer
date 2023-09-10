@@ -24,8 +24,7 @@ logger = get_logger("atmexp")
 
 class OperationParser:
     # pylint: disable=too-few-public-methods
-    """\
-    Parser for arithmetic operations.
+    """Parser for arithmetic operations.
 
     Code for this class was taken from
     https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval
@@ -88,9 +87,11 @@ class ConfigMeta(type):
     _parser = OperationParser()
 
     def __new__(mcs, *args, **kwargs):
+        """Returns new ConfigMeta instance."""
         return super().__new__(mcs, *args)
 
     def __init__(cls, *args, **kwargs):
+        """Initializes ConfigMeta instance."""
         filename = kwargs["filename"]
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         with open(filepath, "r", encoding="utf-8") as file:
@@ -102,6 +103,7 @@ class ConfigMeta(type):
         logger.debug("Loaded config from file %s", filename)
 
     def __call__(cls, *args, **kwargs):
+        """Enables calling ConfigMeta instance like a function."""
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance
