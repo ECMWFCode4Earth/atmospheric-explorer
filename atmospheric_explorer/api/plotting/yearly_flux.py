@@ -31,8 +31,8 @@ def _ghg_flux_over_full_area(dataset: xr.Dataset, var_name: str):
 
 def _ghg_surface_satellite_yearly_data(
     data_variable: str,
-    years: list[str],
-    months: list[str],
+    years: set[str] | list[str],
+    months: set[str] | list[str],
     var_name: str,
     shapes: Selection = Selection(),
     add_satellite_observations: bool = False,
@@ -133,8 +133,8 @@ def _ghg_surface_satellite_yearly_data(
 def ghg_surface_satellite_yearly_plot(
     data_variable: str,
     var_name: str,
-    years: list[str],
-    months: list[str],
+    years: set[str] | list[str],
+    months: set[str] | list[str],
     title: str,
     shapes: Selection = Selection(),
     add_satellite_observations: bool = True,

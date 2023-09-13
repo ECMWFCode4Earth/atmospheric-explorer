@@ -74,7 +74,7 @@ class EAC4Parameters(CAMSParameters):
 
     def subset(self: EAC4Parameters, obj: EAC4Parameters):
         return (
-            self.data_variables.issubset(obj.data_variables)
+            self._data_variables.issubset(obj._data_variables)
             and EAC4Parameters.dates_issubset(self.dates_range, obj.dates_range)
             and self.time_values.issubset(obj.time_values)
             and EAC4Parameters.area_issubset(self.area, obj.area)

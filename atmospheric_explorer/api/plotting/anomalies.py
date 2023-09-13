@@ -23,13 +23,13 @@ def _eac4_anomalies_data(
     data_variable: str,
     var_name: str,
     dates_range: str,
-    time_values: str | list[str],
+    time_values: set[str] | list[str],
     shapes: Selection = Selection(),
     resampling: str = "1MS",
 ) -> xr.Dataset:
     # pylint: disable=too-many-arguments
     data = EAC4Instance(
-        data_variables=data_variable,
+        data_variables=[data_variable],
         dates_range=dates_range,
         time_values=time_values,
     )
@@ -55,7 +55,7 @@ def eac4_anomalies_plot(
     data_variable: str,
     var_name: str,
     dates_range: str,
-    time_values: str | list[str],
+    time_values: set[str] | list[str],
     title: str,
     shapes: Selection = Selection(),
     reference_dates_range: str | None = None,

@@ -24,7 +24,7 @@ class LoggersMeta(type):
             "root": {"handlers": logging.root.handlers, "level": "WARNING"},
             "atmexp": {
                 "handlers": ["console", "rotatingfile"],
-                "level": "INFO",
+                "level": "DEBUG",
                 "propagate": 0,
                 "qualname": "atmexp",
             },

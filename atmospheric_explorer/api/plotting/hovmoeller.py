@@ -32,7 +32,7 @@ def _eac4_hovmoeller_data(
     data = EAC4Instance(
         data_variables=data_variable,
         dates_range=dates_range,
-        time_values=time_values,
+        time_values={time_values},
         pressure_level=pressure_level,
         model_level=model_level,
     )
