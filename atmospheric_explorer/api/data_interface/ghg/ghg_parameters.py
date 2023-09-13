@@ -7,11 +7,14 @@ from __future__ import annotations
 
 from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
 from atmospheric_explorer.api.loggers import get_logger
+from textwrap import dedent
 
 logger = get_logger("atmexp")
 
 
 class GHGParameters(CAMSParameters):
+    """Parameters for Global Inversion dataset."""
+
     def __init__(
         self: GHGParameters,
         data_variables: str,
@@ -30,7 +33,18 @@ class GHGParameters(CAMSParameters):
         self.month = set(month)
         self.version = version
 
-    def subset(self: GHGParameters, obj: GHGParameters):
+    def __repr__(self) -> str:
+        return dedent(f"""\
+        data_variables: {self.data_variables}
+        quantity: {self.quantity}
+        input_observations: {self.input_observations}
+        time_aggregation: {self.time_aggregation}
+        year: {self.year}
+        month: {self.month}
+        version: {self.version}
+        """)
+
+    def subset(self: GHGParameters, obj: GHGParameters) -> bool:
         return (
             self.data_variables == obj.data_variables
             and self.quantity == obj.quantity
@@ -50,8 +64,8 @@ class GHGParameters(CAMSParameters):
                 "quantity": self.quantity,
                 "input_observations": self.input_observations,
                 "time_aggregation": self.time_aggregation,
-                "year": self.year,
-                "month": self.month,
+                "year": list(self.year),
+                "month": list(self.month),
             }
         )
         return call_body

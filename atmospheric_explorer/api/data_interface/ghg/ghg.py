@@ -95,6 +95,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
             month=month,
             version=version,
         )
+        self.downloaded = False
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self.dataset_dir, self.files_dirname)
         if os.path.exists(self.dataset_dir):
@@ -121,24 +122,26 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
         Uses cdsapi to interact with CAMS ADS.
         This function also extracts the netcdf file inside the zip file, which is then deleted.
         """
-        super().download(self.parameters, self.file_full_path)
-        # This dataset downloads zipfiles with possibly multiple netcdf files inside
-        # We must extract it
-        zip_filename = self.file_full_path
-        with zipfile.ZipFile(zip_filename, "r") as zip_ref:
-            self.file_format = "netcdf"
-            self.file_ext = "nc"
-            zip_ref.extractall(self.files_dir_path)
-            logger.info(
-                "Extracted file %s to folder %s",
-                self.file_full_path,
-                self.files_dir_path,
-            )
-        self.file_full_path = "*"
-        logger.info("Updated file_full_path to wildcard path %s", self.file_full_path)
-        # Remove zip file
-        os.remove(zip_filename)
-        logger.info("Removed %s", zip_filename)
+        if not self.downloaded:
+            super().download(self.parameters, self.file_full_path)
+            # This dataset downloads zipfiles with possibly multiple netcdf files inside
+            # We must extract it
+            zip_filename = self.file_full_path
+            with zipfile.ZipFile(zip_filename, "r") as zip_ref:
+                self.file_format = "netcdf"
+                self.file_ext = "nc"
+                zip_ref.extractall(self.files_dir_path)
+                logger.info(
+                    "Extracted file %s to folder %s",
+                    self.file_full_path,
+                    self.files_dir_path,
+                )
+            self.file_full_path = "*"
+            logger.info("Updated file_full_path to wildcard path %s", self.file_full_path)
+            # Remove zip file
+            os.remove(zip_filename)
+            logger.info("Removed %s", zip_filename)
+            self.downloaded = True
 
     @staticmethod
     def _align_dims(dataset: xr.Dataset, dim: str, values: list) -> xr.Dataset:

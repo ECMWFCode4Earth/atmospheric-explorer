@@ -7,11 +7,14 @@ from __future__ import annotations
 
 from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
 from atmospheric_explorer.api.loggers import get_logger
+from textwrap import dedent
 
 logger = get_logger("atmexp")
 
 
 class EAC4Parameters(CAMSParameters):
+    """Parameters for EAC4 dataset."""
+
     def __init__(
         self: EAC4Parameters,
         data_variables: set[str] | list[str],
@@ -30,6 +33,16 @@ class EAC4Parameters(CAMSParameters):
         )
         self.model_level = set(model_level) if model_level is not None else model_level
 
+    def __repr__(self) -> str:
+        return dedent(f"""\
+        data_variables: {self.data_variables}
+        dates_range: {self.dates_range}
+        time_values: {self.time_values}
+        area: {self.area}
+        pressure_level: {self.pressure_level}
+        model_level: {self.model_level}
+        """)
+
     @staticmethod
     def dates_issubset(date_range1, date_range2):
         """Check if the first date range is a subset of the second date range."""
@@ -45,7 +58,7 @@ class EAC4Parameters(CAMSParameters):
         return None
 
     @staticmethod
-    def area_issubset(area1: list, area2: list):
+    def area_issubset(area1: list, area2: list) -> bool:
         """Check if the first area is a subset of the second area."""
         res = EAC4Parameters._is_subset_none(area1, area2)
         if res is not None:
@@ -57,7 +70,7 @@ class EAC4Parameters(CAMSParameters):
         )
 
     @staticmethod
-    def pressure_issubset(pl1: set | None, pl2: set | None):
+    def pressure_issubset(pl1: set | None, pl2: set | None) -> bool:
         """Check if the first pressure level is a subset of the second pressure level."""
         res = EAC4Parameters._is_subset_none(pl1, pl2)
         if res is not None:
@@ -65,14 +78,14 @@ class EAC4Parameters(CAMSParameters):
         return pl1.issubset(pl2)
 
     @staticmethod
-    def model_issubset(ml1: set | None, ml2: set | None):
+    def model_issubset(ml1: set | None, ml2: set | None) -> bool:
         """Check if the first model level is a subset of the second model level."""
         res = EAC4Parameters._is_subset_none(ml1, ml2)
         if res is not None:
             return res
         return ml1.issubset(ml2)
 
-    def subset(self: EAC4Parameters, obj: EAC4Parameters):
+    def subset(self: EAC4Parameters, obj: EAC4Parameters) -> bool:
         return (
             self._data_variables.issubset(obj._data_variables)
             and EAC4Parameters.dates_issubset(self.dates_range, obj.dates_range)

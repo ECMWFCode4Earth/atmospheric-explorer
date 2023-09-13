@@ -36,12 +36,14 @@ def test_build_call_body():
         month={"01", "02"},
     )
     res = obj.build_call_body()
+    res['year'] = sorted(res['year'])
+    res['month'] = sorted(res['month'])
     assert res == {
         "variable": "a",
         "quantity": "quantity2",
         "input_observations": "input_observations",
         "time_aggregation": "time_aggregation",
-        "year": {"2021", "2022"},
-        "month": {"01", "02"},
+        "year": ["2021", "2022"],
+        "month": ["01", "02"],
         "version": "latest"
     }

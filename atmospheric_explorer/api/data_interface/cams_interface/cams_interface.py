@@ -38,6 +38,7 @@ class CAMSDataInterface(ABC):
         self._instances.append(self)
         create_folder(self.data_folder)
         logger.info("Created folder %s", self.data_folder)
+        self.downloaded = False
 
     def build_call_body(self: CAMSDataInterface, parameters: CAMSParameters):
         """Builds the CDS API call body."""
@@ -55,6 +56,7 @@ class CAMSDataInterface(ABC):
         logger.debug("Calling cdsapi with body %s", body)
         client.retrieve(self.dataset_name, body, file_fullpath)
         logger.info("Finished downloading file %s", file_fullpath)
+        self.downloaded = True
 
     @classmethod
     def list_data_files(cls) -> list:

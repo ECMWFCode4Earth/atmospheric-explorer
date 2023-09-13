@@ -11,6 +11,8 @@ logger = get_logger("atmexp")
 
 
 class Parameters(ABC):
+    """Abstract class to instantiate a dataset parameter used for caching."""
+
     @abstractmethod
     def subset(self, parameters: Parameters) -> bool:
         """Determine wether this parameters instance makes up a subset of parameters."""
@@ -34,9 +36,14 @@ class Cached:
     @classmethod
     def find_cache(cls: Cached, parameters: Parameters) -> Cached | None:
         """Find obj in cache that has a superset of the parameters passed in kwargs."""
+        logger.debug("Looking in cache for parameters %s", parameters)
         for sd_obj in cls._cache:
-            if parameters.subset(sd_obj.parameters):
+            if isinstance(sd_obj.parameters, type(parameters)) and parameters.subset(
+                sd_obj.parameters
+            ):
+                logger.debug("Found cached object %s", sd_obj)
                 return sd_obj
+        logger.debug("Object with parameters %s is not cached", parameters)
         return None
 
     def is_cached(self) -> bool:
@@ -45,12 +52,14 @@ class Cached:
 
     def cache(self) -> None:
         """Cache self."""
+        logger.debug("Caching object %s", self)
         type(self)._cache.append(self)
 
     @classmethod
     def clear_cache(cls):
         """Clear cache."""
-        cls._cache = []
+        logger.debug("Cleared objects %s from cache", cls)
+        cls._cache = list(filter(lambda obj: not(isinstance(obj,cls)), cls._cache))
 
     def __new__(cls: Cached, parameters: Parameters):
         logger.debug(
@@ -65,6 +74,7 @@ class Cached:
         cached_obj = cls.find_cache(parameters)
         if cached_obj is not None:
             return cached_obj
+        logger.debug("Cached object not found, creating a new one")
         return super().__new__(cls)
 
     @staticmethod
@@ -79,6 +89,7 @@ class Cached:
         def wrapper(self, *args, **kwargs):
             if self.is_cached():
                 return
+            logger.debug("Initializing an instance of %s", type(self))
             func(self, *args, **kwargs)
             self.cache()
 

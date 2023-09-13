@@ -107,7 +107,8 @@ class EAC4Instance(CAMSDataInterface, Cached):
 
         Uses cdsapi to interact with CAMS ADS.
         """
-        return super().download(self.parameters, self.file_full_path)
+        if not self.downloaded:
+            super().download(self.parameters, self.file_full_path)
 
     def _simplify_dataset(self: EAC4Instance, dataset: xr.Dataset):
         return dataset.rio.write_crs(CRS)
