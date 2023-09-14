@@ -44,16 +44,22 @@ def _ghg_surface_satellite_yearly_data(
     # Download surface data file
     logger.debug(
         dedent(
-            f"""\
-    _ghg_surface_satellite_yearly_data called with arguments
-    data_variable: {data_variable}
-    years: {years}
-    months: {months}
-    var_name: {var_name}
-    shapes: {shapes}
-    add_satellite_observations: {add_satellite_observations}
-    """
-        )
+            """\
+            _ghg_surface_satellite_yearly_data called with arguments
+            data_variable: %s
+            years: %s
+            months: %s
+            var_name: %s
+            shapes: %s
+            add_satellite_observations: %s
+            """
+        ),
+        data_variable,
+        years,
+        months,
+        var_name,
+        shapes,
+        add_satellite_observations
     )
     surface_data = InversionOptimisedGreenhouseGas(
         data_variables=data_variable,

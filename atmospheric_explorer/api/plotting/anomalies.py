@@ -69,17 +69,26 @@ def eac4_anomalies_plot(
     # pylint: disable=too-many-arguments
     logger.debug(
         dedent(
-            f"""\
-            eac4_anomalies_plot called with arguments
-            data_variable: {data_variable}
-            var_name: {var_name}
-            shapes: {shapes}
-            dates_range: {dates_range}
-            time_values: {time_values}
-            title: {title}
-            resampling: {resampling}
+            """\
+            Function eac4_anomalies_plot called with arguments
+            data_variable: %s
+            var_name: %s
+            dates_range: %s
+            time_values: %s
+            title: %s
+            shapes: %s
+            reference_dates_range: %s
+            resampling: %s
             """
-        )
+        ),
+        data_variable,
+        var_name,
+        dates_range,
+        time_values,
+        title,
+        shapes,
+        reference_dates_range,
+        resampling
     )
     dataset = _eac4_anomalies_data(
         data_variable=data_variable,

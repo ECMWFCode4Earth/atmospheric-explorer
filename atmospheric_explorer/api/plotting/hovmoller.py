@@ -80,20 +80,30 @@ def eac4_hovmoeller_plot(
     # pylint: disable=dangerous-default-value
     logger.debug(
         dedent(
-            f"""\
-            eac4_hovmoeller_levels_plot called with arguments
-            data_variable: {data_variable}
-            var_name: {var_name}
-            dates_range: {dates_range}
-            time_values: {time_values}
-            title: {title}
-            pressure_level: {pressure_level}
-            model_level: {model_level}
-            resampling: {resampling}
-            base_colorscale: {base_colorscale}
-            shapes: {shapes}
+            """\
+            Function eac4_hovmoeller_levels_plot called with arguments
+            data_variable: %s
+            var_name: %s
+            dates_range: %s
+            time_values: %s
+            title: %s
+            pressure_level: %s
+            model_level: %s
+            shapes: %s
+            resampling: %s
+            base_colorscale: %s
             """
-        )
+        ),
+        data_variable,
+        var_name,
+        dates_range,
+        time_values,
+        title,
+        pressure_level,
+        model_level,
+        shapes,
+        resampling,
+        base_colorscale
     )
     df_converted = _eac4_hovmoeller_data(
         data_variable=data_variable,

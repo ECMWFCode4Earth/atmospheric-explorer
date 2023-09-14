@@ -66,6 +66,16 @@ class ShapefilesDownloader:
                 logger.debug("Found cached shapefile object")
                 return sd_obj
         return None
+    
+    def __repr__(self):
+        return {
+            "resolution": self.resolution,
+            "map_type": self.map_type,
+            "info_type": self.info_type,
+            "depth": self.depth,
+            ""
+        }
+
 
     @classmethod
     def is_cached(cls, obj: ShapefilesDownloader) -> bool:
@@ -75,6 +85,7 @@ class ShapefilesDownloader:
     @classmethod
     def cache(cls, obj: ShapefilesDownloader):
         """Adds ShapefilesDownloader object to cache."""
+        logger.debug("Cached shapefile")
         ShapefilesDownloader._cache.append(obj)
 
     @classmethod

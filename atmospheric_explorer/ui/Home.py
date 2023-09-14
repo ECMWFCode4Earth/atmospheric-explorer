@@ -41,6 +41,7 @@ def _init():
 
 
 def _selectors_org():
+    logger.debug("Setting organization selectors")
     st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION] = st.selectbox(
         st.session_state["map_level_helper"],
         options=organizations.keys(),
@@ -57,6 +58,7 @@ def _selectors_org():
 
 
 def _selectors_no_org():
+    logger.debug("Setting non-organization selectors")
     if st.session_state["used_form"]:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
@@ -84,7 +86,9 @@ def selectors():
 
     def _used_form():
         st.session_state["used_form"] = True
+        logger.debug("Set used_form in session state to True")
 
+    logger.debug("Setting map selectors form")
     with st.form("selectors"):
         convert = (
             st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]
@@ -115,6 +119,7 @@ def selectors():
                 """,
             )
             if convert:
+                logger.debug("Converting previous selection to EntitySelection")
                 st.session_state[
                     GeneralSessionStateKeys.SELECTED_SHAPES
                 ] = EntitySelection.convert_selection(
@@ -141,19 +146,23 @@ def selectors():
         )
 
 
-_init()
-logger.info("Starting streamlit app")
-progress_bar = st.progress(0.0, "Starting app")
-st.title("Atmospheric Explorer")
-st.subheader("Geographical selection")
-logger.info("Checking session state")
-progress_bar.progress(0.2, "Building selectors")
-selectors()
-progress_bar.progress(0.4, "Building side bar")
-build_sidebar()
-progress_bar.progress(0.6, "Building map")
-out_event = show_folium_map()
-progress_bar.progress(0.8, "Updating session")
-update_session_map_click(out_event)
-progress_bar.progress(1.0, "Done")
-progress_bar.empty()
+def page():
+    _init()
+    logger.info("Starting streamlit app")
+    progress_bar = st.progress(0.0, "Starting app")
+    st.title("Atmospheric Explorer")
+    st.subheader("Geographical selection")
+    progress_bar.progress(0.2, "Building selectors")
+    selectors()
+    progress_bar.progress(0.4, "Building side bar")
+    build_sidebar()
+    progress_bar.progress(0.6, "Building map")
+    out_event = show_folium_map()
+    progress_bar.progress(0.8, "Updating session")
+    update_session_map_click(out_event)
+    progress_bar.progress(1.0, "Done")
+    progress_bar.empty()
+
+
+if __name__ == "__main__":
+    page()
