@@ -1,5 +1,4 @@
-"""\
-Module to manage constants.
+"""Module to manage constants.
 
 This module defines a Singleton, in this way the file constants.cfg is loaded only once.
 The singleton pattern was taken from here

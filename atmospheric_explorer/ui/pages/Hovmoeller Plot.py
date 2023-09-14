@@ -3,12 +3,11 @@ Module for creating Hovmoeller plots through UI
 """
 # pylint: disable=invalid-name
 from datetime import datetime
-from textwrap import dedent
 
 import streamlit as st
 
 from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.plotting.hovmoller import eac4_hovmoeller_plot
+from atmospheric_explorer.api.plotting.hovmoeller import eac4_hovmoeller_plot
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
     HovmSessionStateKeys,
@@ -136,7 +135,9 @@ def page():
         y_axis = st.session_state[HovmSessionStateKeys.HOVM_YAXIS]
         start_date = st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
         end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
-        dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
+        dates_range = (
+            f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
+        )
         time_values = st.session_state[HovmSessionStateKeys.HOVM_TIME]
         shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
         data_variable = st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]

@@ -1,6 +1,4 @@
-"""\
-APIs for generating dynamic and static plots
-"""
+"""APIs for generating GHG yearly flux time series plots."""
 from __future__ import annotations
 
 from textwrap import dedent
@@ -59,7 +57,7 @@ def _ghg_surface_satellite_yearly_data(
         months,
         var_name,
         shapes,
-        add_satellite_observations
+        add_satellite_observations,
     )
     surface_data = InversionOptimisedGreenhouseGas(
         data_variables=data_variable,
@@ -141,20 +139,20 @@ def ghg_surface_satellite_yearly_plot(
     shapes: Selection = Selection(),
     add_satellite_observations: bool = True,
 ) -> go.Figure:
-    """\
-    Generate a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset.
+    """Generates a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset.
+
     Note that we are only considering **surface_flux** quantities in this function.
 
-    Parameters:
+    Arguments:
         data_variable (str): data variable (greenhouse gas) to be plotted.
             Can be one among: 'carbon_dioxide', 'methane, 'nitrous_oxide'
-        years (list[str]): list of years (in YYYY format) to plot the data for
-        months (list[str]): list of month (in MM format) to plot the data for
         var_name (str | list[str]): use a single var_name if the plot only
             shows one input_observations category ('surface').
             Use a list with values corresponding respectively to 'surface'
             and 'satellite' if add_satellite_observations is true.
             Example: ['flux_apos', 'flux_apos_bio']
+        years (list[str]): list of years (in YYYY format) to plot the data for
+        months (list[str]): list of month (in MM format) to plot the data for
         title (str): plot title
         shapes (Selection): GenericShapeSelection or EntitySelection with
         add_satellite_observations (bool): show 'satellite' input_observations

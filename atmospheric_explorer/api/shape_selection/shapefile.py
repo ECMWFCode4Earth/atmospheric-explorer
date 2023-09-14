@@ -66,16 +66,17 @@ class ShapefilesDownloader:
                 logger.debug("Found cached shapefile object")
                 return sd_obj
         return None
-    
-    def __repr__(self):
-        return {
-            "resolution": self.resolution,
-            "map_type": self.map_type,
-            "info_type": self.info_type,
-            "depth": self.depth,
-            ""
-        }
 
+    def __repr__(self):
+        """Printable representation of ShapefilesDownloader instance."""
+        return dedent(
+            "ShapefilesDownloader object with attributes \
+                resolution: {resolution} \
+                map_type: {map_type} \
+                info_type: %s \
+                depth: {info_type} \
+                instance: {instance}"
+        )
 
     @classmethod
     def is_cached(cls, obj: ShapefilesDownloader) -> bool:

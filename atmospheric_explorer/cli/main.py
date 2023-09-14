@@ -15,7 +15,7 @@ from atmospheric_explorer.cli.plotting.plots import plot
 @click.group()
 def main():
     # pylint: disable=unnecessary-pass
-    """Main entry point"""
+    """Command-line interface for Atmospheric Composition Dataset Explorer."""
     pass
 
 

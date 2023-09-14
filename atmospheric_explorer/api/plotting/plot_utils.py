@@ -1,6 +1,4 @@
-"""
-Plotting utilities.
-"""
+"""Plotting utilities."""
 from __future__ import annotations
 
 import re
@@ -30,8 +28,8 @@ def _row_spacing(rows):
 
 
 def hex_to_rgb(hex_color: str) -> tuple:
-    """\
-    Converts an hex color to a rgb tuple.
+    """Converts an hex color to a rgb tuple.
+
     If an rgba color is provided, this function will return its rgb tuple and ignore the alpha channel.
     """
     if hex_color.startswith("#"):
@@ -43,7 +41,7 @@ def hex_to_rgb(hex_color: str) -> tuple:
 
 
 def save_plotly_to_image(fig: go.Figure, path: str, img_format: str = "png") -> None:
-    """Save plotly plot to static image"""
+    """Saves plotly plot to static image."""
     fig.to_image(path, format=img_format)
 
 
@@ -53,7 +51,7 @@ def _add_ci(
     dataset: pd.DataFrame,
     labels: list[str],
 ) -> None:
-    """Add confidence intervals to a plotly trace"""
+    """Adds confidence intervals to a plotly trace."""
     line_color = ",".join([str(n) for n in hex_to_rgb(trace.line.color)])
     if len(labels) > 1:
         regex = re.compile("label=(.+?)(?=<br>)")
@@ -110,16 +108,18 @@ def line_with_ci_subplots(
     add_ci: bool = False,
     color: str | None = None,
 ) -> go.Figure:
-    """\
-    Facet line plot on countries/administrative entinties.
+    """Facet line plot on countries/administrative entinties.
+
     This function plots the yearly mean of a quantity along with its CI.
 
-    Parameters:
+    Arguments:
         dataset (pd.DataFrame): pandas dataframe with (at least) columns
                                     'label','color','mean','lower','upper'
-        col_num (int): number of maximum columns in the facet plot
         unit (str): unit of measure
         title (str): plot title
+        add_ci (bool): whether to add confidence interval to plot.
+            Defaults to false
+        color (str): the dataset label to assign different colors to
     """
     labels = sorted(dataset["label"].unique())
     colors = sorted(dataset[color].unique())
@@ -187,7 +187,7 @@ def line_with_ci_subplots(
 def sequential_colorscale_bar(
     values: list[float] | list[int], colors: list[str]
 ) -> tuple[list, dict]:
-    """Compute a sequential colorscale and colorbar form a list of values and a list of colors"""
+    """Computes a sequential colorscale and colorbar form a list of values and a list of colors."""
     vals = np.array(list(filter(lambda v: not (np.isnan(v)), values)))
     vals.sort()
     separators = np.linspace(vals.min(), vals.max(), len(colors) + 1)
@@ -239,10 +239,9 @@ def hovmoeller_plot(
     model_level: list[str] | None = None,
     base_colorscale: list[str] | None = None,
 ):
-    """\
-    Hovmoeller plot on countries/administrative entinties.
+    """Hovmoeller plot on countries/administrative entinties.
 
-    Parameters:
+    Arguments:
         dataset (xr.Dataset): xarray dataset with (at least) dimension 'label'
         title (str): plot title
         pressure_level (list[str] | None): pressure levels, cannot be specified together with model_level

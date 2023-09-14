@@ -1,6 +1,4 @@
-"""\
-APIs for generating dynamic and static plots
-"""
+"""APIs for generating EAC4 anomalies time series plots."""
 from __future__ import annotations
 
 from textwrap import dedent
@@ -63,9 +61,7 @@ def eac4_anomalies_plot(
     reference_dates_range: str | None = None,
     resampling: str = "1MS",
 ) -> go.Figure:
-    """\
-    Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.
-    """
+    """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset."""
     # pylint: disable=too-many-arguments
     logger.debug(
         dedent(
@@ -88,7 +84,7 @@ def eac4_anomalies_plot(
         title,
         shapes,
         reference_dates_range,
-        resampling
+        resampling,
     )
     dataset = _eac4_anomalies_data(
         data_variable=data_variable,
@@ -122,5 +118,8 @@ def eac4_anomalies_plot(
         .rename({var_name: "value"}, axis=1)
     )
     return line_with_ci_subplots(
-        dataset=df_pandas, unit=dataset.attrs["units"], title=title, color="times"
+        dataset=df_pandas,
+        unit=dataset.attrs["units"],
+        title=title,
+        color="times",
     )

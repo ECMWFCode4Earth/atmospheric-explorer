@@ -28,12 +28,20 @@ and run in the terminal the command
 ## CLI
 *!! TODO. Example gif here as well?*
 
+[Refer to `help` commands.]
+
 ## APIs
 The high-level files containing functions to access the plotting APIs are in `./atmospheric_explorer/api/plotting`.
 You can also use util functions contained in the `data_interface` and `shape_selection` directories.
 
+[Add quickstart about how to use the APIs --> function call to create a plot from the start, i.e. package installation, to the end.
+
+TODO: add this static page on Sphinx, and also a similar one about the CLI]
+
 # How to contribute
 See the **APIs** section above for a quick summary about the API functions that you might want to edit and expand.
+
+[When you add something to the APIs you should also update the corresponding parts on CLI and UI!]
 
 ## Pre-commit
 This repo uses `pre-commit` to run a number of checks before committing (formatting, linting, tests ecc.). In order to enable `pre-commit`:
