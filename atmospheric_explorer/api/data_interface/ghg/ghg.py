@@ -18,7 +18,7 @@ from atmospheric_explorer.api.data_interface.cams_interface.cams_interface impor
 )
 from atmospheric_explorer.api.data_interface.ghg.ghg_parameters import GHGParameters
 from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.os_manager import create_folder, remove_folder
+from atmospheric_explorer.api.os_manager import create_folder
 
 logger = get_logger("atmexp")
 
@@ -98,10 +98,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
         self.downloaded = False
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self.dataset_dir, self.files_dirname)
-        if os.path.exists(self.dataset_dir):
-            remove_folder(self.dataset_dir)
+        if not os.path.exists(self.files_dir_path):
+            create_folder(self.files_dir_path)
         self.file_full_path = self.files_dirname
-        create_folder(self.files_dir_path)
         logger.info("Created folder %s", self.files_dir_path)
 
     @property
@@ -123,7 +122,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
         This function also extracts the netcdf file inside the zip file, which is then deleted.
         """
         if not self.downloaded:
-            super().download(self.parameters, self.file_full_path)
+            super()._download(self.parameters, self.file_full_path)
             # This dataset downloads zipfiles with possibly multiple netcdf files inside
             # We must extract it
             zip_filename = self.file_full_path
@@ -137,7 +136,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
                     self.files_dir_path,
                 )
             self.file_full_path = "*"
-            logger.info("Updated file_full_path to wildcard path %s", self.file_full_path)
+            logger.info(
+                "Updated file_full_path to wildcard path %s", self.file_full_path
+            )
             # Remove zip file
             os.remove(zip_filename)
             logger.info("Removed %s", zip_filename)

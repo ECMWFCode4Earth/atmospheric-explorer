@@ -10,13 +10,15 @@ from itertools import count
 
 import cdsapi
 
+from atmospheric_explorer.api.data_interface.cams_interface.cams_parameters import (
+    CAMSParameters,
+)
 from atmospheric_explorer.api.loggers import get_logger
 from atmospheric_explorer.api.os_manager import (
     create_folder,
     get_local_folder,
     remove_folder,
 )
-from atmospheric_explorer.api.data_interface.cams_interface.cams_parameters import CAMSParameters
 
 logger = get_logger("atmexp")
 
@@ -41,12 +43,14 @@ class CAMSDataInterface(ABC):
         self.downloaded = False
 
     def build_call_body(self: CAMSDataInterface, parameters: CAMSParameters):
-        """Builds the CDS API call body."""
+        """Build call body to be passed to cdsapi."""
         call_body = parameters.build_call_body()
-        call_body['format'] = self.file_format
+        call_body["format"] = self.file_format
         return call_body
 
-    def download(self: CAMSDataInterface, parameters: CAMSParameters, file_fullpath: str) -> None:
+    def _download(
+        self: CAMSDataInterface, parameters: CAMSParameters, file_fullpath: str
+    ) -> None:
         """Download the dataset and saves it to file specified in filename.
 
         Uses cdsapi to interact with CAMS ADS.

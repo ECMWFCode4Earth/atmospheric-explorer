@@ -12,7 +12,7 @@ from atmospheric_explorer.api.config import CRS
 from atmospheric_explorer.api.data_interface.cams_interface import CAMSDataInterface
 from atmospheric_explorer.api.data_interface.eac4.eac4_parameters import EAC4Parameters
 from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.os_manager import create_folder, remove_folder
+from atmospheric_explorer.api.os_manager import create_folder
 
 logger = get_logger("atmexp")
 
@@ -90,9 +90,8 @@ class EAC4Instance(CAMSDataInterface, Cached):
         )
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self.dataset_dir, self.files_dirname)
-        if os.path.exists(self.dataset_dir):
-            remove_folder(self.dataset_dir)
-        create_folder(self.files_dir_path)
+        if not os.path.exists(self.files_dir_path):
+            create_folder(self.files_dir_path)
         logger.info("Created folder %s", self.files_dir_path)
 
     @property
@@ -108,7 +107,7 @@ class EAC4Instance(CAMSDataInterface, Cached):
         Uses cdsapi to interact with CAMS ADS.
         """
         if not self.downloaded:
-            super().download(self.parameters, self.file_full_path)
+            super()._download(self.parameters, self.file_full_path)
 
     def _simplify_dataset(self: EAC4Instance, dataset: xr.Dataset):
         return dataset.rio.write_crs(CRS)
