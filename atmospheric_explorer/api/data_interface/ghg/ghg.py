@@ -17,10 +17,8 @@ from atmospheric_explorer.api.data_interface.cams_interface.cams_interface impor
     CAMSDataInterface,
 )
 from atmospheric_explorer.api.data_interface.ghg.ghg_parameters import GHGParameters
-from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.os_manager import create_folder
-
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.os_utils import create_folder
 
 
 class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
@@ -101,7 +99,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
         if not os.path.exists(self.files_dir_path):
             create_folder(self.files_dir_path)
         self.file_full_path = self.files_dirname
-        logger.info("Created folder %s", self.files_dir_path)
+        atm_exp_logger.info("Created folder %s", self.files_dir_path)
 
     @property
     def file_full_path(self: InversionOptimisedGreenhouseGas) -> str:
@@ -130,18 +128,18 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
                 self.file_format = "netcdf"
                 self.file_ext = "nc"
                 zip_ref.extractall(self.files_dir_path)
-                logger.info(
+                atm_exp_logger.info(
                     "Extracted file %s to folder %s",
                     self.file_full_path,
                     self.files_dir_path,
                 )
             self.file_full_path = "*"
-            logger.info(
+            atm_exp_logger.info(
                 "Updated file_full_path to wildcard path %s", self.file_full_path
             )
             # Remove zip file
             os.remove(zip_filename)
-            logger.info("Removed %s", zip_filename)
+            atm_exp_logger.info("Removed %s", zip_filename)
             self.downloaded = True
 
     @staticmethod
@@ -177,7 +175,9 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
         but the file themselves may miss the time dimension. It adds a time dimension for each file
         that's missing it and concats all files into a dataset.
         """
-        logger.debug("Reading files iteratively from path %s", self.file_full_path)
+        atm_exp_logger.debug(
+            "Reading files iteratively from path %s", self.file_full_path
+        )
         # Create dataset from first file
         files = sorted(glob(self.file_full_path))
         dataset = xr.open_dataset(files[0])

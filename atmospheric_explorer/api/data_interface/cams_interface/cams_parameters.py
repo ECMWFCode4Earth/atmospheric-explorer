@@ -1,18 +1,24 @@
 """\
-This module collects classes to easily interact with data downloaded from CAMS ADS.
+This module defines a generic base class to be used for the CAMS datasets parameters.
 """
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 from __future__ import annotations
 
 from atmospheric_explorer.api.cache import Parameters
-from atmospheric_explorer.api.loggers import get_logger
-
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.loggers import atm_exp_logger
 
 
 class CAMSParameters(Parameters):
+    """\
+    Base class to be used for CAMS dataset parameters.
+
+    Attributes:
+        data_variables (str | set[str] | list[str]): data varaibles to be downloaded from CAMS, depend on the dataset
+    """
+
     def __init__(self, data_variables: str | set[str] | list[str]) -> None:
+        atm_exp_logger.debug("Instantiating parameters object %s", type(self).__name__)
         self.data_variables = data_variables
 
     @property
@@ -32,8 +38,8 @@ class CAMSParameters(Parameters):
             data_variables_input = [data_variables_input]
         self._data_variables = set(data_variables_input)
 
-    def subset(self: CAMSParameters, obj: CAMSParameters):
-        return self.data_variables.issubset(obj.data_variables)
+    def subset(self: CAMSParameters, other: CAMSParameters):
+        return self.data_variables.issubset(other.data_variables)
 
     def build_call_body(self: CAMSParameters) -> dict:
         """Build the CDSAPI call body"""

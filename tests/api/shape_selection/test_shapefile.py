@@ -8,11 +8,11 @@ import os
 import pytest
 import requests.exceptions
 
-from atmospheric_explorer.api.os_manager import get_local_folder
+from atmospheric_explorer.api.local_folder import get_local_folder
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shapefile import (
-    ShapefilesDownloader,
     ShapefileParameters,
+    ShapefilesDownloader,
     dissolve_shapefile_level,
 )
 
@@ -25,13 +25,13 @@ def test_param_init():
     assert sh_down.depth == 0
     assert sh_down.instance == "map_subunits"
 
-    
+
 def test_param_subset():
     sh_down = ShapefileParameters()
     sh_down2 = ShapefileParameters()
     assert sh_down.subset(sh_down2)
     sh_down3 = ShapefileParameters(resolution="10m")
-    assert not sh_down.subset(sh_down3) 
+    assert not sh_down.subset(sh_down3)
 
 
 def test_init():

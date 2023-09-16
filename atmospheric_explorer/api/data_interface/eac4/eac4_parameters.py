@@ -5,11 +5,10 @@ This module collects classes to easily interact with data downloaded from CAMS A
 # pylint: disable=too-many-arguments
 from __future__ import annotations
 
-from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
-from atmospheric_explorer.api.loggers import get_logger
 from textwrap import dedent
 
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
+from atmospheric_explorer.api.loggers import atm_exp_logger
 
 
 class EAC4Parameters(CAMSParameters):
@@ -34,14 +33,16 @@ class EAC4Parameters(CAMSParameters):
         self.model_level = set(model_level) if model_level is not None else model_level
 
     def __repr__(self) -> str:
-        return dedent(f"""\
+        return dedent(
+            f"""\
         data_variables: {self.data_variables}
         dates_range: {self.dates_range}
         time_values: {self.time_values}
         area: {self.area}
         pressure_level: {self.pressure_level}
         model_level: {self.model_level}
-        """)
+        """
+        )
 
     @staticmethod
     def dates_issubset(date_range1, date_range2):
@@ -85,17 +86,20 @@ class EAC4Parameters(CAMSParameters):
             return res
         return ml1.issubset(ml2)
 
-    def subset(self: EAC4Parameters, obj: EAC4Parameters) -> bool:
-        return (
-            self._data_variables.issubset(obj._data_variables)
-            and EAC4Parameters.dates_issubset(self.dates_range, obj.dates_range)
-            and self.time_values.issubset(obj.time_values)
-            and EAC4Parameters.area_issubset(self.area, obj.area)
+    def subset(self: EAC4Parameters, other: EAC4Parameters) -> bool:
+        # pylint: disable = protected-access
+        res = (
+            self._data_variables.issubset(other._data_variables)
+            and EAC4Parameters.dates_issubset(self.dates_range, other.dates_range)
+            and self.time_values.issubset(other.time_values)
+            and EAC4Parameters.area_issubset(self.area, other.area)
             and EAC4Parameters.pressure_issubset(
-                self.pressure_level, obj.pressure_level
+                self.pressure_level, other.pressure_level
             )
-            and EAC4Parameters.model_issubset(self.model_level, obj.model_level)
+            and EAC4Parameters.model_issubset(self.model_level, other.model_level)
         )
+        atm_exp_logger.debug("Subset result: %s\nself: %s\nother: %s", res, self, other)
+        return res
 
     def build_call_body(self: EAC4Parameters) -> dict:
         """Build the CDSAPI call body"""
@@ -108,4 +112,5 @@ class EAC4Parameters(CAMSParameters):
             call_body["pressure_level"] = list(self.pressure_level)
         if self.model_level is not None:
             call_body["model_level"] = list(self.model_level)
+        atm_exp_logger.debug("Call body for %s:\n%s", self, call_body)
         return call_body

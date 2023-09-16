@@ -16,9 +16,7 @@ from functools import singledispatchmethod
 import yaml
 
 from atmospheric_explorer.api.exceptions import OperationNotAllowed
-from atmospheric_explorer.api.loggers import get_logger
-
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.loggers import atm_exp_logger
 
 
 class OperationParser:
@@ -55,13 +53,13 @@ class OperationParser:
                         _eval(node.left), _eval(node.right)
                     )
                 except KeyError as exc:
-                    logger.error(exc)
-                    logger.error("Unsupported operation %s", type(node.op))
+                    atm_exp_logger.error(exc)
+                    atm_exp_logger.error("Unsupported operation %s", type(node.op))
                     raise OperationNotAllowed(
                         f"Unsupported operation {type(node.op)}"
                     ) from exc
             else:
-                logger.error("Unsupported type %s", node)
+                atm_exp_logger.error("Unsupported type %s", node)
                 raise OperationNotAllowed(f"Unsupported type {node}")
 
         return _eval(node.body)
@@ -78,49 +76,57 @@ class OperationParser:
         return [self.arithmetic_eval(op) for op in operation]
 
 
-class ConfigMeta(type):
+class DatasetConfigParser:
     # pylint: disable=too-few-public-methods
-    """This meta class is needed to implement a singleton pattern so that the config files are loaded only once."""
+    """This class implements some basic functionalities to parse a YAML file containing the configuration for a dataset,
+    i.e. variables, conversion factors etc.
 
-    _instances = {}
+    For reference, check the file atmospheric_explorer/api/data_interface/ghg/ghg_config.yaml.
+
+    A dataset configuration file is **expected** to have data structured in the following way
+
+    variables:
+        data_variable_name:
+            var_name: # name of the dataset column
+            conversion:
+                conversion_factor: ...
+                conversion_unit: ...
+    """
+
     _parser = OperationParser()
 
-    def __new__(mcs, *args, **kwargs):
-        """Returns new ConfigMeta instance."""
-        return super().__new__(mcs, *args)
-
-    def __init__(cls, *args, **kwargs):
-        """Initializes ConfigMeta instance."""
+    def __init__(self, **kwargs):
         filename = kwargs["filename"]
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         with open(filepath, "r", encoding="utf-8") as file:
-            cls.config = yaml.safe_load(file)
+            atm_exp_logger.debug("Reading config from file %s", file.name)
+            self.config = yaml.safe_load(file)
         # Convert formulas inside configuration to floats
-        logger.debug("Evaluating arithmetic formulas in config")
-        cls._parse_factors(cls.config["variables"])
-        super().__init__(*args, **kwargs)
-        logger.debug("Loaded config from file %s", filename)
+        atm_exp_logger.debug("Evaluating arithmetic formulas in config")
+        self.parse_factors(self.config["variables"])
 
-    def __call__(cls, *args, **kwargs):
-        """Enables calling ConfigMeta instance like a function."""
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
+    @classmethod
+    def get_config(cls) -> dict:
+        """Function to get the actual config object."""
+        return cls().config
 
     @singledispatchmethod
     @classmethod
-    def _parse_factors(mcs, data_dict: dict):
+    def parse_factors(cls, data_dict: dict):
+        """Parse conversion factors in a dataset config file.
+        
+        The file is **expected** to have a 'conversion' section.
+        """
         if data_dict.get("conversion") is not None:
-            data_dict["conversion"]["conversion_factor"] = mcs._parser.arithmetic_eval(
+            data_dict["conversion"]["conversion_factor"] = cls._parser.arithmetic_eval(
                 data_dict["conversion"]["conversion_factor"]
             )
         else:
             for k in data_dict.keys():
-                mcs._parse_factors(data_dict[k])
+                cls.parse_factors(data_dict[k])
 
-    @_parse_factors.register
+    @parse_factors.register
     @classmethod
-    def _(mcs, data: list):
+    def _(cls, data: list):
         for elem in data:
-            mcs._parse_factors(elem)
+            cls.parse_factors(elem)

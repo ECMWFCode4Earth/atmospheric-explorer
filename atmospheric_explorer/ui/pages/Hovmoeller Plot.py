@@ -6,7 +6,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.hovmoeller import eac4_hovmoeller_plot
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
@@ -24,8 +24,6 @@ from atmospheric_explorer.ui.ui_mappings import (
     eac4_times,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
-
-logger = get_logger("atmexp")
 
 
 def _init():
@@ -48,14 +46,14 @@ def _init():
 
 
 def _year_selector():
-    logger.debug("Setting year selector")
+    atm_exp_logger.debug("Setting year selector")
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
     start_date_col.date_input("Start date", key=HovmSessionStateKeys.HOVM_START_DATE)
     end_date_col.date_input("End date", key=HovmSessionStateKeys.HOVM_END_DATE)
 
 
 def _times_selector():
-    logger.debug("Setting times selector")
+    atm_exp_logger.debug("Setting times selector")
     st.selectbox(
         label="Time",
         options=eac4_times,
@@ -64,7 +62,7 @@ def _times_selector():
 
 
 def _y_axis_selector():
-    logger.debug("Setting y axis selector")
+    atm_exp_logger.debug("Setting y axis selector")
     st.radio(
         "Vertical axis",
         ["Latitude", "Pressure Level", "Model Level"],
@@ -77,14 +75,14 @@ def _y_axis_selector():
         case "Latitude":
             pass
         case "Pressure Level":
-            logger.debug("Setting pressure level selector")
+            atm_exp_logger.debug("Setting pressure level selector")
             st.multiselect(
                 label="Pressure Level",
                 options=eac4_pressure_levels,
                 key=HovmSessionStateKeys.HOVM_P_LEVELS,
             )
         case "Model Level":
-            logger.debug("Setting model level selector")
+            atm_exp_logger.debug("Setting model level selector")
             st.multiselect(
                 label="Model Level",
                 options=eac4_model_levels,
@@ -93,7 +91,7 @@ def _y_axis_selector():
 
 
 def _var_selectors():
-    logger.debug("Setting data variable and var name selectors")
+    atm_exp_logger.debug("Setting data variable and var name selectors")
     if st.session_state[HovmSessionStateKeys.HOVM_YAXIS] == "Latitude":
         all_vars = eac4_sl_data_variables
         vars_mapping = eac4_sl_data_variable_var_name_mapping
@@ -109,7 +107,7 @@ def _var_selectors():
     )
     v_name = vars_mapping[st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]]
     st.text(f"Var name: {v_name}")
-    logger.debug("Setting title input")
+    atm_exp_logger.debug("Setting title input")
     title = st.text_input(
         label="Plot title",
         value=title_mapping[st.session_state[HovmSessionStateKeys.HOVM_DATA_VARIABLE]],
@@ -118,7 +116,7 @@ def _var_selectors():
 
 
 def _selectors():
-    logger.info("Adding selection expander")
+    atm_exp_logger.info("Adding selection expander")
     with st.expander("Selection", expanded=True):
         _year_selector()
         _times_selector()
@@ -131,7 +129,7 @@ def page():
     var_name, plot_title = _selectors()
     build_sidebar()
     if st.button("Generate plot"):
-        logger.info("Generating plot")
+        atm_exp_logger.info("Generating plot")
         y_axis = st.session_state[HovmSessionStateKeys.HOVM_YAXIS]
         start_date = st.session_state[HovmSessionStateKeys.HOVM_START_DATE]
         end_date = st.session_state[HovmSessionStateKeys.HOVM_END_DATE]
@@ -145,7 +143,7 @@ def page():
             with st.spinner("Downloading data and building plot"):
                 match y_axis:
                     case "Latitude":
-                        logger.debug("Generating Latitude plot")
+                        atm_exp_logger.debug("Generating Latitude plot")
                         st.plotly_chart(
                             eac4_hovmoeller_plot(
                                 data_variable=data_variable,
@@ -158,7 +156,7 @@ def page():
                             use_container_width=True,
                         )
                     case "Pressure Level":
-                        logger.debug("Generating Pressure Level plot")
+                        atm_exp_logger.debug("Generating Pressure Level plot")
                         levels = st.session_state[HovmSessionStateKeys.HOVM_P_LEVELS]
                         if levels:
                             st.plotly_chart(
@@ -174,7 +172,7 @@ def page():
                                 use_container_width=True,
                             )
                     case "Model Level":
-                        logger.debug("Generating Model Level plot")
+                        atm_exp_logger.debug("Generating Model Level plot")
                         levels = st.session_state[HovmSessionStateKeys.HOVM_M_LEVELS]
                         if levels:
                             st.plotly_chart(

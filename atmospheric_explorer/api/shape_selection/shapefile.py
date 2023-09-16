@@ -14,21 +14,23 @@ import requests
 import requests.utils
 
 from atmospheric_explorer.api.cache import Cached, Parameters
-from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.os_manager import create_folder, get_local_folder
+from atmospheric_explorer.api.local_folder import get_local_folder
+from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.os_utils import create_folder
 from atmospheric_explorer.api.shape_selection.config import map_level_shapefile_mapping
-
-logger = get_logger("atmexp")
 
 
 class ShapefileParameters(Parameters):
+    # pylint: disable = too-few-public-methods
+    """Parameters for the Natural Earth Data shapefile."""
+
     def __init__(
         self: ShapefileParameters,
         resolution: str = "50m",
         map_type: str = "cultural",
         info_type: str = "admin",
         depth: int = 0,
-        instance: str = "map_subunits"
+        instance: str = "map_subunits",
     ):  # pylint: disable=too-many-arguments
         self.resolution = resolution
         self.map_type = map_type
@@ -36,18 +38,16 @@ class ShapefileParameters(Parameters):
         self.depth = depth
         self.instance = instance
 
-    def subset(
-        self: ShapefileParameters,
-        obj: ShapefileParameters
-    ) -> bool:
-        # pylint: disable=too-many-arguments
-        return (
-            self.resolution == obj.resolution
-            and self.map_type == obj.map_type
-            and self.info_type == obj.info_type
-            and self.depth == obj.depth
-            and self.instance == obj.instance
+    def subset(self: ShapefileParameters, other: ShapefileParameters) -> bool:
+        res = (
+            self.resolution == other.resolution
+            and self.map_type == other.map_type
+            and self.info_type == other.info_type
+            and self.depth == other.depth
+            and self.instance == other.instance
         )
+        atm_exp_logger.debug("Subset result: %s\nself: %s\nother: %s", res, self, other)
+        return res
 
 
 class ShapefilesDownloader(Cached):
@@ -85,13 +85,13 @@ class ShapefilesDownloader(Cached):
         instance: str = "map_subunits",
         timeout: int = 10,
         dst_dir: str | None = None,
-    ):
+    ):  # pylint: disable=too-many-arguments
         params = ShapefileParameters(
             resolution=resolution,
             map_type=map_type,
             info_type=info_type,
             depth=depth,
-            instance=instance
+            instance=instance,
         )
         return Cached.__new__(ShapefilesDownloader, params)
 
@@ -126,7 +126,7 @@ class ShapefilesDownloader(Cached):
             map_type=map_type,
             info_type=info_type,
             depth=depth,
-            instance=instance
+            instance=instance,
         )
         self.timeout = timeout
         self.dst_dir = (
@@ -136,8 +136,8 @@ class ShapefilesDownloader(Cached):
         )
         self._downloaded = False
         create_folder(self.dst_dir)
-        logger.info("Created folder %s to save shapefiles", self.dst_dir)
-        logger.debug(
+        atm_exp_logger.info("Created folder %s to save shapefiles", self.dst_dir)
+        atm_exp_logger.debug(
             dedent(
                 """\
                 Created ShapefilesDownloader object with attributes
@@ -164,7 +164,7 @@ class ShapefilesDownloader(Cached):
         """Shapefile name"""
         if self.parameters.map_type == "physical":
             return f"ne_{self.parameters.resolution}_{self.parameters.info_type}"
-        return f"ne_{self.parameters.resolution}_{self.parameters.info_type}_{self.parameters.depth}_{self.parameters.instance}"
+        return f"ne_{self.parameters.resolution}_{self.parameters.info_type}_{self.parameters.depth}_{self.parameters.instance}"  # noqa: E501
 
     @property
     def shapefile_dir(self: ShapefilesDownloader) -> str:
@@ -180,17 +180,17 @@ class ShapefilesDownloader(Cached):
     def shapefile_url(self: ShapefilesDownloader) -> str:
         """Shapefile download url."""
         # pylint: disable=line-too-long
-        return f"{self._BASE_URL}/{self.parameters.resolution}/{self.parameters.map_type}/{self.shapefile_name}.zip"  # noqa: E501
+        return f"{self._BASE_URL}/{self.parameters.resolution}/{self.parameters.map_type}/{self.shapefile_name}.zip"
 
     def _download_shapefile(self: ShapefilesDownloader) -> bytes:
-        """Downloads shapefiles and returns their content in bytes."""
-        logger.info("Downloading shapefiles from %s", self.shapefile_url)
+        """Download shapefiles and returns their content in bytes."""
+        atm_exp_logger.info("Downloading shapefiles from %s", self.shapefile_url)
         try:
             response = requests.get(
                 self.shapefile_url, headers=self._HEADERS, timeout=self.timeout
             )
         except requests.exceptions.Timeout as err:
-            logger.error("Shapefile download timed out.\n%s", err)
+            atm_exp_logger.error("Shapefile download timed out.\n%s", err)
             raise requests.exceptions.Timeout(
                 dedent(
                     f"""\
@@ -202,7 +202,7 @@ class ShapefilesDownloader(Cached):
             )
 
         if response.status_code != 200:
-            logger.error(
+            atm_exp_logger.error(
                 "Failed to download shapefile, a wrong URL has been provided.\n%s",
                 response.text,
             )
@@ -215,7 +215,7 @@ class ShapefilesDownloader(Cached):
         """Saves shapefiles to zip file."""
         with open(self.shapefile_dir + ".zip", "wb") as file_zip:
             file_zip.write(self._download_shapefile())
-            logger.info("Shapefiles saved into file %s", file_zip.name)
+            atm_exp_logger.info("Shapefiles saved into file %s", file_zip.name)
 
     def _extract_to_folder(self: ShapefilesDownloader):
         """Extracts shapefile zip to directory.
@@ -226,10 +226,10 @@ class ShapefilesDownloader(Cached):
         filepath = self.shapefile_dir + ".zip"
         with zipfile.ZipFile(filepath, "r") as zip_ref:
             zip_ref.extractall(self.shapefile_dir)
-            logger.info("Shapefile extracted to %s", self.shapefile_dir)
+            atm_exp_logger.info("Shapefile extracted to %s", self.shapefile_dir)
         # Remove zip file
         os.remove(filepath)
-        logger.info("Removed file %s", filepath)
+        atm_exp_logger.info("Removed file %s", filepath)
 
     def download(self: ShapefilesDownloader) -> None:
         """Downloads and extracts shapefiles."""
@@ -239,31 +239,27 @@ class ShapefilesDownloader(Cached):
 
     def _read_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
         """Returns shapefile as geopandas dataframe."""
-        logger.debug("Reading %s as dataframe", self.shapefile_full_path)
+        atm_exp_logger.debug("Reading %s as dataframe", self.shapefile_full_path)
         return gpd.read_file(self.shapefile_full_path)
 
     def get_as_dataframe(self: ShapefilesDownloader) -> gpd.GeoDataFrame:
         """Returns shapefile as geopandas dataframe, also downloads shapefile if needed."""
         if not self._downloaded:
-            logger.info(
+            atm_exp_logger.info(
                 "Shapefile not downloaded, downloading it from Natural Earth Data"
             )
             self.download()
         else:
-            logger.info("Shapefile already downloaded in %s", self.shapefile_full_path)
+            atm_exp_logger.info(
+                "Shapefile already downloaded in %s", self.shapefile_full_path
+            )
         return self._read_as_dataframe()
 
 
 def dissolve_shapefile_level(level: str) -> gpd.GeoDataFrame:
-    """Gets shapefile and dissolves it on a selection level."""
-    logger.debug("Dissolve shapefile to level %s", level)
+    """Gets shapefile and dissolves it on a selection level"""
+    atm_exp_logger.debug("Dissolve shapefile to level %s", level)
     col = map_level_shapefile_mapping[level]
     sh_df = ShapefilesDownloader(instance="map_subunits").get_as_dataframe()
     sh_df = sh_df[[col, "geometry"]].rename({col: "label"}, axis=1)
     return sh_df.dissolve(by="label").reset_index()
-
-
-if __name__ == "__main__":
-    sh = ShapefilesDownloader()
-    sh2 = ShapefilesDownloader()
-    print(id(sh) == id(sh2))

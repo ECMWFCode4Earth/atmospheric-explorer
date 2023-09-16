@@ -2,7 +2,6 @@
 
 import os
 import platform
-import shutil
 
 
 def get_local_folder():
@@ -11,17 +10,6 @@ def get_local_folder():
         main_dir = os.path.join(os.getenv("LOCALAPPDATA") or ".", "AtmosphericExplorer")
     else:
         main_dir = os.path.join(os.getenv("HOME") or ".", ".atmospheric_explorer")
-    create_folder(main_dir)
+    if not os.path.exists(main_dir):
+        os.makedirs(main_dir)
     return main_dir
-
-
-def create_folder(folder: str) -> None:
-    """Create folder if it doesn't exist."""
-    if not os.path.exists(folder):
-        os.makedirs(folder)
-
-
-def remove_folder(folder: str) -> None:
-    """Remove folder if it exists."""
-    if os.path.exists(folder):
-        shutil.rmtree(folder)

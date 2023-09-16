@@ -417,12 +417,13 @@ Once pre-commit is enabled, it will run a number of check on **staged files**. A
 ## Logger
 The logger configuration is defined in `logger.py` inside a dictionary.
 
-This application uses a logger called `atmexp`, if you want to use it just import it as show below
+This application uses a logger called `atmexp`, which is already instantiated in the variable `atm_exp_logger`.
+If you want to use it just import `atm_exp_logger`
 
 ```python
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers import atm_exp_logger
 
-logger = get_logger("atmexp")
+atm_exp_logger.info("This is the Atmospheric explorer logger")
 ```
 
 ## API Documentation

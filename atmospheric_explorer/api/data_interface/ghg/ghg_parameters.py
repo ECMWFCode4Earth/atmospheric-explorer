@@ -5,11 +5,10 @@ This module collects classes to easily interact with data downloaded from CAMS A
 # pylint: disable=too-many-arguments
 from __future__ import annotations
 
-from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
-from atmospheric_explorer.api.loggers import get_logger
 from textwrap import dedent
 
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
+from atmospheric_explorer.api.loggers import atm_exp_logger
 
 
 class GHGParameters(CAMSParameters):
@@ -34,7 +33,8 @@ class GHGParameters(CAMSParameters):
         self.version = version
 
     def __repr__(self) -> str:
-        return dedent(f"""\
+        return dedent(
+            f"""\
         data_variables: {self.data_variables}
         quantity: {self.quantity}
         input_observations: {self.input_observations}
@@ -42,18 +42,21 @@ class GHGParameters(CAMSParameters):
         year: {self.year}
         month: {self.month}
         version: {self.version}
-        """)
-
-    def subset(self: GHGParameters, obj: GHGParameters) -> bool:
-        return (
-            self.data_variables == obj.data_variables
-            and self.quantity == obj.quantity
-            and self.input_observations == obj.input_observations
-            and self.time_aggregation == obj.time_aggregation
-            and self.year.issubset(obj.year)
-            and self.month.issubset(obj.month)
-            and self.version == obj.version
+        """
         )
+
+    def subset(self: GHGParameters, other: GHGParameters) -> bool:
+        res = (
+            self.data_variables == other.data_variables
+            and self.quantity == other.quantity
+            and self.input_observations == other.input_observations
+            and self.time_aggregation == other.time_aggregation
+            and self.year.issubset(other.year)
+            and self.month.issubset(other.month)
+            and self.version == other.version
+        )
+        atm_exp_logger.debug("Subset result: %s\nself: %s\nother: %s", res, self, other)
+        return res
 
     def build_call_body(self: GHGParameters) -> dict:
         """Build the CDSAPI call body"""
@@ -68,4 +71,5 @@ class GHGParameters(CAMSParameters):
                 "month": list(self.month),
             }
         )
+        atm_exp_logger.debug("Call body for %s:\n%s", self, call_body)
         return call_body

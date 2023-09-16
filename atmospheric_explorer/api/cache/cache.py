@@ -5,19 +5,18 @@ from abc import ABC, abstractmethod
 from functools import wraps
 from textwrap import dedent
 
-from atmospheric_explorer.api.loggers import get_logger
-
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.loggers import atm_exp_logger
 
 
 class Parameters(ABC):
-    """Abstract class to instantiate a dataset parameter used for caching."""
+    # pylint: disable = too-few-public-methods
+    """Abstract class to instantiate dataset parameters, used for caching."""
 
     @abstractmethod
-    def subset(self, parameters: Parameters) -> bool:
+    def subset(self, other: Parameters) -> bool:
         """Determine wether this parameters instance makes up a subset of parameters."""
         raise NotImplementedError(
-            "A parameters class needs to implement the subset method"
+            "A Parameters subclass needs to implement the subset method"
         )
 
 
@@ -36,14 +35,14 @@ class Cached:
     @classmethod
     def find_cache(cls: Cached, parameters: Parameters) -> Cached | None:
         """Find obj in cache that has a superset of the parameters passed in kwargs."""
-        logger.debug("Looking in cache for parameters %s", parameters)
+        atm_exp_logger.debug("Looking in cache for parameters %s", parameters)
         for sd_obj in cls._cache:
             if isinstance(sd_obj.parameters, type(parameters)) and parameters.subset(
                 sd_obj.parameters
             ):
-                logger.debug("Found cached object %s", sd_obj)
+                atm_exp_logger.debug("Found cached object %s", sd_obj)
                 return sd_obj
-        logger.debug("Object with parameters %s is not cached", parameters)
+        atm_exp_logger.debug("Object with parameters %s is not cached", parameters)
         return None
 
     def is_cached(self) -> bool:
@@ -52,17 +51,17 @@ class Cached:
 
     def cache(self) -> None:
         """Cache self."""
-        logger.debug("Caching object %s", self)
+        atm_exp_logger.debug("Caching object %s", self)
         type(self)._cache.append(self)
 
     @classmethod
     def clear_cache(cls):
         """Clear cache."""
-        logger.debug("Cleared objects %s from cache", cls)
-        cls._cache = list(filter(lambda obj: not(isinstance(obj,cls)), cls._cache))
+        atm_exp_logger.debug("Cleared objects %s from cache", cls)
+        cls._cache = list(filter(lambda obj: not (isinstance(obj, cls)), cls._cache))
 
     def __new__(cls: Cached, parameters: Parameters):
-        logger.debug(
+        atm_exp_logger.debug(
             dedent(
                 """\
                 Attempting to create Cached object with attributes
@@ -74,7 +73,7 @@ class Cached:
         cached_obj = cls.find_cache(parameters)
         if cached_obj is not None:
             return cached_obj
-        logger.debug("Cached object not found, creating a new one")
+        atm_exp_logger.debug("Cached object not found, creating a new one")
         return super().__new__(cls)
 
     @staticmethod
@@ -89,7 +88,7 @@ class Cached:
         def wrapper(self, *args, **kwargs):
             if self.is_cached():
                 return
-            logger.debug("Initializing an instance of %s", type(self))
+            atm_exp_logger.debug("Initializing an instance of %s", type(self))
             func(self, *args, **kwargs)
             self.cache()
 

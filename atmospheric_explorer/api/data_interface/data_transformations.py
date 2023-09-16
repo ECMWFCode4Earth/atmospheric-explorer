@@ -7,11 +7,13 @@ import statsmodels.stats.api as sms
 import xarray as xr
 from shapely.geometry import mapping
 
+from atmospheric_explorer.api.loggers import atm_exp_logger
 from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 
 
 def split_time_dim(dataset: xr.Dataset, time_dim: str):
-    """Split datetime dimension into times and dates."""
+    """Return a new dataset where the time_dim dimension is split into times and dates dimensions."""
+    atm_exp_logger.debug("Splitting time dim %s of dataset %s", time_dim, dataset)
     times = dataset[f"{time_dim}.time"].values
     dates = np.array(dataset[time_dim].values, dtype="datetime64[D]").astype(
         "datetime64[ns]"

@@ -9,7 +9,7 @@ from shapely.geometry import MultiPolygon, Polygon, shape
 from shapely.ops import unary_union
 
 from atmospheric_explorer.api.config import CRS
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers import atm_exp_logger
 from atmospheric_explorer.api.shape_selection.config import (
     SelectionLevel,
     map_level_shapefile_mapping,
@@ -18,8 +18,6 @@ from atmospheric_explorer.api.shape_selection.shapefile import (
     ShapefilesDownloader,
     dissolve_shapefile_level,
 )
-
-logger = get_logger("atmexp")
 
 
 def selection_empty(func):
@@ -88,7 +86,7 @@ class GenericShapeSelection(Selection):
         super().__init__(dataframe, None)
         if dataframe is not None:
             self.level = SelectionLevel.GENERIC
-        logger.debug(
+        atm_exp_logger.debug(
             """\
         Created GenericShapeSelection with dataframe %s
         """,
@@ -129,7 +127,7 @@ class EntitySelection(Selection):
         super().__init__(dataframe, level)
         if self.level == SelectionLevel.GENERIC:
             raise ValueError("EntitySelection cannot have level SelectionLevel.GENERIC")
-        logger.debug(
+        atm_exp_logger.debug(
             """\
         Created EntitySelection with dataframe %s and level %s
         """,

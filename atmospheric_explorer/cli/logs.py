@@ -5,7 +5,7 @@ from pprint import pprint
 
 import click
 
-from atmospheric_explorer.api.loggers import Loggers
+from atmospheric_explorer.api.loggers import clear_logs, list_logs
 
 
 @click.group()
@@ -18,10 +18,10 @@ def logs():
 @logs.command("list")
 def _():
     """List all logs"""
-    pprint(Loggers.list_logs())
+    pprint(list_logs())
 
 
 @logs.command("clear")
 def _():
     """Clear all logs"""
-    Loggers.clear_logs()
+    clear_logs()

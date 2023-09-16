@@ -6,15 +6,13 @@ from textwrap import dedent
 import click
 
 from atmospheric_explorer.api.data_interface.ghg.ghg_config import GHGConfig
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.yearly_flux import (
     ghg_surface_satellite_yearly_plot,
 )
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
 from atmospheric_explorer.cli.plotting.utils import comma_separated_list
-
-logger = get_logger("atmexp")
 
 
 def command_change_options():
@@ -131,7 +129,7 @@ def yearly_flux(
             )
         )
     entities = EntitySelection.from_entities_list(entities, level=selection_level)
-    logger.debug(
+    atm_exp_logger.debug(
         dedent(
             """\
             Called yearly flux CLI with parameters
