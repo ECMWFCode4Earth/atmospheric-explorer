@@ -6,7 +6,7 @@ from textwrap import dedent
 import click
 
 from atmospheric_explorer.api.data_interface.ghg.ghg_config import GHGConfig
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.yearly_flux import (
     ghg_surface_satellite_yearly_plot,
 )

@@ -8,7 +8,7 @@ import xarray as xr
 from atmospheric_explorer.api.data_interface.dataset_config_parser import (
     DatasetConfigParser,
 )
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.singleton import Singleton
 
 

@@ -2,10 +2,10 @@
 Module to define the main logger and a few logging utils.
 """
 import os
+import shutil
 from glob import glob
 
 from atmospheric_explorer.api.loggers.loggers import Logger
-from atmospheric_explorer.api.os_utils import remove_folder
 
 
 def list_logs() -> list:
@@ -15,4 +15,5 @@ def list_logs() -> list:
 
 def clear_logs() -> list:
     """Clear all log files."""
-    remove_folder(Logger.logs_root_dir)
+    if os.path.exists(Logger.logs_root_dir):
+        shutil.rmtree(Logger.logs_root_dir)

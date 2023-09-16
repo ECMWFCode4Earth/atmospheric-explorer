@@ -11,7 +11,7 @@ from atmospheric_explorer.api.cache import Cached
 from atmospheric_explorer.api.config import CRS
 from atmospheric_explorer.api.data_interface.cams_interface import CAMSDataInterface
 from atmospheric_explorer.api.data_interface.eac4.eac4_parameters import EAC4Parameters
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.os_utils import create_folder
 
 

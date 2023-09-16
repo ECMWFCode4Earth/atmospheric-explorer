@@ -10,7 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 def _base_height(n_plots):

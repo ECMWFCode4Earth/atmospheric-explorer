@@ -9,7 +9,7 @@ from shapely.geometry import MultiPolygon, Polygon, shape
 from shapely.ops import unary_union
 
 from atmospheric_explorer.api.config import CRS
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.shape_selection.config import (
     SelectionLevel,
     map_level_shapefile_mapping,

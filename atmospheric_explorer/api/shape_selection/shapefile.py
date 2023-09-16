@@ -15,7 +15,7 @@ import requests.utils
 
 from atmospheric_explorer.api.cache import Cached, Parameters
 from atmospheric_explorer.api.local_folder import get_local_folder
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.os_utils import create_folder
 from atmospheric_explorer.api.shape_selection.config import map_level_shapefile_mapping
 

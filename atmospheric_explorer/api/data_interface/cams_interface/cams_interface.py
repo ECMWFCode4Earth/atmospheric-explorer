@@ -14,7 +14,7 @@ from atmospheric_explorer.api.data_interface.cams_interface.cams_parameters impo
     CAMSParameters,
 )
 from atmospheric_explorer.api.local_folder import get_local_folder
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.os_utils import create_folder, remove_folder
 
 

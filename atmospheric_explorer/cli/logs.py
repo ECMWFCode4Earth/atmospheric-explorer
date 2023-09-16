@@ -5,7 +5,7 @@ from pprint import pprint
 
 import click
 
-from atmospheric_explorer.api.loggers import clear_logs, list_logs
+from atmospheric_explorer.api.loggers.loggers_utils import clear_logs, list_logs
 
 
 @click.group()

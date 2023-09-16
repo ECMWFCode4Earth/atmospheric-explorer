@@ -6,7 +6,7 @@ This module defines a generic base class to be used for the CAMS datasets parame
 from __future__ import annotations
 
 from atmospheric_explorer.api.cache import Parameters
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 class CAMSParameters(Parameters):

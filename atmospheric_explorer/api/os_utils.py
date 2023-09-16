@@ -5,7 +5,7 @@ Module to gather all utility functions and classes.
 import os
 import shutil
 
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 def create_folder(folder: str) -> None:

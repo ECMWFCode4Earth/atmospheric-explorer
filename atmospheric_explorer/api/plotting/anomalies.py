@@ -12,7 +12,7 @@ from atmospheric_explorer.api.data_interface.data_transformations import (
     split_time_dim,
 )
 from atmospheric_explorer.api.data_interface.eac4 import EAC4Config, EAC4Instance
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.plot_utils import line_with_ci_subplots
 from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 

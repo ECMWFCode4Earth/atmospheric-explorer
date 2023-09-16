@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from functools import wraps
 from textwrap import dedent
 
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 class Parameters(ABC):

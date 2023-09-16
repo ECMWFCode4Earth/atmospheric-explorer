@@ -6,7 +6,7 @@ from textwrap import dedent
 import click
 
 from atmospheric_explorer.api.data_interface.eac4.eac4_config import EAC4Config
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.anomalies import eac4_anomalies_plot
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys

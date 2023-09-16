@@ -16,7 +16,7 @@ from functools import singledispatchmethod
 import yaml
 
 from atmospheric_explorer.api.exceptions import OperationNotAllowed
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 class OperationParser:

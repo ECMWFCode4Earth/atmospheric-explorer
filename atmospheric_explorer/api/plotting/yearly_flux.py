@@ -14,7 +14,7 @@ from atmospheric_explorer.api.data_interface.ghg import (
     GHGConfig,
     InversionOptimisedGreenhouseGas,
 )
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.plot_utils import line_with_ci_subplots
 from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 

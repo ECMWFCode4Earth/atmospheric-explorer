@@ -6,7 +6,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.hovmoeller import eac4_hovmoeller_plot
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,

@@ -8,7 +8,7 @@ from __future__ import annotations
 from textwrap import dedent
 
 from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
-from atmospheric_explorer.api.loggers import atm_exp_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 class GHGParameters(CAMSParameters):
