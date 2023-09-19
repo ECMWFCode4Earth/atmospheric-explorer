@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.shape_selection package &mdash; Atmospheric Explorer 0.1.0.dev0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=965fac30"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Atmospheric Explorer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">api.shape_selection package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-api.shape_selection.config">api.shape_selection.config module</a><ul>
+<li><a class="reference internal" href="#api.shape_selection.config.SelectionLevel"><code class="docutils literal notranslate"><span class="pre">SelectionLevel</span></code></a><ul>
+<li><a class="reference internal" href="#api.shape_selection.config.SelectionLevel.CONTINENTS"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.CONTINENTS</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.config.SelectionLevel.COUNTRIES"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.COUNTRIES</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.config.SelectionLevel.COUNTRIES_SUB"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.COUNTRIES_SUB</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.config.SelectionLevel.GENERIC"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.GENERIC</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.config.SelectionLevel.ORGANIZATIONS"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.ORGANIZATIONS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.shape_selection.shape_selection">api.shape_selection.shape_selection module</a><ul>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection"><code class="docutils literal notranslate"><span class="pre">EntitySelection</span></code></a><ul>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection.convert_selection"><code class="docutils literal notranslate"><span class="pre">EntitySelection.convert_selection()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection.from_entities_list"><code class="docutils literal notranslate"><span class="pre">EntitySelection.from_entities_list()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection.from_entity_selection"><code class="docutils literal notranslate"><span class="pre">EntitySelection.from_entity_selection()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection.from_generic_selection"><code class="docutils literal notranslate"><span class="pre">EntitySelection.from_generic_selection()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.GenericShapeSelection"><code class="docutils literal notranslate"><span class="pre">GenericShapeSelection</span></code></a><ul>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.GenericShapeSelection.convert_selection"><code class="docutils literal notranslate"><span class="pre">GenericShapeSelection.convert_selection()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.GenericShapeSelection.from_shape"><code class="docutils literal notranslate"><span class="pre">GenericShapeSelection.from_shape()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.Selection"><code class="docutils literal notranslate"><span class="pre">Selection</span></code></a><ul>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.Selection.empty"><code class="docutils literal notranslate"><span class="pre">Selection.empty()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.Selection.get_event_label"><code class="docutils literal notranslate"><span class="pre">Selection.get_event_label()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.Selection.labels"><code class="docutils literal notranslate"><span class="pre">Selection.labels</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.from_out_event"><code class="docutils literal notranslate"><span class="pre">from_out_event()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shape_selection.selection_empty"><code class="docutils literal notranslate"><span class="pre">selection_empty()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.shape_selection.shapefile">api.shape_selection.shapefile module</a><ul>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader</span></code></a><ul>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.cache()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.clear_cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.clear_cache()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.download"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.download()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.find_cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.find_cache()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.get_as_dataframe"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.get_as_dataframe()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.is_cached"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.is_cached()</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_dir"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_dir</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_full_path"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_full_path</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_name"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_name</span></code></a></li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_url"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_url</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.shape_selection.shapefile.dissolve_shapefile_level"><code class="docutils literal notranslate"><span class="pre">dissolve_shapefile_level()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.shape_selection">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Atmospheric Explorer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">api.shape_selection package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.shape_selection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-shape-selection-package">
+<h1>api.shape_selection package<a class="headerlink" href="#api-shape-selection-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.shape_selection.config">
+<span id="api-shape-selection-config-module"></span><h2>api.shape_selection.config module<a class="headerlink" href="#module-api.shape_selection.config" title="Link to this heading"></a></h2>
+<p>Mappings and configs for the interactive map.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.shape_selection.config.SelectionLevel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.shape_selection.config.</span></span><span class="sig-name descname"><span class="pre">SelectionLevel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.config.SelectionLevel" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Levels for the shape selection.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.shape_selection.config.SelectionLevel.CONTINENTS">
+<span class="sig-name descname"><span class="pre">CONTINENTS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Continents'</span></em><a class="headerlink" href="#api.shape_selection.config.SelectionLevel.CONTINENTS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.shape_selection.config.SelectionLevel.COUNTRIES">
+<span class="sig-name descname"><span class="pre">COUNTRIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Countries'</span></em><a class="headerlink" href="#api.shape_selection.config.SelectionLevel.COUNTRIES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.shape_selection.config.SelectionLevel.COUNTRIES_SUB">
+<span class="sig-name descname"><span class="pre">COUNTRIES_SUB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Sub-national</span> <span class="pre">divisions'</span></em><a class="headerlink" href="#api.shape_selection.config.SelectionLevel.COUNTRIES_SUB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.shape_selection.config.SelectionLevel.GENERIC">
+<span class="sig-name descname"><span class="pre">GENERIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Generic'</span></em><a class="headerlink" href="#api.shape_selection.config.SelectionLevel.GENERIC" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.shape_selection.config.SelectionLevel.ORGANIZATIONS">
+<span class="sig-name descname"><span class="pre">ORGANIZATIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Organizations'</span></em><a class="headerlink" href="#api.shape_selection.config.SelectionLevel.ORGANIZATIONS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.shape_selection.shape_selection">
+<span id="api-shape-selection-shape-selection-module"></span><h2>api.shape_selection.shape_selection module<a class="headerlink" href="#module-api.shape_selection.shape_selection" title="Link to this heading"></a></h2>
+<p>Module to manage selections done on the folium map.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.EntitySelection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.shape_selection.shape_selection.</span></span><span class="sig-name descname"><span class="pre">EntitySelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shape_selection.EntitySelection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.shape_selection.shape_selection.Selection" title="api.shape_selection.shape_selection.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a></p>
+<p>Class to manage entity selections on the interactive map.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.EntitySelection.convert_selection">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.shape_selection.shape_selection.Selection" title="api.shape_selection.shape_selection.Selection"><span class="pre">Selection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection" title="api.shape_selection.shape_selection.EntitySelection"><span class="pre">EntitySelection</span></a></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.EntitySelection.convert_selection" title="Link to this definition"></a></dt>
+<dd><p>Converts selections between levels and types (shape vs entity).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.EntitySelection.from_entities_list">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_entities_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection" title="api.shape_selection.shape_selection.EntitySelection"><span class="pre">EntitySelection</span></a></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.EntitySelection.from_entities_list" title="Link to this definition"></a></dt>
+<dd><p>Generates an EntitySelection object from a list of entities, shapes are taken from the shapefile.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.EntitySelection.from_entity_selection">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_entity_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection" title="api.shape_selection.shape_selection.EntitySelection"><span class="pre">EntitySelection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shape_selection.EntitySelection.from_entity_selection" title="Link to this definition"></a></dt>
+<dd><p>Converts an EntitySelection object to a new SelectionLevel.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.EntitySelection.from_generic_selection">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_generic_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">generic_shape_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.shape_selection.shape_selection.GenericShapeSelection" title="api.shape_selection.shape_selection.GenericShapeSelection"><span class="pre">GenericShapeSelection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shape_selection.EntitySelection" title="api.shape_selection.shape_selection.EntitySelection"><span class="pre">EntitySelection</span></a></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.EntitySelection.from_generic_selection" title="Link to this definition"></a></dt>
+<dd><p>Generates an EntitySelection object encompassing entitities that         are touched by the generic_shape_selection objects passed.</p>
+<p>It assumes the generic_shape_selection argument is a generic shape.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.GenericShapeSelection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.shape_selection.shape_selection.</span></span><span class="sig-name descname"><span class="pre">GenericShapeSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shape_selection.GenericShapeSelection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.shape_selection.shape_selection.Selection" title="api.shape_selection.shape_selection.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a></p>
+<p>Class to manage generic shape selections on the interactive map.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.GenericShapeSelection.convert_selection">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape_selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.shape_selection.shape_selection.Selection" title="api.shape_selection.shape_selection.Selection"><span class="pre">Selection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shape_selection.GenericShapeSelection" title="api.shape_selection.shape_selection.GenericShapeSelection"><span class="pre">GenericShapeSelection</span></a></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.GenericShapeSelection.convert_selection" title="Link to this definition"></a></dt>
+<dd><p>Converts selections between types (shape vs entity).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.GenericShapeSelection.from_shape">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Polygon</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MultiPolygon</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shape_selection.GenericShapeSelection" title="api.shape_selection.shape_selection.GenericShapeSelection"><span class="pre">GenericShapeSelection</span></a></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.GenericShapeSelection.from_shape" title="Link to this definition"></a></dt>
+<dd><p>Generates a GenericShapeSelection from a shapely Polygon or MultiPolygon.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.Selection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.shape_selection.shape_selection.</span></span><span class="sig-name descname"><span class="pre">Selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GeoDataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shape_selection.Selection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Selection interface.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.Selection.empty">
+<span class="sig-name descname"><span class="pre">empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.Selection.empty" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the selection is empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.Selection.get_event_label">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_event_label</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.Selection.get_event_label" title="Link to this definition"></a></dt>
+<dd><p>Get label from folium map click event.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.Selection.labels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">labels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#api.shape_selection.shape_selection.Selection.labels" title="Link to this definition"></a></dt>
+<dd><p>Selection labels, useful when countries are selected.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.from_out_event">
+<span class="sig-prename descclassname"><span class="pre">api.shape_selection.shape_selection.</span></span><span class="sig-name descname"><span class="pre">from_out_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">out_event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SelectionLevel</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shape_selection.Selection" title="api.shape_selection.shape_selection.Selection"><span class="pre">Selection</span></a></span></span><a class="headerlink" href="#api.shape_selection.shape_selection.from_out_event" title="Link to this definition"></a></dt>
+<dd><p>Generates a GenericShapeSelection/EntitySelection object from an output event generated by streamlit_folium.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.shape_selection.shape_selection.selection_empty">
+<span class="sig-prename descclassname"><span class="pre">api.shape_selection.shape_selection.</span></span><span class="sig-name descname"><span class="pre">selection_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shape_selection.selection_empty" title="Link to this definition"></a></dt>
+<dd><p>Decorator to add a check for an empty selection.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.shape_selection.shapefile">
+<span id="api-shape-selection-shapefile-module"></span><h2>api.shape_selection.shapefile module<a class="headerlink" href="#module-api.shape_selection.shapefile" title="Link to this heading"></a></h2>
+<p>Module to manage shapefiles.</p>
+<p>This module defines a class that donwloads, extracts and saves one or more shapefiles.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.shape_selection.shapefile.</span></span><span class="sig-name descname"><span class="pre">ShapefilesDownloader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'50m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cultural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'admin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'map_subunits'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class manages the download, extraction and saving on disk of         shapefiles.</p>
+<p>Shapefiles will be downloaded as zip files and then extracted into a
+folder. Shapefiles are downloaded from Natural Earth Data.
+By default, the class download a 50m resolution “admin” shapefile for all
+countries in the world.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.cache">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader" title="api.shape_selection.shapefile.ShapefilesDownloader"><span class="pre">ShapefilesDownloader</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.cache" title="Link to this definition"></a></dt>
+<dd><p>Adds ShapefilesDownloader object to cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.clear_cache">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.clear_cache" title="Link to this definition"></a></dt>
+<dd><p>Clears cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.download" title="Link to this definition"></a></dt>
+<dd><p>Downloads and extracts shapefiles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.find_cache">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">find_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'50m'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cultural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'admin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'map_subunits'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader" title="api.shape_selection.shapefile.ShapefilesDownloader"><span class="pre">ShapefilesDownloader</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.find_cache" title="Link to this definition"></a></dt>
+<dd><p>Finds shapefile object in cache.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.get_as_dataframe">
+<span class="sig-name descname"><span class="pre">get_as_dataframe</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeoDataFrame</span></span></span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.get_as_dataframe" title="Link to this definition"></a></dt>
+<dd><p>Returns shapefile as geopandas dataframe, also downloads shapefile if needed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.is_cached">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_cached</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.shape_selection.shapefile.ShapefilesDownloader" title="api.shape_selection.shapefile.ShapefilesDownloader"><span class="pre">ShapefilesDownloader</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.is_cached" title="Link to this definition"></a></dt>
+<dd><p>Checks if ShapefilesDownloader object is cached.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.shapefile_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shapefile_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_dir" title="Link to this definition"></a></dt>
+<dd><p>Shapefile directory.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.shapefile_full_path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shapefile_full_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_full_path" title="Link to this definition"></a></dt>
+<dd><p>Shapefile full path.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.shapefile_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shapefile_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_name" title="Link to this definition"></a></dt>
+<dd><p>Shapefile file name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.ShapefilesDownloader.shapefile_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shapefile_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_url" title="Link to this definition"></a></dt>
+<dd><p>Shapefile download url.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.shape_selection.shapefile.dissolve_shapefile_level">
+<span class="sig-prename descclassname"><span class="pre">api.shape_selection.shapefile.</span></span><span class="sig-name descname"><span class="pre">dissolve_shapefile_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeoDataFrame</span></span></span><a class="headerlink" href="#api.shape_selection.shapefile.dissolve_shapefile_level" title="Link to this definition"></a></dt>
+<dd><p>Gets shapefile and dissolves it on a selection level.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.shape_selection">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.shape_selection" title="Link to this heading"></a></h2>
+<p>Module containing Atmospheric Explorer APIs to manage shapefiles.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Elisa Aliverti, Luigi Brancati, Giulia Fiantanese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

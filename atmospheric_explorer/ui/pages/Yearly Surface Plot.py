@@ -6,8 +6,10 @@ from textwrap import dedent
 
 import streamlit as st
 
-from atmospheric_explorer.loggers import get_logger
-from atmospheric_explorer.plotting.yearly_flux import ghg_surface_satellite_yearly_plot
+from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.plotting.yearly_flux import (
+    ghg_surface_satellite_yearly_plot,
+)
 from atmospheric_explorer.ui.session_state import (
     GeneralSessionStateKeys,
     GHGSessionStateKeys,
@@ -40,7 +42,8 @@ def _init():
         st.session_state[GHGSessionStateKeys.GHG_ALL_MONTHS] = True
 
 
-def _year_filter():
+def _year_selectors():
+    logger.debug("Setting years selector")
     start_year_col, end_year_col, _ = st.columns([1, 1, 3])
     start_year_col.number_input(
         "Start year", key=GHGSessionStateKeys.GHG_START_YEAR, step=1
@@ -48,7 +51,8 @@ def _year_filter():
     end_year_col.number_input("End year", key=GHGSessionStateKeys.GHG_END_YEAR, step=1)
 
 
-def _months_filter():
+def _months_selectors():
+    logger.debug("Setting months selector")
     st.checkbox(label="All Months", key=GHGSessionStateKeys.GHG_ALL_MONTHS)
     if not st.session_state[GHGSessionStateKeys.GHG_ALL_MONTHS]:
         st.multiselect(
@@ -62,13 +66,15 @@ def _months_filter():
         ]
 
 
-def _vars_filter():
+def _vars_selectors():
+    logger.debug("Setting data variable selector")
     st.selectbox(
         label="Data variable",
         options=ghg_data_variables,
         key=GHGSessionStateKeys.GHG_DATA_VARIABLE,
     )
     if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
+        logger.debug("Setting satellite selector")
         st.checkbox(
             label="Include satellite observations",
             key=GHGSessionStateKeys.GHG_ADD_SATELLITE,
@@ -80,12 +86,12 @@ def _vars_filter():
         )
 
 
-def _filters():
-    with st.expander("Filters", expanded=True):
-        logger.info("Adding filters")
-        _year_filter()
-        _months_filter()
-        _vars_filter()
+def _selectors():
+    logger.info("Adding selection expander")
+    with st.expander("Selection", expanded=True):
+        _year_selectors()
+        _months_selectors()
+        _vars_selectors()
         var_names = ghg_data_variable_var_name_mapping[
             st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
         ]
@@ -95,6 +101,7 @@ def _filters():
             help="Select var_name inside dataset",
         )
         idx = var_names.index(v_name)
+        logger.debug("Setting title input")
         title = st.text_input(
             "Plot title",
             value=ghg_data_variable_default_plot_title_mapping[
@@ -104,49 +111,40 @@ def _filters():
     return v_name, title
 
 
-# Page
-_init()
-var_name, plot_title = _filters()
-build_sidebar()
-if st.button("Generate plot"):
-    years = [
-        str(y)
-        for y in range(
-            st.session_state[GHGSessionStateKeys.GHG_START_YEAR],
-            st.session_state[GHGSessionStateKeys.GHG_END_YEAR] + 1,
-        )
-    ]
-    months = st.session_state[GHGSessionStateKeys.GHG_MONTHS]
-    shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
-    data_variable = st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
-    add_satellite_observations = st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE]
-    with st.container():
-        with st.spinner("Downloading data and building plot"):
-            logger.debug(
-                dedent(
-                    f"""\
-            Building first plot with parameters
-            Variable: {data_variable}
-            Var name: {var_name}
-            Shapes: {shapes}
-            Years: {years}
-            Month: {months}
-            Title: {plot_title}
-            Add satellite observations: {add_satellite_observations}
-            """
-                )
+def page():
+    _init()
+    var_name, plot_title = _selectors()
+    build_sidebar()
+    if st.button("Generate plot"):
+        logger.info("Generating plot")
+        years = [
+            str(y)
+            for y in range(
+                st.session_state[GHGSessionStateKeys.GHG_START_YEAR],
+                st.session_state[GHGSessionStateKeys.GHG_END_YEAR] + 1,
             )
-            st.plotly_chart(
-                ghg_surface_satellite_yearly_plot(
-                    data_variable=data_variable,
-                    years=years,
-                    months=months,
-                    title=plot_title,
-                    var_name=var_name,
-                    shapes=shapes.dataframe,
-                    add_satellite_observations=(
-                        add_satellite_observations and data_variable == "carbon_dioxide"
+        ]
+        months = st.session_state[GHGSessionStateKeys.GHG_MONTHS]
+        shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
+        data_variable = st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
+        add_satellite_observations = st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE]
+        with st.container():
+            with st.spinner("Downloading data and building plot"):
+                st.plotly_chart(
+                    ghg_surface_satellite_yearly_plot(
+                        data_variable=data_variable,
+                        years=years,
+                        months=months,
+                        title=plot_title,
+                        var_name=var_name,
+                        shapes=shapes,
+                        add_satellite_observations=(
+                            add_satellite_observations and data_variable == "carbon_dioxide"
+                        ),
                     ),
-                ),
-                use_container_width=True,
-            )
+                    use_container_width=True,
+                )
+
+
+if __name__ == "__main__":
+    page()

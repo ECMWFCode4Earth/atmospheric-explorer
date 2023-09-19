@@ -40,7 +40,7 @@ repos:
         exclude: docs/
     -   id: pytest
         name: pytest
-        entry: pytest tests/
+        entry: pytest --cov=atmospheric_explorer --log-disable=true tests/
         language: system
         always_run: true
         pass_filenames: false
@@ -52,3 +52,10 @@ repos:
     -   id: ruff
         args: [--exit-non-zero-on-fix]
         exclude: docs/
+-   repo: https://github.com/pycqa/pydocstyle
+    rev: 07f6707e2c5612960347f7c00125620457f490a7
+    hooks:
+    -   id: pydocstyle
+        files: atmospheric_explorer/api/
+        args:
+        - --convention=google

@@ -1,8 +1,8 @@
 """\
 Module to keep all mapping of data variables for the Streamlit application.
 """
-from atmospheric_explorer.data_interface.eac4 import EAC4Config
-from atmospheric_explorer.data_interface.ghg import GHGConfig
+from atmospheric_explorer.api.data_interface.eac4 import EAC4Config
+from atmospheric_explorer.api.data_interface.ghg import GHGConfig
 
 # EAC4 mappings and data variables list
 eac4_config = EAC4Config.get_config()
@@ -31,10 +31,6 @@ eac4_ml_data_variable_default_plot_title_mapping = {
     if v["var_type"] == "multi_level"
 }
 eac4_ml_data_variables = list(eac4_ml_data_variable_var_name_mapping.keys())
-# GHG mappings and data variables list
-# ! We are only considering surface_flux quantities
-# carbon_dioxide var_names are lists corresponding respectively to
-# [surface, satellite] var_names
 ghg_config = GHGConfig.get_config()
 ghg_data_variable_var_name_mapping = {
     k: [

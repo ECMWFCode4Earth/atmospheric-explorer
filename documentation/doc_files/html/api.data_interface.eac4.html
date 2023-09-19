@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.data_interface.eac4 package &mdash; Atmospheric Explorer 0.1.0.dev0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=965fac30"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Atmospheric Explorer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">api.data_interface.eac4 package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-api.data_interface.eac4.eac4">api.data_interface.eac4.eac4 module</a><ul>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance"><code class="docutils literal notranslate"><span class="pre">EAC4Instance</span></code></a><ul>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.dataset_dir"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.dataset_dir</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.dataset_name"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.dataset_name</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.download"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.download()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.file_ext"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.file_ext</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.file_format"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.file_format</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.file_full_path"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.file_full_path</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.model_level"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.model_level</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.pressure_level"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.pressure_level</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.read_dataset"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.read_dataset()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4.EAC4Instance.time_values"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.time_values</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.data_interface.eac4.eac4_config">api.data_interface.eac4.eac4_config module</a><ul>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4_config.EAC4Config"><code class="docutils literal notranslate"><span class="pre">EAC4Config</span></code></a><ul>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4_config.EAC4Config.convert_units_array"><code class="docutils literal notranslate"><span class="pre">EAC4Config.convert_units_array()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.eac4.eac4_config.EAC4Config.get_config"><code class="docutils literal notranslate"><span class="pre">EAC4Config.get_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.data_interface.eac4">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Atmospheric Explorer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">api.data_interface.eac4 package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.data_interface.eac4.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-data-interface-eac4-package">
+<h1>api.data_interface.eac4 package<a class="headerlink" href="#api-data-interface-eac4-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.data_interface.eac4.eac4">
+<span id="api-data-interface-eac4-eac4-module"></span><h2>api.data_interface.eac4.eac4 module<a class="headerlink" href="#module-api.data_interface.eac4.eac4" title="Link to this heading"></a></h2>
+<p>This module collects classes to easily interact with EAC4 data downloaded from CAMS ADS.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.eac4.eac4.</span></span><span class="sig-name descname"><span class="pre">EAC4Instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">CAMSDataInterface</span></code></p>
+<p>Interface for CAMS global reanalysis (EAC4) and CAMS global reanalysis (EAC4) monthly averaged fields datasets.</p>
+<p>See <a class="reference external" href="https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings">https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings</a>
+for a full list of parameters and more details about the dataset.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.dataset_dir">
+<span class="sig-name descname"><span class="pre">dataset_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/luigi/.atmospheric_explorer/data/cams-global-reanalysis-eac4'</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.dataset_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.dataset_name">
+<span class="sig-name descname"><span class="pre">dataset_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cams-global-reanalysis-eac4'</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.dataset_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.download" title="Link to this definition"></a></dt>
+<dd><p>Downloads the dataset and saves it to file specified in filename.</p>
+<p>Uses cdsapi to interact with CAMS ADS.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.file_ext">
+<span class="sig-name descname"><span class="pre">file_ext</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nc'</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.file_ext" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.file_format">
+<span class="sig-name descname"><span class="pre">file_format</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'netcdf'</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.file_format" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.file_full_path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">file_full_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.file_full_path" title="Link to this definition"></a></dt>
+<dd><p>Name of the saved file.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.model_level">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.model_level" title="Link to this definition"></a></dt>
+<dd><p>Model level is internally represented as a set, use this property to set/get its value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.pressure_level">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pressure_level</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.pressure_level" title="Link to this definition"></a></dt>
+<dd><p>Pressure level is internally represented as a set, use this property to set/get its value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.read_dataset">
+<span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dataset</span></span></span><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.read_dataset" title="Link to this definition"></a></dt>
+<dd><p>Returns data as an xarray.Dataset.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4.EAC4Instance.time_values">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#api.data_interface.eac4.eac4.EAC4Instance.time_values" title="Link to this definition"></a></dt>
+<dd><p>Time values are internally represented as a set, use this property to set/get its value.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.data_interface.eac4.eac4_config">
+<span id="api-data-interface-eac4-eac4-config-module"></span><h2>api.data_interface.eac4.eac4_config module<a class="headerlink" href="#module-api.data_interface.eac4.eac4_config" title="Link to this heading"></a></h2>
+<p>Config for EAC4 APIs.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4_config.EAC4Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.eac4.eac4_config.</span></span><span class="sig-name descname"><span class="pre">EAC4Config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.eac4.eac4_config.EAC4Config" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is needed to implement a singleton pattern so that config is loaded only once.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4_config.EAC4Config.convert_units_array">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert_units_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataArray</span></span></span><a class="headerlink" href="#api.data_interface.eac4.eac4_config.EAC4Config.convert_units_array" title="Link to this definition"></a></dt>
+<dd><p>Converts an xarray.DataArray from its original units to the units specified in the eac4_config.yaml file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.eac4.eac4_config.EAC4Config.get_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#api.data_interface.eac4.eac4_config.EAC4Config.get_config" title="Link to this definition"></a></dt>
+<dd><p>Function to get the actual config object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.data_interface.eac4">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.data_interface.eac4" title="Link to this heading"></a></h2>
+<p>Module containing Atmospheric Explorer APIs to access EAC4 data.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Elisa Aliverti, Luigi Brancati, Giulia Fiantanese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

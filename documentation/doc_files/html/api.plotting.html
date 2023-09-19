@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.plotting package &mdash; Atmospheric Explorer 0.1.0.dev0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=965fac30"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Atmospheric Explorer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">api.plotting package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-api.plotting.anomalies">api.plotting.anomalies module</a><ul>
+<li><a class="reference internal" href="#api.plotting.anomalies.eac4_anomalies_plot"><code class="docutils literal notranslate"><span class="pre">eac4_anomalies_plot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.plotting.hovmoeller">api.plotting.hovmoeller module</a><ul>
+<li><a class="reference internal" href="#api.plotting.hovmoeller.eac4_hovmoeller_plot"><code class="docutils literal notranslate"><span class="pre">eac4_hovmoeller_plot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.plotting.plot_utils">api.plotting.plot_utils module</a><ul>
+<li><a class="reference internal" href="#api.plotting.plot_utils.hex_to_rgb"><code class="docutils literal notranslate"><span class="pre">hex_to_rgb()</span></code></a></li>
+<li><a class="reference internal" href="#api.plotting.plot_utils.hovmoeller_plot"><code class="docutils literal notranslate"><span class="pre">hovmoeller_plot()</span></code></a></li>
+<li><a class="reference internal" href="#api.plotting.plot_utils.line_with_ci_subplots"><code class="docutils literal notranslate"><span class="pre">line_with_ci_subplots()</span></code></a></li>
+<li><a class="reference internal" href="#api.plotting.plot_utils.save_plotly_to_image"><code class="docutils literal notranslate"><span class="pre">save_plotly_to_image()</span></code></a></li>
+<li><a class="reference internal" href="#api.plotting.plot_utils.sequential_colorscale_bar"><code class="docutils literal notranslate"><span class="pre">sequential_colorscale_bar()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.plotting.yearly_flux">api.plotting.yearly_flux module</a><ul>
+<li><a class="reference internal" href="#api.plotting.yearly_flux.ghg_surface_satellite_yearly_plot"><code class="docutils literal notranslate"><span class="pre">ghg_surface_satellite_yearly_plot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.plotting">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Atmospheric Explorer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">api.plotting package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.plotting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-plotting-package">
+<h1>api.plotting package<a class="headerlink" href="#api-plotting-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.plotting.anomalies">
+<span id="api-plotting-anomalies-module"></span><h2>api.plotting.anomalies module<a class="headerlink" href="#module-api.plotting.anomalies" title="Link to this heading"></a></h2>
+<p>APIs for generating EAC4 anomalies time series plots.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.anomalies.eac4_anomalies_plot">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.anomalies.</span></span><span class="sig-name descname"><span class="pre">eac4_anomalies_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Selection</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_dates_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1MS'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#api.plotting.anomalies.eac4_anomalies_plot" title="Link to this definition"></a></dt>
+<dd><p>Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.plotting.hovmoeller">
+<span id="api-plotting-hovmoeller-module"></span><h2>api.plotting.hovmoeller module<a class="headerlink" href="#module-api.plotting.hovmoeller" title="Link to this heading"></a></h2>
+<p>APIs for generating EAC4 Hovmoeller plots.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.hovmoeller.eac4_hovmoeller_plot">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.hovmoeller.</span></span><span class="sig-name descname"><span class="pre">eac4_hovmoeller_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dates_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Selection</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1MS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_colorscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#api.plotting.hovmoeller.eac4_hovmoeller_plot" title="Link to this definition"></a></dt>
+<dd><p>Generate a vertical Hovmoeller plot (levels vs time) for a quantity from the Global Reanalysis EAC4 dataset.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.plotting.plot_utils">
+<span id="api-plotting-plot-utils-module"></span><h2>api.plotting.plot_utils module<a class="headerlink" href="#module-api.plotting.plot_utils" title="Link to this heading"></a></h2>
+<p>Plotting utilities.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.plot_utils.hex_to_rgb">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.plot_utils.</span></span><span class="sig-name descname"><span class="pre">hex_to_rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hex_color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#api.plotting.plot_utils.hex_to_rgb" title="Link to this definition"></a></dt>
+<dd><p>Converts an hex color to a rgb tuple.</p>
+<p>If an rgba color is provided, this function will return its rgb tuple and ignore the alpha channel.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.plot_utils.hovmoeller_plot">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.plot_utils.</span></span><span class="sig-name descname"><span class="pre">hovmoeller_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_colorscale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.plotting.plot_utils.hovmoeller_plot" title="Link to this definition"></a></dt>
+<dd><p>Hovmoeller plot on countries/administrative entinties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>xr.Dataset</em>) – xarray dataset with (at least) dimension ‘label’</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>pressure_level</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – pressure levels, cannot be specified together with model_level</p></li>
+<li><p><strong>model_level</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – model levels, cannot be specified together with pressure_level</p></li>
+<li><p><strong>base_colorscale</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – color scale to be used for the z axis</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.plot_utils.line_with_ci_subplots">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.plot_utils.</span></span><span class="sig-name descname"><span class="pre">line_with_ci_subplots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_ci</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#api.plotting.plot_utils.line_with_ci_subplots" title="Link to this definition"></a></dt>
+<dd><p>Facet line plot on countries/administrative entinties.</p>
+<p>This function plots the yearly mean of a quantity along with its CI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>pd.DataFrame</em>) – pandas dataframe with (at least) columns
+‘label’,’color’,’mean’,’lower’,’upper’</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – unit of measure</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>add_ci</strong> (<em>bool</em>) – whether to add confidence interval to plot.
+Defaults to false</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – the dataset label to assign different colors to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.plot_utils.save_plotly_to_image">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.plot_utils.</span></span><span class="sig-name descname"><span class="pre">save_plotly_to_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Figure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'png'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.plotting.plot_utils.save_plotly_to_image" title="Link to this definition"></a></dt>
+<dd><p>Saves plotly plot to static image.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.plot_utils.sequential_colorscale_bar">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.plot_utils.</span></span><span class="sig-name descname"><span class="pre">sequential_colorscale_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#api.plotting.plot_utils.sequential_colorscale_bar" title="Link to this definition"></a></dt>
+<dd><p>Computes a sequential colorscale and colorbar form a list of values and a list of colors.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.plotting.yearly_flux">
+<span id="api-plotting-yearly-flux-module"></span><h2>api.plotting.yearly_flux module<a class="headerlink" href="#module-api.plotting.yearly_flux" title="Link to this heading"></a></h2>
+<p>APIs for generating GHG yearly flux time series plots.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.plotting.yearly_flux.ghg_surface_satellite_yearly_plot">
+<span class="sig-prename descclassname"><span class="pre">api.plotting.yearly_flux.</span></span><span class="sig-name descname"><span class="pre">ghg_surface_satellite_yearly_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">years</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">months</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shapes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Selection</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_satellite_observations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#api.plotting.yearly_flux.ghg_surface_satellite_yearly_plot" title="Link to this definition"></a></dt>
+<dd><p>Generates a yearly mean plot with CI for a quantity from the CAMS Global Greenhouse Gas Inversion dataset.</p>
+<p>Note that we are only considering <strong>surface_flux</strong> quantities in this function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_variable</strong> (<em>str</em>) – data variable (greenhouse gas) to be plotted.
+Can be one among: ‘carbon_dioxide’, ‘methane, ‘nitrous_oxide’</p></li>
+<li><p><strong>var_name</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – use a single var_name if the plot only
+shows one input_observations category (‘surface’).
+Use a list with values corresponding respectively to ‘surface’
+and ‘satellite’ if add_satellite_observations is true.
+Example: [‘flux_apos’, ‘flux_apos_bio’]</p></li>
+<li><p><strong>years</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – list of years (in YYYY format) to plot the data for</p></li>
+<li><p><strong>months</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – list of month (in MM format) to plot the data for</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – plot title</p></li>
+<li><p><strong>shapes</strong> (<a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.Selection" title="api.shape_selection.shape_selection.Selection"><em>Selection</em></a>) – GenericShapeSelection or EntitySelection with</p></li>
+<li><p><strong>add_satellite_observations</strong> (<em>bool</em>) – show ‘satellite’ input_observations
+data along with ‘surface’ (only available for carbon_dioxide data
+variable).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-api.plotting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.plotting" title="Link to this heading"></a></h2>
+<p>Module containing Atmospheric Explorer APIs to plot data.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Elisa Aliverti, Luigi Brancati, Giulia Fiantanese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
