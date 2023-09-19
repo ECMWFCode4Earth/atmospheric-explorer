@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api package &mdash; Atmospheric Explorer 0.1.0.dev0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=965fac30"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Atmospheric Explorer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">api package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-api.config">api.config module</a></li>
+<li><a class="reference internal" href="#module-api.exceptions">api.exceptions module</a><ul>
+<li><a class="reference internal" href="#api.exceptions.OperationNotAllowed"><code class="docutils literal notranslate"><span class="pre">OperationNotAllowed</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.loggers">api.loggers module</a><ul>
+<li><a class="reference internal" href="#api.loggers.Loggers"><code class="docutils literal notranslate"><span class="pre">Loggers</span></code></a><ul>
+<li><a class="reference internal" href="#api.loggers.Loggers.clear_logs"><code class="docutils literal notranslate"><span class="pre">Loggers.clear_logs()</span></code></a></li>
+<li><a class="reference internal" href="#api.loggers.Loggers.get_logger"><code class="docutils literal notranslate"><span class="pre">Loggers.get_logger()</span></code></a></li>
+<li><a class="reference internal" href="#api.loggers.Loggers.list_logs"><code class="docutils literal notranslate"><span class="pre">Loggers.list_logs()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.loggers.LoggersMeta"><code class="docutils literal notranslate"><span class="pre">LoggersMeta</span></code></a><ul>
+<li><a class="reference internal" href="#api.loggers.LoggersMeta.logging_config"><code class="docutils literal notranslate"><span class="pre">LoggersMeta.logging_config</span></code></a></li>
+<li><a class="reference internal" href="#api.loggers.LoggersMeta.logs_root_dir"><code class="docutils literal notranslate"><span class="pre">LoggersMeta.logs_root_dir</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.loggers.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.os_manager">api.os_manager module</a><ul>
+<li><a class="reference internal" href="#api.os_manager.create_folder"><code class="docutils literal notranslate"><span class="pre">create_folder()</span></code></a></li>
+<li><a class="reference internal" href="#api.os_manager.get_local_folder"><code class="docutils literal notranslate"><span class="pre">get_local_folder()</span></code></a></li>
+<li><a class="reference internal" href="#api.os_manager.remove_folder"><code class="docutils literal notranslate"><span class="pre">remove_folder()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Atmospheric Explorer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">api package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-package">
+<h1>api package<a class="headerlink" href="#api-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.data_interface.html">api.data_interface package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.eac4.html">api.data_interface.eac4 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4">api.data_interface.eac4.eac4 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4_config">api.data_interface.eac4.eac4_config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.ghg.html">api.data_interface.ghg package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg">api.data_interface.ghg.ghg module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg_config">api.data_interface.ghg.ghg_config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.cams_interface">api.data_interface.cams_interface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.clear_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.clear_data_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.data_folder"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_folder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.data_variables"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_variables</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.dataset_name"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.dataset_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.file_ext"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_ext</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.file_format"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_format</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.list_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.list_data_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.read_dataset"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.read_dataset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.config_parser">api.data_interface.config_parser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.ConfigMeta"><code class="docutils literal notranslate"><span class="pre">ConfigMeta</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.OperationParser"><code class="docutils literal notranslate"><span class="pre">OperationParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.OperationParser.allowed_ops"><code class="docutils literal notranslate"><span class="pre">OperationParser.allowed_ops</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.OperationParser.arithmetic_eval"><code class="docutils literal notranslate"><span class="pre">OperationParser.arithmetic_eval()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.data_transformations">api.data_interface.data_transformations module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.clip_and_concat_shapes"><code class="docutils literal notranslate"><span class="pre">clip_and_concat_shapes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.confidence_interval"><code class="docutils literal notranslate"><span class="pre">confidence_interval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.shifting_long"><code class="docutils literal notranslate"><span class="pre">shifting_long()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.split_time_dim"><code class="docutils literal notranslate"><span class="pre">split_time_dim()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.plotting.html">api.plotting package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.plotting.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.plotting.html#module-api.plotting.anomalies">api.plotting.anomalies module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.anomalies.eac4_anomalies_plot"><code class="docutils literal notranslate"><span class="pre">eac4_anomalies_plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.plotting.html#module-api.plotting.hovmoeller">api.plotting.hovmoeller module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.hovmoeller.eac4_hovmoeller_plot"><code class="docutils literal notranslate"><span class="pre">eac4_hovmoeller_plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.plotting.html#module-api.plotting.plot_utils">api.plotting.plot_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.plot_utils.hex_to_rgb"><code class="docutils literal notranslate"><span class="pre">hex_to_rgb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.plot_utils.hovmoeller_plot"><code class="docutils literal notranslate"><span class="pre">hovmoeller_plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.plot_utils.line_with_ci_subplots"><code class="docutils literal notranslate"><span class="pre">line_with_ci_subplots()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.plot_utils.save_plotly_to_image"><code class="docutils literal notranslate"><span class="pre">save_plotly_to_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.plot_utils.sequential_colorscale_bar"><code class="docutils literal notranslate"><span class="pre">sequential_colorscale_bar()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.plotting.html#module-api.plotting.yearly_flux">api.plotting.yearly_flux module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.plotting.html#api.plotting.yearly_flux.ghg_surface_satellite_yearly_plot"><code class="docutils literal notranslate"><span class="pre">ghg_surface_satellite_yearly_plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.plotting.html#module-api.plotting">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.shape_selection.html">api.shape_selection package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.shape_selection.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.shape_selection.html#module-api.shape_selection.config">api.shape_selection.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.config.SelectionLevel"><code class="docutils literal notranslate"><span class="pre">SelectionLevel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.config.SelectionLevel.CONTINENTS"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.CONTINENTS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.config.SelectionLevel.COUNTRIES"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.COUNTRIES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.config.SelectionLevel.COUNTRIES_SUB"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.COUNTRIES_SUB</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.config.SelectionLevel.GENERIC"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.GENERIC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.config.SelectionLevel.ORGANIZATIONS"><code class="docutils literal notranslate"><span class="pre">SelectionLevel.ORGANIZATIONS</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.shape_selection.html#module-api.shape_selection.shape_selection">api.shape_selection.shape_selection module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.EntitySelection"><code class="docutils literal notranslate"><span class="pre">EntitySelection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.EntitySelection.convert_selection"><code class="docutils literal notranslate"><span class="pre">EntitySelection.convert_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.EntitySelection.from_entities_list"><code class="docutils literal notranslate"><span class="pre">EntitySelection.from_entities_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.EntitySelection.from_entity_selection"><code class="docutils literal notranslate"><span class="pre">EntitySelection.from_entity_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.EntitySelection.from_generic_selection"><code class="docutils literal notranslate"><span class="pre">EntitySelection.from_generic_selection()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.GenericShapeSelection"><code class="docutils literal notranslate"><span class="pre">GenericShapeSelection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.GenericShapeSelection.convert_selection"><code class="docutils literal notranslate"><span class="pre">GenericShapeSelection.convert_selection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.GenericShapeSelection.from_shape"><code class="docutils literal notranslate"><span class="pre">GenericShapeSelection.from_shape()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.Selection"><code class="docutils literal notranslate"><span class="pre">Selection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.Selection.empty"><code class="docutils literal notranslate"><span class="pre">Selection.empty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.Selection.get_event_label"><code class="docutils literal notranslate"><span class="pre">Selection.get_event_label()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.Selection.labels"><code class="docutils literal notranslate"><span class="pre">Selection.labels</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.from_out_event"><code class="docutils literal notranslate"><span class="pre">from_out_event()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shape_selection.selection_empty"><code class="docutils literal notranslate"><span class="pre">selection_empty()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.shape_selection.html#module-api.shape_selection.shapefile">api.shape_selection.shapefile module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.clear_cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.clear_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.download"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.download()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.find_cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.find_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.get_as_dataframe"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.get_as_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.is_cached"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.is_cached()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_dir"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_full_path"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_full_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_name"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_url"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_url</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.dissolve_shapefile_level"><code class="docutils literal notranslate"><span class="pre">dissolve_shapefile_level()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.shape_selection.html#module-api.shape_selection">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.config">
+<span id="api-config-module"></span><h2>api.config module<a class="headerlink" href="#module-api.config" title="Link to this heading"></a></h2>
+<p>General config for APIs.</p>
+</section>
+<section id="module-api.exceptions">
+<span id="api-exceptions-module"></span><h2>api.exceptions module<a class="headerlink" href="#module-api.exceptions" title="Link to this heading"></a></h2>
+<p>Module to gather custom exceptions.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="api.exceptions.OperationNotAllowed">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.exceptions.</span></span><span class="sig-name descname"><span class="pre">OperationNotAllowed</span></span><a class="headerlink" href="#api.exceptions.OperationNotAllowed" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception to be used when parsing python operations from strings.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.loggers">
+<span id="api-loggers-module"></span><h2>api.loggers module<a class="headerlink" href="#module-api.loggers" title="Link to this heading"></a></h2>
+<p>Module to manage logging.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.loggers.Loggers">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.loggers.</span></span><span class="sig-name descname"><span class="pre">Loggers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.Loggers" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is needed to implement a singleton pattern so that the logger config is loaded only once.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.loggers.Loggers.clear_logs">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#api.loggers.Loggers.clear_logs" title="Link to this definition"></a></dt>
+<dd><p>Clear all log files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.loggers.Loggers.get_logger">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.Loggers.get_logger" title="Link to this definition"></a></dt>
+<dd><p>Function to get a logger.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.loggers.Loggers.list_logs">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#api.loggers.Loggers.list_logs" title="Link to this definition"></a></dt>
+<dd><p>List all log files.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.loggers.LoggersMeta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.loggers.</span></span><span class="sig-name descname"><span class="pre">LoggersMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.LoggersMeta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>This meta class is needed to implement a singleton pattern so that the logger config is loaded only once.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.loggers.LoggersMeta.logging_config">
+<span class="sig-name descname"><span class="pre">logging_config</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'disable_existing_loggers':</span> <span class="pre">False,</span> <span class="pre">'formatters':</span> <span class="pre">{'simple':</span> <span class="pre">{'format':</span> <span class="pre">'%(asctime)s</span> <span class="pre">%(levelname)s</span> <span class="pre">%(message)s'},</span> <span class="pre">'verbose':</span> <span class="pre">{'format':</span> <span class="pre">'%(asctime)s|%(levelname)s|%(module)s|%(process)d|%(thread)d:</span> <span class="pre">%(message)s'}},</span> <span class="pre">'handlers':</span> <span class="pre">{'console':</span> <span class="pre">{'class':</span> <span class="pre">'logging.StreamHandler',</span> <span class="pre">'formatter':</span> <span class="pre">'simple'},</span> <span class="pre">'rotatingfile':</span> <span class="pre">{'backupCount':</span> <span class="pre">100,</span> <span class="pre">'class':</span> <span class="pre">'logging.handlers.RotatingFileHandler',</span> <span class="pre">'filename':</span> <span class="pre">'/home/luigi/.atmospheric_explorer/logs/logconfig.log',</span> <span class="pre">'formatter':</span> <span class="pre">'verbose',</span> <span class="pre">'maxBytes':</span> <span class="pre">51200}},</span> <span class="pre">'loggers':</span> <span class="pre">{'atmexp':</span> <span class="pre">{'handlers':</span> <span class="pre">['console',</span> <span class="pre">'rotatingfile'],</span> <span class="pre">'level':</span> <span class="pre">'INFO',</span> <span class="pre">'propagate':</span> <span class="pre">0,</span> <span class="pre">'qualname':</span> <span class="pre">'atmexp'},</span> <span class="pre">'root':</span> <span class="pre">{'handlers':</span> <span class="pre">[],</span> <span class="pre">'level':</span> <span class="pre">'WARNING'}},</span> <span class="pre">'version':</span> <span class="pre">1}</span></em><a class="headerlink" href="#api.loggers.LoggersMeta.logging_config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.loggers.LoggersMeta.logs_root_dir">
+<span class="sig-name descname"><span class="pre">logs_root_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/luigi/.atmospheric_explorer/logs'</span></em><a class="headerlink" href="#api.loggers.LoggersMeta.logs_root_dir" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.loggers.get_logger">
+<span class="sig-prename descclassname"><span class="pre">api.loggers.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.get_logger" title="Link to this definition"></a></dt>
+<dd><p>Function to get a logger.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.os_manager">
+<span id="api-os-manager-module"></span><h2>api.os_manager module<a class="headerlink" href="#module-api.os_manager" title="Link to this heading"></a></h2>
+<p>Module to gather all utility functions and classes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.os_manager.create_folder">
+<span class="sig-prename descclassname"><span class="pre">api.os_manager.</span></span><span class="sig-name descname"><span class="pre">create_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.os_manager.create_folder" title="Link to this definition"></a></dt>
+<dd><p>Create folder if it doesn’t exist.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.os_manager.get_local_folder">
+<span class="sig-prename descclassname"><span class="pre">api.os_manager.</span></span><span class="sig-name descname"><span class="pre">get_local_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api.os_manager.get_local_folder" title="Link to this definition"></a></dt>
+<dd><p>Returns the folder where to put local files based on the user’s OS.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.os_manager.remove_folder">
+<span class="sig-prename descclassname"><span class="pre">api.os_manager.</span></span><span class="sig-name descname"><span class="pre">remove_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.os_manager.remove_folder" title="Link to this definition"></a></dt>
+<dd><p>Remove folder if it exists.</p>
+</dd></dl>
+
+</section>
+<section id="module-api">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api" title="Link to this heading"></a></h2>
+<p>Module containing all Atmospheric Explorer APIs.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Elisa Aliverti, Luigi Brancati, Giulia Fiantanese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
