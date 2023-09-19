@@ -5,7 +5,7 @@ from functools import wraps
 
 import geopandas as gpd
 from geopandas.testing import assert_geodataframe_equal
-from shapely.geometry import shape
+from shapely.geometry import MultiPolygon, Polygon, shape
 from shapely.ops import unary_union
 
 from atmospheric_explorer.api.config import CRS
@@ -93,6 +93,19 @@ class GenericShapeSelection(Selection):
         Created GenericShapeSelection with dataframe %s
         """,
             dataframe,
+        )
+
+    @classmethod
+    def from_shape(cls, poly: Polygon | MultiPolygon) -> GenericShapeSelection:
+        """Generates a GenericShapeSelection from a shapely Polygon or MultiPolygon."""
+        return cls(
+            dataframe=gpd.GeoDataFrame(
+                {
+                    "label": ["generic shape"],
+                    "geometry": [poly],
+                },
+                crs=CRS,
+            )
         )
 
     @classmethod
@@ -211,12 +224,6 @@ def from_out_event(out_event, level: SelectionLevel) -> Selection:
             ),
             level=level,
         )
-    return GenericShapeSelection(
-        dataframe=gpd.GeoDataFrame(
-            {
-                "label": ["generic shape"],
-                "geometry": [shape(out_event["last_active_drawing"]["geometry"])],
-            },
-            crs=CRS,
-        )
+    return GenericShapeSelection.from_shape(
+        shape(out_event["last_active_drawing"]["geometry"])
     )
