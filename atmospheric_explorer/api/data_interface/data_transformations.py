@@ -13,7 +13,9 @@ from atmospheric_explorer.api.shape_selection.shape_selection import Selection
 def split_time_dim(dataset: xr.Dataset, time_dim: str):
     """Split datetime dimension into times and dates."""
     times = dataset[f"{time_dim}.time"].values
-    dates = np.array(dataset[time_dim].values, dtype="datetime64[D]")
+    dates = np.array(dataset[time_dim].values, dtype="datetime64[D]").astype(
+        "datetime64[ns]"
+    )
     ind = pd.MultiIndex.from_arrays((times, dates), names=("times", "dates"))
     return dataset.assign(**{f"{time_dim}": ind}).unstack(time_dim)
 
