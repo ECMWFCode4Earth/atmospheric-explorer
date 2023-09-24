@@ -43,6 +43,7 @@ class LoggerSingleton(Singleton):
 
     def __init__(cls, *args, **kwargs):
         # pylint: disable = unused-argument
+        """Create logging folder and add logger configuration to root logger."""
         if not os.path.exists(cls.logs_root_dir):
             os.makedirs(cls.logs_root_dir)
         logging.config.dictConfig(cls.logging_config)

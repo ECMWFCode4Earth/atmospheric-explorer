@@ -1,7 +1,8 @@
-"""\
-Module to manage constants.
+"""Module to manage constants.
 
-This module defines a Singleton, in this way the file constants.cfg is loaded only once.
+This module defines a Singleton, which is used in several classes like the one that load the dataset configurations:
+this way the configuration is loaded only once.
+
 The singleton pattern was taken from here
 https://refactoring.guru/design-patterns/singleton/python/example#example-0
 """
@@ -17,6 +18,7 @@ class Singleton(type):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
+        """Creates a new instance only if there's no other instance in _instances class attribute."""
         if cls not in cls._instances:
             instance = super().__call__(*args, **kwargs)
             cls._instances[cls] = instance

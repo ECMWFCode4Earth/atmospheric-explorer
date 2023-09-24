@@ -3,7 +3,6 @@ Module for creating Anomalies plots through UI
 """
 # pylint: disable=invalid-name
 from datetime import datetime
-from textwrap import dedent
 
 import streamlit as st
 
@@ -119,7 +118,8 @@ def _selectors():
     return v_name, title
 
 
-def page():
+def anomalies_page():
+    """Builds the Anomalies page."""
     _init()
     var_name, plot_title = _selectors()
     build_sidebar()
@@ -128,9 +128,15 @@ def page():
         start_date = st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
         ]
-        end_date = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE]
-        dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
-        time_values = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES]
+        end_date = st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
+        ]
+        dates_range = (
+            f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
+        )
+        time_values = st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES
+        ]
         shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
         data_variable = st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
@@ -142,9 +148,7 @@ def page():
             ref_end_date = st.session_state[
                 EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_END_DATE
             ]
-            reference_dates_range = (
-                f"{ref_start_date.strftime('%Y-%m-%d')}/{ref_end_date.strftime('%Y-%m-%d')}"
-            )
+            reference_dates_range = f"{ref_start_date.strftime('%Y-%m-%d')}/{ref_end_date.strftime('%Y-%m-%d')}"
         else:
             reference_dates_range = None
         with st.container():
@@ -164,4 +168,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    anomalies_page()

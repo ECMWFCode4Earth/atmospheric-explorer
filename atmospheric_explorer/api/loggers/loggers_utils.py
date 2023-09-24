@@ -1,6 +1,4 @@
-"""\
-Module to define the main logger and a few logging utils.
-"""
+"""Module to define the main logger and a few logging utils."""
 import os
 import shutil
 from glob import glob

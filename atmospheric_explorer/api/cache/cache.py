@@ -22,12 +22,14 @@ class Parameters(ABC):
 
 class Cached:
     """This class defines a few methods that allow to cache another class instances.
+
     Caching is based on the class attributes.
 
-    To cache a class, inherit from this class and define the subset method,
-    which is used inside find_cache to determine wether an instance is already included
-    or is equal to another instance. Last, one needs to decorate the new class __init__ with the
-    static method Cached.init_cache.
+    To cache a class, inherit from this class and define the `__new__` method:
+    this method is only needed to instantiate the Parameters instance
+    corresponding to the specific CAMS dataset and pass it to Cached.__new__.
+
+    Last, one needs to decorate the new class __init__ with the static method Cached.init_cache.
     """
 
     _cache: list[Cached] = []
@@ -61,6 +63,12 @@ class Cached:
         cls._cache = list(filter(lambda obj: not (isinstance(obj, cls)), cls._cache))
 
     def __new__(cls: Cached, parameters: Parameters):
+        """Create a new instance of the cached class if there's no similar instance in the cache.
+
+        When attempting to create an instance, a cached class first instantiates its parameters and
+        then checks them against other cached instances. If an instance with the same or a superset of parameters
+        is found, that instance instead of a new one is returned.
+        """
         atm_exp_logger.debug(
             dedent(
                 """\

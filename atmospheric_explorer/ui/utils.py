@@ -13,14 +13,14 @@ from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
 def local_css(filename: str | Path) -> None:
     """Load local css"""
-    logger.info("Loading local css")
+    atm_exp_logger.info("Loading local css")
     with open(filename, "r", encoding="utf-8") as style_file:
         st.markdown(f"<style>{style_file.read()}</style>", unsafe_allow_html=True)
 
 
 def page_init():
     """Page initialization"""
-    logger.info("Initializing page %s", __file__)
+    atm_exp_logger.info("Initializing page %s", __file__)
     st.set_page_config(
         page_title="Atmospheric Explorer", page_icon=":earth_africa:", layout="wide"
     )

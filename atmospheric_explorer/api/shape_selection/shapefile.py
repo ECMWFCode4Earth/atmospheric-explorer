@@ -31,14 +31,45 @@ class ShapefileParameters(Parameters):
         info_type: str = "admin",
         depth: int = 0,
         instance: str = "map_subunits",
-    ):  # pylint: disable=too-many-arguments
+    ):
+        # pylint: disable=too-many-arguments
+        """Initializes ShapefileParameters instance.
+
+        Attributes:
+            resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
+            map_type (str): map type, e.g. cultural, physical or raster
+            info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
+                            values depending on the resolution on the webpage below
+            depth (int): different info_type shapefiles can have different values.
+                        Use 0 for administrative shapefiles (countries)
+            instance (str): the specific shapefile to be downloaded. Example: countries_ita
+
+        See some more details here: https://www.naturalearthdata.com/downloads/
+        """
         self.resolution = resolution
         self.map_type = map_type
         self.info_type = info_type
         self.depth = depth
         self.instance = instance
 
+    def __repr__(self) -> str:
+        """Parameters representation."""
+        return dedent(
+            f"""\
+            resolution: {self.resolution}
+            map_type: {self.map_type}
+            info_type: {self.info_type}
+            depth: {self.depth}
+            instance: {self.instance}
+            """
+        )
+
     def subset(self: ShapefileParameters, other: ShapefileParameters) -> bool:
+        """Return true if the parameters of this instance are equal or a subset of other.
+
+        Attributes:
+            other (ShapefileParameters): the other instance of ShapefileParameters to be compared with self
+        """
         res = (
             self.resolution == other.resolution
             and self.map_type == other.map_type
@@ -85,7 +116,23 @@ class ShapefilesDownloader(Cached):
         instance: str = "map_subunits",
         timeout: int = 10,
         dst_dir: str | None = None,
-    ):  # pylint: disable=too-many-arguments
+    ):
+        # pylint: disable=too-many-arguments
+        """Instantiate a new ShapefilesDownloader instance.
+
+        Attributes:
+            resolution (str): spatial resolution. Possible values: 10m, 50m, 110m
+            map_type (str): map type, e.g. cultural, physical or raster
+            info_type (str): shapefile type, e.g. admin, lakes, etc. You can check possible
+                            values depending on the resolution on the webpage below
+            depth (int): different info_type shapefiles can have different values.
+                        Use 0 for administrative shapefiles (countries)
+            instance (str): the specific shapefile to be downloaded. Example: countries_ita
+            timeout (int): timeout fot the GET call to Natural Earth Data
+            dst_dir (str): destination diractory for the donwloaded shapefile
+
+        See some more details here: https://www.naturalearthdata.com/downloads/
+        """
         params = ShapefileParameters(
             resolution=resolution,
             map_type=map_type,
@@ -161,7 +208,7 @@ class ShapefilesDownloader(Cached):
 
     @property
     def shapefile_name(self: ShapefilesDownloader) -> str:
-        """Shapefile name"""
+        """Shapefile name."""
         if self.parameters.map_type == "physical":
             return f"ne_{self.parameters.resolution}_{self.parameters.info_type}"
         return f"ne_{self.parameters.resolution}_{self.parameters.info_type}_{self.parameters.depth}_{self.parameters.instance}"  # noqa: E501
@@ -257,7 +304,7 @@ class ShapefilesDownloader(Cached):
 
 
 def dissolve_shapefile_level(level: str) -> gpd.GeoDataFrame:
-    """Gets shapefile and dissolves it on a selection level"""
+    """Gets shapefile and dissolves it on a selection level."""
     atm_exp_logger.debug("Dissolve shapefile to level %s", level)
     col = map_level_shapefile_mapping[level]
     sh_df = ShapefilesDownloader(instance="map_subunits").get_as_dataframe()

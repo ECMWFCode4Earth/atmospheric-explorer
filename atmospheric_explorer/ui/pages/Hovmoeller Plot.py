@@ -124,7 +124,8 @@ def _selectors():
         return _var_selectors()
 
 
-def page():
+def hovm_page():
+    """Builds the Hovmoeller page."""
     _init()
     var_name, plot_title = _selectors()
     build_sidebar()
@@ -190,4 +191,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    hovm_page()

@@ -6,8 +6,7 @@
 
 import pytest
 
-from atmospheric_explorer.api.data_interface.eac4 import EAC4Instance
-from atmospheric_explorer.api.data_interface.eac4 import EAC4Parameters
+from atmospheric_explorer.api.data_interface.eac4 import EAC4Instance, EAC4Parameters
 
 
 @pytest.fixture(autouse=True)

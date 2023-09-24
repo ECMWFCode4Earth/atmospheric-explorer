@@ -142,7 +142,8 @@ def selectors():
         )
 
 
-def page():
+def home_page():
+    """Builds the Home page."""
     _init()
     atm_exp_logger.info("Starting streamlit app")
     progress_bar = st.progress(0.0, "Starting app")
@@ -161,4 +162,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    home_page()

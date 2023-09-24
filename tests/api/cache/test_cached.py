@@ -19,7 +19,6 @@ class ParametersClass(Parameters):
 
 
 class CachedClass(Cached):
-
     def __new__(cls, arg):
         par = ParametersClass(arg)
         return Cached.__new__(CachedClass, par)

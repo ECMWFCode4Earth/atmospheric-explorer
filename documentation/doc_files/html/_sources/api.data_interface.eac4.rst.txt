@@ -19,7 +19,14 @@ api.data\_interface.eac4.eac4\_config module
    :members:
    :undoc-members:
    :show-inheritance:
-   :exclude-members: config
+
+api.data\_interface.eac4.eac4\_parameters module
+------------------------------------------------
+
+.. automodule:: api.data_interface.eac4.eac4_parameters
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

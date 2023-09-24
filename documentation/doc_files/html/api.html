@@ -51,25 +51,17 @@
 <li><a class="reference internal" href="#api.exceptions.OperationNotAllowed"><code class="docutils literal notranslate"><span class="pre">OperationNotAllowed</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-api.loggers">api.loggers module</a><ul>
-<li><a class="reference internal" href="#api.loggers.Loggers"><code class="docutils literal notranslate"><span class="pre">Loggers</span></code></a><ul>
-<li><a class="reference internal" href="#api.loggers.Loggers.clear_logs"><code class="docutils literal notranslate"><span class="pre">Loggers.clear_logs()</span></code></a></li>
-<li><a class="reference internal" href="#api.loggers.Loggers.get_logger"><code class="docutils literal notranslate"><span class="pre">Loggers.get_logger()</span></code></a></li>
-<li><a class="reference internal" href="#api.loggers.Loggers.list_logs"><code class="docutils literal notranslate"><span class="pre">Loggers.list_logs()</span></code></a></li>
+<li><a class="reference internal" href="#module-api.local_folder">api.local_folder module</a><ul>
+<li><a class="reference internal" href="#api.local_folder.get_local_folder"><code class="docutils literal notranslate"><span class="pre">get_local_folder()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#api.loggers.LoggersMeta"><code class="docutils literal notranslate"><span class="pre">LoggersMeta</span></code></a><ul>
-<li><a class="reference internal" href="#api.loggers.LoggersMeta.logging_config"><code class="docutils literal notranslate"><span class="pre">LoggersMeta.logging_config</span></code></a></li>
-<li><a class="reference internal" href="#api.loggers.LoggersMeta.logs_root_dir"><code class="docutils literal notranslate"><span class="pre">LoggersMeta.logs_root_dir</span></code></a></li>
+<li><a class="reference internal" href="#module-api.os_utils">api.os_utils module</a><ul>
+<li><a class="reference internal" href="#api.os_utils.create_folder"><code class="docutils literal notranslate"><span class="pre">create_folder()</span></code></a></li>
+<li><a class="reference internal" href="#api.os_utils.remove_folder"><code class="docutils literal notranslate"><span class="pre">remove_folder()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#api.loggers.get_logger"><code class="docutils literal notranslate"><span class="pre">get_logger()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-api.os_manager">api.os_manager module</a><ul>
-<li><a class="reference internal" href="#api.os_manager.create_folder"><code class="docutils literal notranslate"><span class="pre">create_folder()</span></code></a></li>
-<li><a class="reference internal" href="#api.os_manager.get_local_folder"><code class="docutils literal notranslate"><span class="pre">get_local_folder()</span></code></a></li>
-<li><a class="reference internal" href="#api.os_manager.remove_folder"><code class="docutils literal notranslate"><span class="pre">remove_folder()</span></code></a></li>
+<li><a class="reference internal" href="#module-api.singleton">api.singleton module</a><ul>
+<li><a class="reference internal" href="#api.singleton.Singleton"><code class="docutils literal notranslate"><span class="pre">Singleton</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-api">Module contents</a></li>
@@ -107,12 +99,40 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="api.cache.html">api.cache package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.cache.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.cache.html#module-api.cache.cache">api.cache.cache module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.cache.html#api.cache.cache.Cached"><code class="docutils literal notranslate"><span class="pre">Cached</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.cache.html#api.cache.cache.Cached.cache"><code class="docutils literal notranslate"><span class="pre">Cached.cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.cache.html#api.cache.cache.Cached.clear_cache"><code class="docutils literal notranslate"><span class="pre">Cached.clear_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.cache.html#api.cache.cache.Cached.find_cache"><code class="docutils literal notranslate"><span class="pre">Cached.find_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.cache.html#api.cache.cache.Cached.init_cache"><code class="docutils literal notranslate"><span class="pre">Cached.init_cache()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.cache.html#api.cache.cache.Cached.is_cached"><code class="docutils literal notranslate"><span class="pre">Cached.is_cached()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.cache.html#api.cache.cache.Parameters"><code class="docutils literal notranslate"><span class="pre">Parameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.cache.html#api.cache.cache.Parameters.subset"><code class="docutils literal notranslate"><span class="pre">Parameters.subset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.cache.html#module-api.cache">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.data_interface.html">api.data_interface package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.cams_interface.html">api.data_interface.cams_interface package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#module-api.data_interface.cams_interface.cams_interface">api.data_interface.cams_interface.cams_interface module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#module-api.data_interface.cams_interface.cams_parameters">api.data_interface.cams_interface.cams_parameters module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#module-api.data_interface.cams_interface">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="api.data_interface.eac4.html">api.data_interface.eac4 package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4">api.data_interface.eac4.eac4 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4_config">api.data_interface.eac4.eac4_config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4_parameters">api.data_interface.eac4.eac4_parameters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4">Module contents</a></li>
 </ul>
 </li>
@@ -120,35 +140,13 @@
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg">api.data_interface.ghg.ghg module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg_config">api.data_interface.ghg.ghg_config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg_parameters">api.data_interface.ghg.ghg_parameters module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.cams_interface">api.data_interface.cams_interface module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.clear_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.clear_data_files()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.data_folder"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_folder</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.data_variables"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_variables</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.dataset_name"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.dataset_name</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.file_ext"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_ext</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.file_format"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_format</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.list_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.list_data_files()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.cams_interface.CAMSDataInterface.read_dataset"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.read_dataset()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.config_parser">api.data_interface.config_parser module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.ConfigMeta"><code class="docutils literal notranslate"><span class="pre">ConfigMeta</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.OperationParser"><code class="docutils literal notranslate"><span class="pre">OperationParser</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.OperationParser.allowed_ops"><code class="docutils literal notranslate"><span class="pre">OperationParser.allowed_ops</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.config_parser.OperationParser.arithmetic_eval"><code class="docutils literal notranslate"><span class="pre">OperationParser.arithmetic_eval()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.data_transformations">api.data_interface.data_transformations module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.clip_and_concat_shapes"><code class="docutils literal notranslate"><span class="pre">clip_and_concat_shapes()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.confidence_interval"><code class="docutils literal notranslate"><span class="pre">confidence_interval()</span></code></a></li>
@@ -156,7 +154,42 @@
 <li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.data_transformations.split_time_dim"><code class="docutils literal notranslate"><span class="pre">split_time_dim()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface.dataset_config_parser">api.data_interface.dataset_config_parser module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.dataset_config_parser.DatasetConfigParser"><code class="docutils literal notranslate"><span class="pre">DatasetConfigParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.dataset_config_parser.DatasetConfigParser.get_config"><code class="docutils literal notranslate"><span class="pre">DatasetConfigParser.get_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.dataset_config_parser.DatasetConfigParser.parse_factors"><code class="docutils literal notranslate"><span class="pre">DatasetConfigParser.parse_factors()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.html#api.data_interface.dataset_config_parser.OperationParser"><code class="docutils literal notranslate"><span class="pre">OperationParser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.dataset_config_parser.OperationParser.allowed_ops"><code class="docutils literal notranslate"><span class="pre">OperationParser.allowed_ops</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.html#api.data_interface.dataset_config_parser.OperationParser.arithmetic_eval"><code class="docutils literal notranslate"><span class="pre">OperationParser.arithmetic_eval()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.html#module-api.data_interface">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.loggers.html">api.loggers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.loggers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.loggers.html#module-api.loggers.loggers">api.loggers.loggers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.loggers.html#api.loggers.loggers.Logger"><code class="docutils literal notranslate"><span class="pre">Logger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.loggers.html#api.loggers.loggers.Logger.get_logger"><code class="docutils literal notranslate"><span class="pre">Logger.get_logger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.loggers.html#api.loggers.loggers.LoggerSingleton"><code class="docutils literal notranslate"><span class="pre">LoggerSingleton</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.loggers.html#api.loggers.loggers.LoggerSingleton.logging_config"><code class="docutils literal notranslate"><span class="pre">LoggerSingleton.logging_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.loggers.html#api.loggers.loggers.LoggerSingleton.logs_root_dir"><code class="docutils literal notranslate"><span class="pre">LoggerSingleton.logs_root_dir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.loggers.html#module-api.loggers.loggers_utils">api.loggers.loggers_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.loggers.html#api.loggers.loggers_utils.clear_logs"><code class="docutils literal notranslate"><span class="pre">clear_logs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.loggers.html#api.loggers.loggers_utils.list_logs"><code class="docutils literal notranslate"><span class="pre">list_logs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.loggers.html#module-api.loggers">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.plotting.html">api.plotting package</a><ul>
@@ -221,13 +254,14 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api.shape_selection.html#module-api.shape_selection.shapefile">api.shape_selection.shapefile module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefileParameters"><code class="docutils literal notranslate"><span class="pre">ShapefileParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefileParameters.subset"><code class="docutils literal notranslate"><span class="pre">ShapefileParameters.subset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefileParameters.other"><code class="docutils literal notranslate"><span class="pre">ShapefileParameters.other</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.clear_cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.clear_cache()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.download"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.download()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.find_cache"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.find_cache()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.get_as_dataframe"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.get_as_dataframe()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.is_cached"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.is_cached()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_dir"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_dir</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_full_path"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_full_path</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.shape_selection.html#api.shape_selection.shapefile.ShapefilesDownloader.shapefile_name"><code class="docutils literal notranslate"><span class="pre">ShapefilesDownloader.shapefile_name</span></code></a></li>
@@ -261,77 +295,44 @@
 </dd></dl>
 
 </section>
-<section id="module-api.loggers">
-<span id="api-loggers-module"></span><h2>api.loggers module<a class="headerlink" href="#module-api.loggers" title="Link to this heading"></a></h2>
-<p>Module to manage logging.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="api.loggers.Loggers">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.loggers.</span></span><span class="sig-name descname"><span class="pre">Loggers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.Loggers" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is needed to implement a singleton pattern so that the logger config is loaded only once.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="api.loggers.Loggers.clear_logs">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#api.loggers.Loggers.clear_logs" title="Link to this definition"></a></dt>
-<dd><p>Clear all log files.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="api.loggers.Loggers.get_logger">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.Loggers.get_logger" title="Link to this definition"></a></dt>
-<dd><p>Function to get a logger.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="api.loggers.Loggers.list_logs">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_logs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#api.loggers.Loggers.list_logs" title="Link to this definition"></a></dt>
-<dd><p>List all log files.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="api.loggers.LoggersMeta">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.loggers.</span></span><span class="sig-name descname"><span class="pre">LoggersMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.LoggersMeta" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
-<p>This meta class is needed to implement a singleton pattern so that the logger config is loaded only once.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.loggers.LoggersMeta.logging_config">
-<span class="sig-name descname"><span class="pre">logging_config</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'disable_existing_loggers':</span> <span class="pre">False,</span> <span class="pre">'formatters':</span> <span class="pre">{'simple':</span> <span class="pre">{'format':</span> <span class="pre">'%(asctime)s</span> <span class="pre">%(levelname)s</span> <span class="pre">%(message)s'},</span> <span class="pre">'verbose':</span> <span class="pre">{'format':</span> <span class="pre">'%(asctime)s|%(levelname)s|%(module)s|%(process)d|%(thread)d:</span> <span class="pre">%(message)s'}},</span> <span class="pre">'handlers':</span> <span class="pre">{'console':</span> <span class="pre">{'class':</span> <span class="pre">'logging.StreamHandler',</span> <span class="pre">'formatter':</span> <span class="pre">'simple'},</span> <span class="pre">'rotatingfile':</span> <span class="pre">{'backupCount':</span> <span class="pre">100,</span> <span class="pre">'class':</span> <span class="pre">'logging.handlers.RotatingFileHandler',</span> <span class="pre">'filename':</span> <span class="pre">'/home/luigi/.atmospheric_explorer/logs/logconfig.log',</span> <span class="pre">'formatter':</span> <span class="pre">'verbose',</span> <span class="pre">'maxBytes':</span> <span class="pre">51200}},</span> <span class="pre">'loggers':</span> <span class="pre">{'atmexp':</span> <span class="pre">{'handlers':</span> <span class="pre">['console',</span> <span class="pre">'rotatingfile'],</span> <span class="pre">'level':</span> <span class="pre">'INFO',</span> <span class="pre">'propagate':</span> <span class="pre">0,</span> <span class="pre">'qualname':</span> <span class="pre">'atmexp'},</span> <span class="pre">'root':</span> <span class="pre">{'handlers':</span> <span class="pre">[],</span> <span class="pre">'level':</span> <span class="pre">'WARNING'}},</span> <span class="pre">'version':</span> <span class="pre">1}</span></em><a class="headerlink" href="#api.loggers.LoggersMeta.logging_config" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.loggers.LoggersMeta.logs_root_dir">
-<span class="sig-name descname"><span class="pre">logs_root_dir</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/luigi/.atmospheric_explorer/logs'</span></em><a class="headerlink" href="#api.loggers.LoggersMeta.logs_root_dir" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="api.loggers.get_logger">
-<span class="sig-prename descclassname"><span class="pre">api.loggers.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.loggers.get_logger" title="Link to this definition"></a></dt>
-<dd><p>Function to get a logger.</p>
-</dd></dl>
-
-</section>
-<section id="module-api.os_manager">
-<span id="api-os-manager-module"></span><h2>api.os_manager module<a class="headerlink" href="#module-api.os_manager" title="Link to this heading"></a></h2>
+<section id="module-api.local_folder">
+<span id="api-local-folder-module"></span><h2>api.local_folder module<a class="headerlink" href="#module-api.local_folder" title="Link to this heading"></a></h2>
 <p>Module to gather all utility functions and classes.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="api.os_manager.create_folder">
-<span class="sig-prename descclassname"><span class="pre">api.os_manager.</span></span><span class="sig-name descname"><span class="pre">create_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.os_manager.create_folder" title="Link to this definition"></a></dt>
-<dd><p>Create folder if it doesn’t exist.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="api.os_manager.get_local_folder">
-<span class="sig-prename descclassname"><span class="pre">api.os_manager.</span></span><span class="sig-name descname"><span class="pre">get_local_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api.os_manager.get_local_folder" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="api.local_folder.get_local_folder">
+<span class="sig-prename descclassname"><span class="pre">api.local_folder.</span></span><span class="sig-name descname"><span class="pre">get_local_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api.local_folder.get_local_folder" title="Link to this definition"></a></dt>
 <dd><p>Returns the folder where to put local files based on the user’s OS.</p>
 </dd></dl>
 
+</section>
+<section id="module-api.os_utils">
+<span id="api-os-utils-module"></span><h2>api.os_utils module<a class="headerlink" href="#module-api.os_utils" title="Link to this heading"></a></h2>
+<p>Module to gather all utility functions and classes.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="api.os_manager.remove_folder">
-<span class="sig-prename descclassname"><span class="pre">api.os_manager.</span></span><span class="sig-name descname"><span class="pre">remove_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.os_manager.remove_folder" title="Link to this definition"></a></dt>
-<dd><p>Remove folder if it exists.</p>
+<dt class="sig sig-object py" id="api.os_utils.create_folder">
+<span class="sig-prename descclassname"><span class="pre">api.os_utils.</span></span><span class="sig-name descname"><span class="pre">create_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.os_utils.create_folder" title="Link to this definition"></a></dt>
+<dd><p>Create folder if it doesn’t exists.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.os_utils.remove_folder">
+<span class="sig-prename descclassname"><span class="pre">api.os_utils.</span></span><span class="sig-name descname"><span class="pre">remove_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.os_utils.remove_folder" title="Link to this definition"></a></dt>
+<dd><p>Remove folder if exists.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.singleton">
+<span id="api-singleton-module"></span><h2>api.singleton module<a class="headerlink" href="#module-api.singleton" title="Link to this heading"></a></h2>
+<p>Module to manage constants.</p>
+<p>This module defines a Singleton, which is used in several classes like the one that load the dataset configurations:
+this way the configuration is loaded only once.</p>
+<p>The singleton pattern was taken from here
+<a class="reference external" href="https://refactoring.guru/design-patterns/singleton/python/example#example-0">https://refactoring.guru/design-patterns/singleton/python/example#example-0</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.singleton.Singleton">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.singleton.</span></span><span class="sig-name descname"><span class="pre">Singleton</span></span><a class="headerlink" href="#api.singleton.Singleton" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>This meta class is needed to implement a singleton pattern.</p>
 </dd></dl>
 
 </section>

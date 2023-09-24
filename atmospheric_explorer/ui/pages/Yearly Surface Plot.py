@@ -2,8 +2,6 @@
 Module for creating GHG plots through UI
 """
 # pylint: disable=invalid-name
-from textwrap import dedent
-
 import streamlit as st
 
 from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
@@ -109,7 +107,8 @@ def _selectors():
     return v_name, title
 
 
-def page():
+def yearly_surface_page():
+    """Builds the Yearly Surface page."""
     _init()
     var_name, plot_title = _selectors()
     build_sidebar()
@@ -125,7 +124,9 @@ def page():
         months = st.session_state[GHGSessionStateKeys.GHG_MONTHS]
         shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
         data_variable = st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
-        add_satellite_observations = st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE]
+        add_satellite_observations = st.session_state[
+            GHGSessionStateKeys.GHG_ADD_SATELLITE
+        ]
         with st.container():
             with st.spinner("Downloading data and building plot"):
                 st.plotly_chart(
@@ -137,7 +138,8 @@ def page():
                         var_name=var_name,
                         shapes=shapes,
                         add_satellite_observations=(
-                            add_satellite_observations and data_variable == "carbon_dioxide"
+                            add_satellite_observations
+                            and data_variable == "carbon_dioxide"
                         ),
                     ),
                     use_container_width=True,
@@ -145,4 +147,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    yearly_surface_page()

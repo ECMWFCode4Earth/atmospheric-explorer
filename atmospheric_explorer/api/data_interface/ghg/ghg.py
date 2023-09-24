@@ -46,6 +46,20 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
         files_dir: str | None = None,
         version: str = "latest",
     ):
+        """Instantiate a new InversionOptimisedGreenhouseGas instance.
+
+        Attributes:
+            data_variables (str): data varaibles to be downloaded from CAMS,
+                see https://ads.atmosphere.copernicus.eu/cdsapp#!/dataset/cams-global-greenhouse-gas-inversion?tab=overview
+            quantity (str): quantity, can be one of ['mean_column', 'surface_flux', 'concentration']
+            input_observations (str): input observations, can be one of ['surface', 'satellite', 'surface_satellite']
+            time_aggregation (str): time aggregation, can be one of ['instantaneous', 'daily_mean', 'monthly_mean']
+            year (set[str] | list[str]): set or list of years, in 'YYYY' format
+            month (set[str] | list[str]): set or list of months, in 'MM' format
+            files_dir (str | None): directory where to save the data. If not provided will be built using
+                a dinamically generated name
+            version (str): version of the dataset, default is 'latest'
+        """
         params = GHGParameters(
             data_variables=data_variables,
             quantity=quantity,
@@ -79,7 +93,7 @@ class InversionOptimisedGreenhouseGas(CAMSDataInterface, Cached):
             time_aggregation (str): time aggregation, can be one of ['instantaneous', 'daily_mean', 'monthly_mean']
             year (set[str] | list[str]): set or list of years, in 'YYYY' format
             month (set[str] | list[str]): set or list of months, in 'MM' format
-            files_dir (str | None): directory where to save the data. If not provided will be built using 
+            files_dir (str | None): directory where to save the data. If not provided will be built using
                 a dinamically generated name
             version (str): version of the dataset, default is 'latest'
         """

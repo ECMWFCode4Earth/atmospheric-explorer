@@ -29,7 +29,6 @@ repos:
         language: system
         types_or: [python, pyi]
         args: [--load-plugins=pylint.extensions.redefined_loop_name]
-        exclude: docs/
     -   id: pylint-unspecified-encoding
         entry: pylint
         name: Using open without explicitly specifying an encoding
@@ -37,7 +36,6 @@ repos:
         language: system
         types_or: [python, pyi]
         args: [--disable=all, --enable=unspecified-encoding]
-        exclude: docs/
     -   id: pytest
         name: pytest
         entry: pytest --cov=atmospheric_explorer --log-disable=true tests/
@@ -51,7 +49,6 @@ repos:
     hooks:
     -   id: ruff
         args: [--exit-non-zero-on-fix]
-        exclude: docs/
 -   repo: https://github.com/pycqa/pydocstyle
     rev: 07f6707e2c5612960347f7c00125620457f490a7
     hooks:

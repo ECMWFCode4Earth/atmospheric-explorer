@@ -14,9 +14,10 @@ from atmospheric_explorer.api.singleton import Singleton
 
 class EAC4Config(DatasetConfigParser, metaclass=Singleton):
     # pylint: disable=too-few-public-methods
-    """This class is needed to implement a singleton pattern so that config is loaded only once."""
+    """This class is needed to implement a singleton pattern so that EAC4 dataset config is loaded only once."""
 
     def __init__(self):
+        """Initialize EAC4Config instance."""
         super().__init__(filename="eac4/eac4_config.yaml")
 
     @classmethod

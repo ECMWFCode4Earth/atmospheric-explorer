@@ -2,7 +2,7 @@
 
 This module defines a Singleton, in this way the file constants.cfg is loaded only once.
 The singleton pattern was taken from here
-https://refactoring.guru/design-patterns/singleton/python/example#example-0
+https://refactoring.guru/design-patterns/singleton/python/example#example-0 .
 """
 # pylint: disable=no-else-return
 # pylint: disable=missing-function-docstring
@@ -78,13 +78,11 @@ class OperationParser:
 
 class DatasetConfigParser:
     # pylint: disable=too-few-public-methods
-    """This class implements some basic functionalities to parse a YAML file containing the configuration for a dataset,
-    i.e. variables, conversion factors etc.
+    """This class implements some basic functionalities to parse a YAML file containing the configuration for a dataset.
 
     For reference, check the file atmospheric_explorer/api/data_interface/ghg/ghg_config.yaml.
 
     A dataset configuration file is **expected** to have data structured in the following way
-
     variables:
         data_variable_name:
             var_name: # name of the dataset column
@@ -96,6 +94,11 @@ class DatasetConfigParser:
     _parser = OperationParser()
 
     def __init__(self, **kwargs):
+        """Initializes a DatasetConfigParser instance.
+
+        Attributes:
+            filename (str): the name of the config file passed as a key-value argument
+        """
         filename = kwargs["filename"]
         filepath = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         with open(filepath, "r", encoding="utf-8") as file:
@@ -114,7 +117,7 @@ class DatasetConfigParser:
     @classmethod
     def parse_factors(cls, data_dict: dict):
         """Parse conversion factors in a dataset config file.
-        
+
         The file is **expected** to have a 'conversion' section.
         """
         if data_dict.get("conversion") is not None:

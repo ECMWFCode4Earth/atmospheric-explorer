@@ -4,8 +4,10 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 
-from atmospheric_explorer.api.data_interface.cams_interface import CAMSDataInterface
-from atmospheric_explorer.api.data_interface.cams_interface import CAMSParameters
+from atmospheric_explorer.api.data_interface.cams_interface import (
+    CAMSDataInterface,
+    CAMSParameters,
+)
 
 
 class CAMSDataInterfaceTesting(CAMSDataInterface):

@@ -1,6 +1,4 @@
-"""\
-This module collects classes to easily interact with data downloaded from CAMS ADS.
-"""
+"""This module collects classes to easily interact with data downloaded from CAMS ADS."""
 # pylint: disable=too-few-public-methods
 # pylint: disable=too-many-arguments
 from __future__ import annotations
@@ -12,6 +10,7 @@ from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 class EAC4Parameters(CAMSParameters):
+    # pylint: disable=line-too-long
     """Parameters for EAC4 dataset."""
 
     def __init__(
@@ -23,6 +22,22 @@ class EAC4Parameters(CAMSParameters):
         pressure_level: set[str] | list[str] | None = None,
         model_level: set[str] | list[str] | None = None,
     ) -> None:
+        """Initializes EAC4Parameters instance.
+
+        Attributes:
+            data_variables (set[str] | list[str]): data varaibles to be downloaded from CAMS,
+                see https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
+            dates_range (str): range of dates to consider, provided as a 'start/end' string with dates in ISO format
+            time_values (set[str] | list[str]): times in 'HH:MM' format. A set or a list of values can be provided.
+                Accepted values are [00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00]
+            area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
+                [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
+            pressure_level (set[str] | list[str] | None): pressure levels to be considered for multilevel variables.
+                Can be a set or a list of levels, see documentation linked above for all possible values.
+            model_level (set[str] | list[str] | None): model levels to be considered for multilevel variables.
+                Can be a set or a list of levels, chosen in a range from 1 to 60.
+                See documentation linked above for all possible values.
+        """
         super().__init__(data_variables)
         self.dates_range = dates_range
         self.time_values = set(time_values)
@@ -33,6 +48,7 @@ class EAC4Parameters(CAMSParameters):
         self.model_level = set(model_level) if model_level is not None else model_level
 
     def __repr__(self) -> str:
+        """Parameters representation."""
         return dedent(
             f"""\
         data_variables: {self.data_variables}
@@ -88,6 +104,11 @@ class EAC4Parameters(CAMSParameters):
 
     def subset(self: EAC4Parameters, other: EAC4Parameters) -> bool:
         # pylint: disable = protected-access
+        """Return true if the parameters of this instance are equal or a subset of other.
+
+        Attributes:
+            other (EAC4Parameters): the other instance of EAC4Parameters to be compared with self
+        """
         res = (
             self._data_variables.issubset(other._data_variables)
             and EAC4Parameters.dates_issubset(self.dates_range, other.dates_range)
@@ -102,7 +123,7 @@ class EAC4Parameters(CAMSParameters):
         return res
 
     def build_call_body(self: EAC4Parameters) -> dict:
-        """Build the CDSAPI call body"""
+        """Build the CDSAPI call body."""
         call_body = super().build_call_body()
         call_body["date"] = self.dates_range
         call_body["time"] = list(self.time_values)

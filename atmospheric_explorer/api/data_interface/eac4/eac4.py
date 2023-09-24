@@ -38,6 +38,24 @@ class EAC4Instance(CAMSDataInterface, Cached):
         pressure_level: set[str] | list[str] | None = None,
         model_level: set[str] | list[str] | None = None,
     ):
+        """Instantiate a new EAC4Instance instance.
+
+        Attributes:
+            data_variables (set[str] | list[str]): data varaibles to be downloaded from CAMS,
+                see https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
+            dates_range (str): range of dates to consider, provided as a 'start/end' string with dates in ISO format
+            time_values (set[str] | list[str]): times in 'HH:MM' format. A set or a list of values can be provided.
+                Accepted values are [00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00]
+            files_dir (str | None): directory where to save the data. If not provided will be built using
+                a dinamically generated name
+            area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
+                [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
+            pressure_level (set[str] | list[str] | None): pressure levels to be considered for multilevel variables.
+                Can be a set or a list of levels, see documentation linked above for all possible values.
+            model_level (set[str] | list[str] | None): model levels to be considered for multilevel variables.
+                Can be a set or a list of levels, chosen in a range from 1 to 60.
+                See documentation linked above for all possible values.
+        """
         params = EAC4Parameters(
             data_variables=data_variables,
             dates_range=dates_range,
