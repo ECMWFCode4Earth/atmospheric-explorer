@@ -5,24 +5,22 @@ from pathlib import Path
 
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 
-logger = get_logger("atmexp")
-
 
 def local_css(filename: str | Path) -> None:
     """Load local css"""
-    logger.info("Loading local css")
+    atm_exp_logger.info("Loading local css")
     with open(filename, "r", encoding="utf-8") as style_file:
         st.markdown(f"<style>{style_file.read()}</style>", unsafe_allow_html=True)
 
 
 def page_init():
     """Page initialization"""
-    logger.info("Initializing page %s", __file__)
+    atm_exp_logger.info("Initializing page %s", __file__)
     st.set_page_config(
         page_title="Atmospheric Explorer", page_icon=":earth_africa:", layout="wide"
     )
@@ -39,7 +37,7 @@ def page_init():
 
 def build_sidebar():
     """Build sidebar"""
-    logger.info("Building sidebar")
+    atm_exp_logger.info("Building sidebar")
     level_name = st.session_state[GeneralSessionStateKeys.MAP_LEVEL]
     with st.sidebar:
         if not st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES].empty():

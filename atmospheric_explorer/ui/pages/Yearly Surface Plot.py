@@ -2,11 +2,9 @@
 Module for creating GHG plots through UI
 """
 # pylint: disable=invalid-name
-from textwrap import dedent
-
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.yearly_flux import (
     ghg_surface_satellite_yearly_plot,
 )
@@ -20,8 +18,6 @@ from atmospheric_explorer.ui.ui_mappings import (
     ghg_data_variables,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
-
-logger = get_logger("atmexp")
 
 
 def _init():
@@ -43,7 +39,7 @@ def _init():
 
 
 def _year_selectors():
-    logger.debug("Setting years selector")
+    atm_exp_logger.debug("Setting years selector")
     start_year_col, end_year_col, _ = st.columns([1, 1, 3])
     start_year_col.number_input(
         "Start year", key=GHGSessionStateKeys.GHG_START_YEAR, step=1
@@ -52,7 +48,7 @@ def _year_selectors():
 
 
 def _months_selectors():
-    logger.debug("Setting months selector")
+    atm_exp_logger.debug("Setting months selector")
     st.checkbox(label="All Months", key=GHGSessionStateKeys.GHG_ALL_MONTHS)
     if not st.session_state[GHGSessionStateKeys.GHG_ALL_MONTHS]:
         st.multiselect(
@@ -67,14 +63,14 @@ def _months_selectors():
 
 
 def _vars_selectors():
-    logger.debug("Setting data variable selector")
+    atm_exp_logger.debug("Setting data variable selector")
     st.selectbox(
         label="Data variable",
         options=ghg_data_variables,
         key=GHGSessionStateKeys.GHG_DATA_VARIABLE,
     )
     if st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE] == "carbon_dioxide":
-        logger.debug("Setting satellite selector")
+        atm_exp_logger.debug("Setting satellite selector")
         st.checkbox(
             label="Include satellite observations",
             key=GHGSessionStateKeys.GHG_ADD_SATELLITE,
@@ -87,7 +83,7 @@ def _vars_selectors():
 
 
 def _selectors():
-    logger.info("Adding selection expander")
+    atm_exp_logger.info("Adding selection expander")
     with st.expander("Selection", expanded=True):
         _year_selectors()
         _months_selectors()
@@ -101,7 +97,7 @@ def _selectors():
             help="Select var_name inside dataset",
         )
         idx = var_names.index(v_name)
-        logger.debug("Setting title input")
+        atm_exp_logger.debug("Setting title input")
         title = st.text_input(
             "Plot title",
             value=ghg_data_variable_default_plot_title_mapping[
@@ -111,12 +107,13 @@ def _selectors():
     return v_name, title
 
 
-def page():
+def yearly_surface_page():
+    """Builds the Yearly Surface page."""
     _init()
     var_name, plot_title = _selectors()
     build_sidebar()
     if st.button("Generate plot"):
-        logger.info("Generating plot")
+        atm_exp_logger.info("Generating plot")
         years = [
             str(y)
             for y in range(
@@ -127,7 +124,9 @@ def page():
         months = st.session_state[GHGSessionStateKeys.GHG_MONTHS]
         shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
         data_variable = st.session_state[GHGSessionStateKeys.GHG_DATA_VARIABLE]
-        add_satellite_observations = st.session_state[GHGSessionStateKeys.GHG_ADD_SATELLITE]
+        add_satellite_observations = st.session_state[
+            GHGSessionStateKeys.GHG_ADD_SATELLITE
+        ]
         with st.container():
             with st.spinner("Downloading data and building plot"):
                 st.plotly_chart(
@@ -139,7 +138,8 @@ def page():
                         var_name=var_name,
                         shapes=shapes,
                         add_satellite_observations=(
-                            add_satellite_observations and data_variable == "carbon_dioxide"
+                            add_satellite_observations
+                            and data_variable == "carbon_dioxide"
                         ),
                     ),
                     use_container_width=True,
@@ -147,4 +147,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    yearly_surface_page()

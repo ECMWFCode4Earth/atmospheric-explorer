@@ -8,68 +8,30 @@ import os
 import pytest
 import requests.exceptions
 
-from atmospheric_explorer.api.os_manager import get_local_folder
+from atmospheric_explorer.api.local_folder import get_local_folder
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shapefile import (
+    ShapefileParameters,
     ShapefilesDownloader,
     dissolve_shapefile_level,
 )
 
 
-def test_cache():
-    assert not ShapefilesDownloader._cache
-    sh1 = ShapefilesDownloader.__new__(ShapefilesDownloader)
-    sh2 = ShapefilesDownloader.__new__(ShapefilesDownloader)
-    ShapefilesDownloader.cache(sh1)
-    ShapefilesDownloader.cache(sh2)
-    assert len(ShapefilesDownloader._cache) == 2
-    assert ShapefilesDownloader._cache[0] is sh1
-    assert ShapefilesDownloader._cache[1] is sh2
+def test_param_init():
+    sh_down = ShapefileParameters()
+    assert sh_down.resolution == "50m"
+    assert sh_down.map_type == "cultural"
+    assert sh_down.info_type == "admin"
+    assert sh_down.depth == 0
+    assert sh_down.instance == "map_subunits"
 
 
-def test_find_cache():
-    sh1 = ShapefilesDownloader(
-        resolution="10m",
-        map_type="cultural",
-        info_type="admin",
-        depth=0,
-        instance="countries",
-    )
-    assert (
-        ShapefilesDownloader.find_cache(
-            resolution="10m",
-            map_type="cultural",
-            info_type="admin",
-            depth=0,
-            instance="countries",
-        )
-        is sh1
-    )
-    assert (
-        ShapefilesDownloader.find_cache(
-            resolution="50m",
-            map_type="cultural",
-            info_type="admin",
-            depth=0,
-            instance="countries",
-        )
-        is None
-    )
-
-
-def test_is_cached():
-    sh1 = ShapefilesDownloader()
-    assert ShapefilesDownloader.is_cached(sh1)
-    assert not ShapefilesDownloader.is_cached(
-        ShapefilesDownloader.__new__(ShapefilesDownloader, instance="countries")
-    )
-
-
-def test_clear_cache():
-    ShapefilesDownloader()
-    assert len(ShapefilesDownloader._cache) > 0
-    ShapefilesDownloader.clear_cache()
-    assert not ShapefilesDownloader._cache
+def test_param_subset():
+    sh_down = ShapefileParameters()
+    sh_down2 = ShapefileParameters()
+    assert sh_down.subset(sh_down2)
+    sh_down3 = ShapefileParameters(resolution="10m")
+    assert not sh_down.subset(sh_down3)
 
 
 def test_init():

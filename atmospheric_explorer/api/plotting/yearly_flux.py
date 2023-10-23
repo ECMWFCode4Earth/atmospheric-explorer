@@ -14,11 +14,9 @@ from atmospheric_explorer.api.data_interface.ghg import (
     GHGConfig,
     InversionOptimisedGreenhouseGas,
 )
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.plot_utils import line_with_ci_subplots
 from atmospheric_explorer.api.shape_selection.shape_selection import Selection
-
-logger = get_logger("atmexp")
 
 
 def _ghg_flux_over_full_area(dataset: xr.Dataset, var_name: str):
@@ -31,8 +29,8 @@ def _ghg_flux_over_full_area(dataset: xr.Dataset, var_name: str):
 
 def _ghg_surface_satellite_yearly_data(
     data_variable: str,
-    years: list[str],
-    months: list[str],
+    years: set[str] | list[str],
+    months: set[str] | list[str],
     var_name: str,
     shapes: Selection = Selection(),
     add_satellite_observations: bool = False,
@@ -40,7 +38,7 @@ def _ghg_surface_satellite_yearly_data(
     # pylint: disable=too-many-arguments
     # pylint: disable=invalid-name
     # Download surface data file
-    logger.debug(
+    atm_exp_logger.debug(
         dedent(
             """\
             _ghg_surface_satellite_yearly_data called with arguments
@@ -133,8 +131,8 @@ def _ghg_surface_satellite_yearly_data(
 def ghg_surface_satellite_yearly_plot(
     data_variable: str,
     var_name: str,
-    years: list[str],
-    months: list[str],
+    years: set[str] | list[str],
+    months: set[str] | list[str],
     title: str,
     shapes: Selection = Selection(),
     add_satellite_observations: bool = True,
@@ -162,7 +160,7 @@ def ghg_surface_satellite_yearly_plot(
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
     # pylint: disable=invalid-name
-    logger.debug(
+    atm_exp_logger.debug(
         dedent(
             f"""\
     ghg_surface_satellite_yearly_plot called with arguments

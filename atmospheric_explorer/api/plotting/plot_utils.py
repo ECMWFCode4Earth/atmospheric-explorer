@@ -10,9 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import xarray as xr
 
-from atmospheric_explorer.api.loggers import get_logger
-
-logger = get_logger("atmexp")
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 
 
 def _base_height(n_plots):
@@ -199,12 +197,12 @@ def sequential_colorscale_bar(
     tickvals = [
         np.mean(separators[k : k + 2]) for k in range(len(separators) - 1)
     ]  # position of tick text
-    logger.debug("Separators for colorbar: %s", separators)
+    atm_exp_logger.debug("Separators for colorbar: %s", separators)
     if (separators.max() - separators.min()) < (len(separators) - 1):
         n_decimals = int(
             round(1 - log10(separators.max() / (len(separators) - 1)), 0)
         )  # number of decimals needed to distinguish color levels
-        logger.debug("Colorbar decimals: %i", n_decimals)
+        atm_exp_logger.debug("Colorbar decimals: %i", n_decimals)
         ticktext = (
             [f"<{separators[1]:.{n_decimals}f}"]
             + [
@@ -214,7 +212,7 @@ def sequential_colorscale_bar(
             + [f">{separators[-2]:.{n_decimals}f}"]
         )
     else:
-        logger.debug("Colorbar decimals: 0")
+        atm_exp_logger.debug("Colorbar decimals: 0")
         ticktext = (
             [f"<{separators[1]:.0f}"]
             + [

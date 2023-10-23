@@ -6,13 +6,11 @@ from textwrap import dedent
 import click
 
 from atmospheric_explorer.api.data_interface.eac4.eac4_config import EAC4Config
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.anomalies import eac4_anomalies_plot
 from atmospheric_explorer.api.shape_selection.config import SelectionLevel
 from atmospheric_explorer.api.shape_selection.shape_selection import EntitySelection
 from atmospheric_explorer.cli.plotting.utils import comma_separated_list
-
-logger = get_logger("atmexp")
 
 
 @click.command()
@@ -111,7 +109,7 @@ def anomalies(
         )
     entities = EntitySelection.from_entities_list(entities, level=selection_level)
     var_name = EAC4Config.get_config()["variables"][data_variable]["var_name"]
-    logger.debug(
+    atm_exp_logger.debug(
         dedent(
             """\
             Called anomalies CLI with parameters
@@ -142,7 +140,7 @@ def anomalies(
         height,
         scale,
     )
-    logger.debug("Selected variable %s", var_name)
+    atm_exp_logger.debug("Selected variable %s", var_name)
     fig = eac4_anomalies_plot(
         data_variable=data_variable,
         var_name=var_name,

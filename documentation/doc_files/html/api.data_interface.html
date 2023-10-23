@@ -46,34 +46,24 @@
 <li><a class="reference internal" href="#">api.data_interface package</a><ul>
 <li><a class="reference internal" href="#subpackages">Subpackages</a></li>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-api.data_interface.cams_interface">api.data_interface.cams_interface module</a><ul>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface</span></code></a><ul>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.clear_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.clear_data_files()</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.data_folder"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_folder</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.data_variables"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_variables</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.dataset_name"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.dataset_name</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.file_ext"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_ext</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.file_format"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_format</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.list_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.list_data_files()</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.cams_interface.CAMSDataInterface.read_dataset"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.read_dataset()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-api.data_interface.config_parser">api.data_interface.config_parser module</a><ul>
-<li><a class="reference internal" href="#api.data_interface.config_parser.ConfigMeta"><code class="docutils literal notranslate"><span class="pre">ConfigMeta</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.config_parser.OperationParser"><code class="docutils literal notranslate"><span class="pre">OperationParser</span></code></a><ul>
-<li><a class="reference internal" href="#api.data_interface.config_parser.OperationParser.allowed_ops"><code class="docutils literal notranslate"><span class="pre">OperationParser.allowed_ops</span></code></a></li>
-<li><a class="reference internal" href="#api.data_interface.config_parser.OperationParser.arithmetic_eval"><code class="docutils literal notranslate"><span class="pre">OperationParser.arithmetic_eval()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li><a class="reference internal" href="#module-api.data_interface.data_transformations">api.data_interface.data_transformations module</a><ul>
 <li><a class="reference internal" href="#api.data_interface.data_transformations.clip_and_concat_shapes"><code class="docutils literal notranslate"><span class="pre">clip_and_concat_shapes()</span></code></a></li>
 <li><a class="reference internal" href="#api.data_interface.data_transformations.confidence_interval"><code class="docutils literal notranslate"><span class="pre">confidence_interval()</span></code></a></li>
 <li><a class="reference internal" href="#api.data_interface.data_transformations.shifting_long"><code class="docutils literal notranslate"><span class="pre">shifting_long()</span></code></a></li>
 <li><a class="reference internal" href="#api.data_interface.data_transformations.split_time_dim"><code class="docutils literal notranslate"><span class="pre">split_time_dim()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.data_interface.dataset_config_parser">api.data_interface.dataset_config_parser module</a><ul>
+<li><a class="reference internal" href="#api.data_interface.dataset_config_parser.DatasetConfigParser"><code class="docutils literal notranslate"><span class="pre">DatasetConfigParser</span></code></a><ul>
+<li><a class="reference internal" href="#api.data_interface.dataset_config_parser.DatasetConfigParser.get_config"><code class="docutils literal notranslate"><span class="pre">DatasetConfigParser.get_config()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.dataset_config_parser.DatasetConfigParser.parse_factors"><code class="docutils literal notranslate"><span class="pre">DatasetConfigParser.parse_factors()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api.data_interface.dataset_config_parser.OperationParser"><code class="docutils literal notranslate"><span class="pre">OperationParser</span></code></a><ul>
+<li><a class="reference internal" href="#api.data_interface.dataset_config_parser.OperationParser.allowed_ops"><code class="docutils literal notranslate"><span class="pre">OperationParser.allowed_ops</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.dataset_config_parser.OperationParser.arithmetic_eval"><code class="docutils literal notranslate"><span class="pre">OperationParser.arithmetic_eval()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-api.data_interface">Module contents</a></li>
@@ -111,6 +101,35 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="api.data_interface.cams_interface.html">api.data_interface.cams_interface package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.cams_interface.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.cams_interface.html#module-api.data_interface.cams_interface.cams_interface">api.data_interface.cams_interface.cams_interface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.build_call_body"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.build_call_body()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.clear_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.clear_data_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.data_folder"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_folder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.dataset_name"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.dataset_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_ext"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_ext</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_format"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_format</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.list_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.list_data_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.read_dataset"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.read_dataset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.cams_interface.html#module-api.data_interface.cams_interface.cams_parameters">api.data_interface.cams_interface.cams_parameters module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_parameters.CAMSParameters"><code class="docutils literal notranslate"><span class="pre">CAMSParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_parameters.CAMSParameters.build_call_body"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.build_call_body()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_parameters.CAMSParameters.data_variables"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.data_variables</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_parameters.CAMSParameters.subset"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.subset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.cams_interface.html#api.data_interface.cams_interface.cams_parameters.CAMSParameters.other"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.other</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.cams_interface.html#module-api.data_interface.cams_interface">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.data_interface.eac4.html">api.data_interface.eac4 package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.eac4.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4">api.data_interface.eac4.eac4 module</a><ul>
@@ -121,10 +140,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.file_ext"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.file_ext</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.file_format"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.file_format</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.file_full_path"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.file_full_path</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.model_level"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.model_level</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.pressure_level"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.pressure_level</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.read_dataset"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.read_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4.EAC4Instance.time_values"><code class="docutils literal notranslate"><span class="pre">EAC4Instance.time_values</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -132,7 +148,19 @@
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4_config">api.data_interface.eac4.eac4_config module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_config.EAC4Config"><code class="docutils literal notranslate"><span class="pre">EAC4Config</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_config.EAC4Config.convert_units_array"><code class="docutils literal notranslate"><span class="pre">EAC4Config.convert_units_array()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_config.EAC4Config.get_config"><code class="docutils literal notranslate"><span class="pre">EAC4Config.get_config()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.eac4.html#module-api.data_interface.eac4.eac4_parameters">api.data_interface.eac4.eac4_parameters module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.area_issubset"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.area_issubset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.build_call_body"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.build_call_body()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.dates_issubset"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.dates_issubset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.model_issubset"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.model_issubset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.pressure_issubset"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.pressure_issubset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.subset"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.subset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.eac4.html#api.data_interface.eac4.eac4_parameters.EAC4Parameters.other"><code class="docutils literal notranslate"><span class="pre">EAC4Parameters.other</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -150,9 +178,7 @@
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg.InversionOptimisedGreenhouseGas.file_ext"><code class="docutils literal notranslate"><span class="pre">InversionOptimisedGreenhouseGas.file_ext</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg.InversionOptimisedGreenhouseGas.file_format"><code class="docutils literal notranslate"><span class="pre">InversionOptimisedGreenhouseGas.file_format</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg.InversionOptimisedGreenhouseGas.file_full_path"><code class="docutils literal notranslate"><span class="pre">InversionOptimisedGreenhouseGas.file_full_path</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg.InversionOptimisedGreenhouseGas.month"><code class="docutils literal notranslate"><span class="pre">InversionOptimisedGreenhouseGas.month</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg.InversionOptimisedGreenhouseGas.read_dataset"><code class="docutils literal notranslate"><span class="pre">InversionOptimisedGreenhouseGas.read_dataset()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg.InversionOptimisedGreenhouseGas.year"><code class="docutils literal notranslate"><span class="pre">InversionOptimisedGreenhouseGas.year</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -160,8 +186,16 @@
 <li class="toctree-l2"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg_config">api.data_interface.ghg.ghg_config module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_config.GHGConfig"><code class="docutils literal notranslate"><span class="pre">GHGConfig</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_config.GHGConfig.convert_units_array"><code class="docutils literal notranslate"><span class="pre">GHGConfig.convert_units_array()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_config.GHGConfig.get_config"><code class="docutils literal notranslate"><span class="pre">GHGConfig.get_config()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_config.GHGConfig.get_var_names"><code class="docutils literal notranslate"><span class="pre">GHGConfig.get_var_names()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.data_interface.ghg.html#module-api.data_interface.ghg.ghg_parameters">api.data_interface.ghg.ghg_parameters module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_parameters.GHGParameters"><code class="docutils literal notranslate"><span class="pre">GHGParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_parameters.GHGParameters.build_call_body"><code class="docutils literal notranslate"><span class="pre">GHGParameters.build_call_body()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_parameters.GHGParameters.subset"><code class="docutils literal notranslate"><span class="pre">GHGParameters.subset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.data_interface.ghg.html#api.data_interface.ghg.ghg_parameters.GHGParameters.other"><code class="docutils literal notranslate"><span class="pre">GHGParameters.other</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -174,101 +208,6 @@
 </section>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
-</section>
-<section id="module-api.data_interface.cams_interface">
-<span id="api-data-interface-cams-interface-module"></span><h2>api.data_interface.cams_interface module<a class="headerlink" href="#module-api.data_interface.cams_interface" title="Link to this heading"></a></h2>
-<p>This module collects classes to easily interact with data downloaded from CAMS ADS.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.cams_interface.</span></span><span class="sig-name descname"><span class="pre">CAMSDataInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>Generic interface common to all CAMS datasets.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.clear_data_files">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_data_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.clear_data_files" title="Link to this definition"></a></dt>
-<dd><p>Clears all files inside data folder.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.data_folder">
-<span class="sig-name descname"><span class="pre">data_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/luigi/.atmospheric_explorer/data'</span></em><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.data_folder" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.data_variables">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.data_variables" title="Link to this definition"></a></dt>
-<dd><p>Time values are internally represented as a set, use this property to set/get its value.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.dataset_name">
-<span class="sig-name descname"><span class="pre">dataset_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.dataset_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.file_ext">
-<span class="sig-name descname"><span class="pre">file_ext</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.file_ext" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.file_format">
-<span class="sig-name descname"><span class="pre">file_format</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.file_format" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.list_data_files">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_data_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.list_data_files" title="Link to this definition"></a></dt>
-<dd><p>Lists all files inside data folder.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="api.data_interface.cams_interface.CAMSDataInterface.read_dataset">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.cams_interface.CAMSDataInterface.read_dataset" title="Link to this definition"></a></dt>
-<dd><p>Returns the files as an xarray.Dataset.</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="module-api.data_interface.config_parser">
-<span id="api-data-interface-config-parser-module"></span><h2>api.data_interface.config_parser module<a class="headerlink" href="#module-api.data_interface.config_parser" title="Link to this heading"></a></h2>
-<p>Module to manage constants.</p>
-<p>This module defines a Singleton, in this way the file constants.cfg is loaded only once.
-The singleton pattern was taken from here
-<a class="reference external" href="https://refactoring.guru/design-patterns/singleton/python/example#example-0">https://refactoring.guru/design-patterns/singleton/python/example#example-0</a></p>
-<dl class="py class">
-<dt class="sig sig-object py" id="api.data_interface.config_parser.ConfigMeta">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.config_parser.</span></span><span class="sig-name descname"><span class="pre">ConfigMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.config_parser.ConfigMeta" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
-<p>This meta class is needed to implement a singleton pattern so that the config files are loaded only once.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="api.data_interface.config_parser.OperationParser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.config_parser.</span></span><span class="sig-name descname"><span class="pre">OperationParser</span></span><a class="headerlink" href="#api.data_interface.config_parser.OperationParser" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Parser for arithmetic operations.</p>
-<p>Code for this class was taken from
-<a class="reference external" href="https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval">https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval</a></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="api.data_interface.config_parser.OperationParser.allowed_ops">
-<span class="sig-name descname"><span class="pre">allowed_ops</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'ast.Add'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">add&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Div'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">truediv&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Mod'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">mod&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Mult'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">mul&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Sub'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">sub&gt;}</span></em><a class="headerlink" href="#api.data_interface.config_parser.OperationParser.allowed_ops" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="api.data_interface.config_parser.OperationParser.arithmetic_eval">
-<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#api.data_interface.config_parser.OperationParser.arithmetic_eval" title="Link to this definition"></a></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span></dt>
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span></dt>
-<dd><p>Parse an arithmetic operation passed as a string.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 <section id="module-api.data_interface.data_transformations">
 <span id="api-data-interface-data-transformations-module"></span><h2>api.data_interface.data_transformations module<a class="headerlink" href="#module-api.data_interface.data_transformations" title="Link to this heading"></a></h2>
@@ -296,7 +235,74 @@ The singleton pattern was taken from here
 <dl class="py function">
 <dt class="sig sig-object py" id="api.data_interface.data_transformations.split_time_dim">
 <span class="sig-prename descclassname"><span class="pre">api.data_interface.data_transformations.</span></span><span class="sig-name descname"><span class="pre">split_time_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.data_transformations.split_time_dim" title="Link to this definition"></a></dt>
-<dd><p>Split datetime dimension into times and dates.</p>
+<dd><p>Return a new dataset where the time_dim dimension is split into times and dates dimensions.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.data_interface.dataset_config_parser">
+<span id="api-data-interface-dataset-config-parser-module"></span><h2>api.data_interface.dataset_config_parser module<a class="headerlink" href="#module-api.data_interface.dataset_config_parser" title="Link to this heading"></a></h2>
+<p>Module to manage constants.</p>
+<p>This module defines a Singleton, in this way the file constants.cfg is loaded only once.
+The singleton pattern was taken from here
+<a class="reference external" href="https://refactoring.guru/design-patterns/singleton/python/example#example-0">https://refactoring.guru/design-patterns/singleton/python/example#example-0</a> .</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.data_interface.dataset_config_parser.DatasetConfigParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.dataset_config_parser.</span></span><span class="sig-name descname"><span class="pre">DatasetConfigParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.dataset_config_parser.DatasetConfigParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class implements some basic functionalities to parse a YAML file containing the configuration for a dataset.</p>
+<p>For reference, check the file atmospheric_explorer/api/data_interface/ghg/ghg_config.yaml.</p>
+<p>A dataset configuration file is <strong>expected</strong> to have data structured in the following way
+variables:</p>
+<blockquote>
+<div><dl>
+<dt>data_variable_name:</dt><dd><p>var_name: # name of the dataset column
+conversion:</p>
+<blockquote>
+<div><p>conversion_factor: …
+conversion_unit: …</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.dataset_config_parser.DatasetConfigParser.get_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#api.data_interface.dataset_config_parser.DatasetConfigParser.get_config" title="Link to this definition"></a></dt>
+<dd><p>Function to get the actual config object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.dataset_config_parser.DatasetConfigParser.parse_factors">
+<span class="sig-name descname"><span class="pre">parse_factors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.dataset_config_parser.DatasetConfigParser.parse_factors" title="Link to this definition"></a></dt>
+<dd><p>Parse conversion factors in a dataset config file.</p>
+<p>The file is <strong>expected</strong> to have a ‘conversion’ section.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.data_interface.dataset_config_parser.OperationParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.dataset_config_parser.</span></span><span class="sig-name descname"><span class="pre">OperationParser</span></span><a class="headerlink" href="#api.data_interface.dataset_config_parser.OperationParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Parser for arithmetic operations.</p>
+<p>Code for this class was taken from
+<a class="reference external" href="https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval">https://stackoverflow.com/questions/20748202/valueerror-malformed-string-when-using-ast-literal-eval</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.dataset_config_parser.OperationParser.allowed_ops">
+<span class="sig-name descname"><span class="pre">allowed_ops</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{&lt;class</span> <span class="pre">'ast.Add'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">add&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Div'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">truediv&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Mod'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">mod&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Mult'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">mul&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'ast.Sub'&gt;:</span> <span class="pre">&lt;built-in</span> <span class="pre">function</span> <span class="pre">sub&gt;}</span></em><a class="headerlink" href="#api.data_interface.dataset_config_parser.OperationParser.allowed_ops" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.dataset_config_parser.OperationParser.arithmetic_eval">
+<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#api.data_interface.dataset_config_parser.OperationParser.arithmetic_eval" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">arithmetic_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span></dt>
+<dd><p>Parse an arithmetic operation passed as a string.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>

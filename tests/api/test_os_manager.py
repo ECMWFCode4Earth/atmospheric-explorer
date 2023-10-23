@@ -5,7 +5,7 @@
 # pylint: disable=unused-argument
 import os
 
-from atmospheric_explorer.api.os_manager import get_local_folder
+from atmospheric_explorer.api.local_folder import get_local_folder
 
 
 def test_get_local_folder():

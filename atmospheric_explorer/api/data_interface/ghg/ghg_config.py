@@ -5,21 +5,20 @@ from __future__ import annotations
 
 import xarray as xr
 
-from atmospheric_explorer.api.data_interface.config_parser import ConfigMeta
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.data_interface.dataset_config_parser import (
+    DatasetConfigParser,
+)
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
+from atmospheric_explorer.api.singleton import Singleton
 
-logger = get_logger("atmexp")
 
-
-class GHGConfig(metaclass=ConfigMeta, filename="ghg/ghg_config.yaml"):
+class GHGConfig(DatasetConfigParser, metaclass=Singleton):
     # pylint: disable=too-few-public-methods
-    """This class is needed to implement a singleton pattern so that config is loaded only once."""
+    """This class is needed to implement a singleton pattern so that GHG dataset config is loaded only once."""
 
-    @classmethod
-    def get_config(cls) -> dict:
-        """Function to get the actual config object."""
-        logger.debug("Loading ghg config")
-        return cls().config
+    def __init__(self):
+        """Initialize GHGConfig instance."""
+        super().__init__(filename="ghg/ghg_config.yaml")
 
     @classmethod
     def get_var_names(
@@ -50,7 +49,7 @@ class GHGConfig(metaclass=ConfigMeta, filename="ghg/ghg_config.yaml"):
             )
         )[0]
         conv_f = float(conf["conversion"]["conversion_factor"])
-        logger.debug(
+        atm_exp_logger.debug(
             "Converting array %s to unit %s with factor %f",
             var_name,
             conf["conversion"]["convert_unit"],

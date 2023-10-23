@@ -3,11 +3,10 @@ Module for creating Anomalies plots through UI
 """
 # pylint: disable=invalid-name
 from datetime import datetime
-from textwrap import dedent
 
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.anomalies import eac4_anomalies_plot
 from atmospheric_explorer.ui.session_state import (
     EAC4AnomaliesSessionStateKeys,
@@ -20,8 +19,6 @@ from atmospheric_explorer.ui.ui_mappings import (
     eac4_times,
 )
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
-
-logger = get_logger("atmexp")
 
 
 def _init():
@@ -57,7 +54,7 @@ def _init():
 
 
 def _dates_selectors():
-    logger.debug("Setting dates selectors")
+    atm_exp_logger.debug("Setting dates selectors")
     start_date_col, end_date_col, _ = st.columns([1, 1, 3])
     start_date_col.date_input(
         label="Start date",
@@ -86,7 +83,7 @@ def _dates_selectors():
 
 
 def _times_selector():
-    logger.debug("Setting time selector")
+    atm_exp_logger.debug("Setting time selector")
     st.multiselect(
         label="Times",
         options=eac4_times,
@@ -95,11 +92,11 @@ def _times_selector():
 
 
 def _selectors():
-    logger.info("Adding selection expander")
+    atm_exp_logger.info("Adding selection expander")
     with st.expander("Selection", expanded=True):
         _dates_selectors()
         _times_selector()
-        logger.debug("Setting data variable and var name selectors")
+        atm_exp_logger.debug("Setting data variable and var name selectors")
         st.selectbox(
             label="Data variable",
             options=eac4_sl_data_variables,
@@ -109,7 +106,7 @@ def _selectors():
             st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE]
         ]
         st.text(f"Var name: {v_name}")
-        logger.debug("Setting title input")
+        atm_exp_logger.debug("Setting title input")
         title = st.text_input(
             label="Plot title",
             value=eac4_sl_data_variable_default_plot_title_mapping[
@@ -121,18 +118,25 @@ def _selectors():
     return v_name, title
 
 
-def page():
+def anomalies_page():
+    """Builds the Anomalies page."""
     _init()
     var_name, plot_title = _selectors()
     build_sidebar()
     if st.button("Generate plot"):
-        logger.info("Generating plot")
+        atm_exp_logger.info("Generating plot")
         start_date = st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_START_DATE
         ]
-        end_date = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE]
-        dates_range = f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
-        time_values = st.session_state[EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES]
+        end_date = st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_END_DATE
+        ]
+        dates_range = (
+            f"{start_date.strftime('%Y-%m-%d')}/{end_date.strftime('%Y-%m-%d')}"
+        )
+        time_values = st.session_state[
+            EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_TIMES
+        ]
         shapes = st.session_state[GeneralSessionStateKeys.SELECTED_SHAPES]
         data_variable = st.session_state[
             EAC4AnomaliesSessionStateKeys.EAC4_ANOMALIES_DATA_VARIABLE
@@ -144,9 +148,7 @@ def page():
             ref_end_date = st.session_state[
                 EAC4AnomaliesSessionStateKeys.EAC4_REFERENCE_END_DATE
             ]
-            reference_dates_range = (
-                f"{ref_start_date.strftime('%Y-%m-%d')}/{ref_end_date.strftime('%Y-%m-%d')}"
-            )
+            reference_dates_range = f"{ref_start_date.strftime('%Y-%m-%d')}/{ref_end_date.strftime('%Y-%m-%d')}"
         else:
             reference_dates_range = None
         with st.container():
@@ -166,4 +168,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    anomalies_page()

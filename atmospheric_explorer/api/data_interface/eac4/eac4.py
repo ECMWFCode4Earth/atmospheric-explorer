@@ -7,15 +7,15 @@ import os
 
 import xarray as xr
 
+from atmospheric_explorer.api.cache import Cached
 from atmospheric_explorer.api.config import CRS
 from atmospheric_explorer.api.data_interface.cams_interface import CAMSDataInterface
-from atmospheric_explorer.api.loggers import get_logger
-from atmospheric_explorer.api.os_manager import create_folder, remove_folder
+from atmospheric_explorer.api.data_interface.eac4.eac4_parameters import EAC4Parameters
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
+from atmospheric_explorer.api.os_utils import create_folder
 
-logger = get_logger("atmexp")
 
-
-class EAC4Instance(CAMSDataInterface):
+class EAC4Instance(CAMSDataInterface, Cached):
     # pylint: disable=line-too-long
     # pylint: disable=too-many-instance-attributes
     """Interface for CAMS global reanalysis (EAC4) and CAMS global reanalysis (EAC4) monthly averaged fields datasets.
@@ -28,47 +28,87 @@ class EAC4Instance(CAMSDataInterface):
     file_format = "netcdf"
     file_ext = "nc"
 
-    def __init__(
-        self,
-        data_variables: str | set[str] | list[str],
+    def __new__(
+        cls: Cached,
+        data_variables: set[str] | list[str],
         dates_range: str,
-        time_values: str | set[str] | list[str],
+        time_values: set[str] | list[str],
         files_dir: str | None = None,
         area: list[int] | None = None,
-        pressure_level: str | set[str] | list[str] | None = None,
-        model_level: str | set[str] | list[str] | None = None,
+        pressure_level: set[str] | list[str] | None = None,
+        model_level: set[str] | list[str] | None = None,
+    ):
+        """Instantiate a new EAC4Instance instance.
+
+        Attributes:
+            data_variables (set[str] | list[str]): data varaibles to be downloaded from CAMS,
+                see https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
+            dates_range (str): range of dates to consider, provided as a 'start/end' string with dates in ISO format
+            time_values (set[str] | list[str]): times in 'HH:MM' format. A set or a list of values can be provided.
+                Accepted values are [00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00]
+            files_dir (str | None): directory where to save the data. If not provided will be built using
+                a dinamically generated name
+            area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
+                [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
+            pressure_level (set[str] | list[str] | None): pressure levels to be considered for multilevel variables.
+                Can be a set or a list of levels, see documentation linked above for all possible values.
+            model_level (set[str] | list[str] | None): model levels to be considered for multilevel variables.
+                Can be a set or a list of levels, chosen in a range from 1 to 60.
+                See documentation linked above for all possible values.
+        """
+        params = EAC4Parameters(
+            data_variables=data_variables,
+            dates_range=dates_range,
+            time_values=time_values,
+            area=area,
+            pressure_level=pressure_level,
+            model_level=model_level,
+        )
+        return Cached.__new__(EAC4Instance, params)
+
+    @Cached.init_cache
+    def __init__(
+        self,
+        data_variables: set[str] | list[str],
+        dates_range: str,
+        time_values: set[str] | list[str],
+        files_dir: str | None = None,
+        area: list[int] | None = None,
+        pressure_level: set[str] | list[str] | None = None,
+        model_level: set[str] | list[str] | None = None,
     ):
         """Initializes EAC4Instance instance.
 
         Attributes:
-            data_variables (str | list[str]): data varaibles to be downloaded from CAMS,
+            data_variables (set[str] | list[str]): data varaibles to be downloaded from CAMS,
                 see https://confluence.ecmwf.int/display/CKB/CAMS%3A+Reanalysis+data+documentation#heading-CAMSglobalreanalysisEAC4Parameterlistings
-            file_format (str): format for the downloaded data, can be either 'netcdf' or 'grib'
             dates_range (str): range of dates to consider, provided as a 'start/end' string with dates in ISO format
-            time_values (str | list[str]): time in 'HH:MM' format. One value or a list of values can be provided.
+            time_values (set[str] | list[str]): times in 'HH:MM' format. A set or a list of values can be provided.
                 Accepted values are [00:00, 03:00, 06:00, 09:00, 12:00, 15:00, 18:00, 21:00]
-            filename (str | None): file where to save the data. If not provided will be built using file_format and
-                with a dinamically generated name
+            files_dir (str | None): directory where to save the data. If not provided will be built using
+                a dinamically generated name
             area (list[int]): latitude-longitude area box to be considered, provided as a list of four values
                 [NORTH, WEST, SOUTH, EAST]. If not provided, full area will be considered
-            pressure_level (str | list[str] | None): pressure levels to be considered for multilevel variables.
-                Can be a single level or a list of levels, see documentation linked above for all possible values.
-            model_level (str | list[str] | None): model levels to be considered for multilevel variables.
-                Can be a single level or a list of levels, chosen in a range from 1 to 60.
+            pressure_level (set[str] | list[str] | None): pressure levels to be considered for multilevel variables.
+                Can be a set or a list of levels, see documentation linked above for all possible values.
+            model_level (set[str] | list[str] | None): model levels to be considered for multilevel variables.
+                Can be a set or a list of levels, chosen in a range from 1 to 60.
                 See documentation linked above for all possible values.
         """
-        super().__init__(data_variables)
-        self.dates_range = dates_range
-        self.time_values = time_values
-        self.area = area
-        self.pressure_level = pressure_level
-        self.model_level = model_level
+        super().__init__()
+        self.parameters = EAC4Parameters(
+            data_variables=data_variables,
+            dates_range=dates_range,
+            time_values=time_values,
+            area=area,
+            pressure_level=pressure_level,
+            model_level=model_level,
+        )
         self.files_dirname = files_dir if files_dir is not None else f"data_{self._id}"
         self.files_dir_path = os.path.join(self.dataset_dir, self.files_dirname)
-        if os.path.exists(self.dataset_dir):
-            remove_folder(self.dataset_dir)
-        create_folder(self.files_dir_path)
-        logger.info("Created folder %s", self.files_dir_path)
+        if not os.path.exists(self.files_dir_path):
+            create_folder(self.files_dir_path)
+        atm_exp_logger.info("Created folder %s", self.files_dir_path)
 
     @property
     def file_full_path(self: EAC4Instance) -> str:
@@ -77,76 +117,14 @@ class EAC4Instance(CAMSDataInterface):
             self.files_dir_path, f"{self.files_dirname}.{self.file_ext}"
         )
 
-    @property
-    def time_values(self: EAC4Instance) -> str | list[str]:
-        """Time values are internally represented as a set, use this property to set/get its value."""
-        return (
-            list(self._time_values)
-            if isinstance(self._time_values, set)
-            else self._time_values
-        )
-
-    @time_values.setter
-    def time_values(
-        self: EAC4Instance, time_values: str | set[str] | list[str]
-    ) -> None:
-        if isinstance(time_values, list):
-            time_values = set(time_values)
-        self._time_values = time_values
-
-    @property
-    def pressure_level(self: EAC4Instance) -> str | list[str] | None:
-        """Pressure level is internally represented as a set, use this property to set/get its value."""
-        return (
-            list(self._pressure_level)
-            if isinstance(self._pressure_level, set)
-            else self._pressure_level
-        )
-
-    @pressure_level.setter
-    def pressure_level(
-        self: EAC4Instance, pressure_level: str | set[str] | list[str] | None
-    ) -> None:
-        if isinstance(pressure_level, list):
-            pressure_level = set(pressure_level)
-        self._pressure_level = pressure_level
-
-    @property
-    def model_level(self: EAC4Instance) -> str | list[str] | None:
-        """Model level is internally represented as a set, use this property to set/get its value."""
-        return (
-            list(self._model_level)
-            if isinstance(self._model_level, set)
-            else self._model_level
-        )
-
-    @model_level.setter
-    def model_level(
-        self: EAC4Instance, model_level: str | set[str] | list[str] | None
-    ) -> None:
-        if isinstance(model_level, list):
-            model_level = set(model_level)
-        self._model_level = model_level
-
-    def _build_call_body(self: EAC4Instance) -> dict:
-        """Builds the CDS API call body."""
-        call_body = super()._build_call_body()
-        call_body["date"] = self.dates_range
-        call_body["time"] = self.time_values
-        if self.area is not None:
-            call_body["area"] = self.area
-        if self.pressure_level is not None:
-            call_body["pressure_level"] = self.pressure_level
-        if self.model_level is not None:
-            call_body["model_level"] = self.model_level
-        return call_body
-
     def download(self: EAC4Instance) -> None:
         """Downloads the dataset and saves it to file specified in filename.
 
         Uses cdsapi to interact with CAMS ADS.
         """
-        return super()._download(self.file_full_path)
+        atm_exp_logger.info("Downloading dataset %s", self)
+        if not self.downloaded:
+            super()._download(self.parameters, self.file_full_path)
 
     def _simplify_dataset(self: EAC4Instance, dataset: xr.Dataset):
         return dataset.rio.write_crs(CRS)

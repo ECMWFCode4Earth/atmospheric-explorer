@@ -5,7 +5,7 @@ from pprint import pprint
 
 import click
 
-from atmospheric_explorer.api.data_interface import CAMSDataInterface
+from atmospheric_explorer.api.data_interface.cams_interface import CAMSDataInterface
 
 
 @click.group()

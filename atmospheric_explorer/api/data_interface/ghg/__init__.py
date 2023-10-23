@@ -6,3 +6,4 @@ from atmospheric_explorer.api.data_interface.ghg.ghg import (
     InversionOptimisedGreenhouseGas,
 )
 from atmospheric_explorer.api.data_interface.ghg.ghg_config import GHGConfig
+from atmospheric_explorer.api.data_interface.ghg.ghg_parameters import GHGParameters

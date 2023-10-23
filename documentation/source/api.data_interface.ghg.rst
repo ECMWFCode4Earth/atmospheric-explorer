@@ -19,7 +19,14 @@ api.data\_interface.ghg.ghg\_config module
    :members:
    :undoc-members:
    :show-inheritance:
-   :exclude-members: config
+
+api.data\_interface.ghg.ghg\_parameters module
+----------------------------------------------
+
+.. automodule:: api.data_interface.ghg.ghg_parameters
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

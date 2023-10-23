@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.data_interface.cams_interface package &mdash; Atmospheric Explorer 0.1.0.dev0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=965fac30"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Atmospheric Explorer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">api.data_interface.cams_interface package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-api.data_interface.cams_interface.cams_interface">api.data_interface.cams_interface.cams_interface module</a><ul>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface</span></code></a><ul>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.build_call_body"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.build_call_body()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.clear_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.clear_data_files()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.data_folder"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.data_folder</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.dataset_name"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.dataset_name</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_ext"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_ext</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_format"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.file_format</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.list_data_files"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.list_data_files()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.read_dataset"><code class="docutils literal notranslate"><span class="pre">CAMSDataInterface.read_dataset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.data_interface.cams_interface.cams_parameters">api.data_interface.cams_interface.cams_parameters module</a><ul>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters"><code class="docutils literal notranslate"><span class="pre">CAMSParameters</span></code></a><ul>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.build_call_body"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.build_call_body()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.data_variables"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.data_variables</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.subset"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.subset()</span></code></a></li>
+<li><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.other"><code class="docutils literal notranslate"><span class="pre">CAMSParameters.other</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-api.data_interface.cams_interface">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Atmospheric Explorer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">api.data_interface.cams_interface package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api.data_interface.cams_interface.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-data-interface-cams-interface-package">
+<h1>api.data_interface.cams_interface package<a class="headerlink" href="#api-data-interface-cams-interface-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-api.data_interface.cams_interface.cams_interface">
+<span id="api-data-interface-cams-interface-cams-interface-module"></span><h2>api.data_interface.cams_interface.cams_interface module<a class="headerlink" href="#module-api.data_interface.cams_interface.cams_interface" title="Link to this heading"></a></h2>
+<p>This module collects classes to easily interact with data downloaded from CAMS ADS.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.cams_interface.cams_interface.</span></span><span class="sig-name descname"><span class="pre">CAMSDataInterface</span></span><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Generic interface common to all CAMS datasets.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.build_call_body">
+<span class="sig-name descname"><span class="pre">build_call_body</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">CAMSParameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.build_call_body" title="Link to this definition"></a></dt>
+<dd><p>Build call body to be passed to cdsapi.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.clear_data_files">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">clear_data_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.clear_data_files" title="Link to this definition"></a></dt>
+<dd><p>Clears all files inside data folder.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.data_folder">
+<span class="sig-name descname"><span class="pre">data_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/home/luigi/.atmospheric_explorer/data'</span></em><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.data_folder" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.dataset_name">
+<span class="sig-name descname"><span class="pre">dataset_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.dataset_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_ext">
+<span class="sig-name descname"><span class="pre">file_ext</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_ext" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_format">
+<span class="sig-name descname"><span class="pre">file_format</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.file_format" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.list_data_files">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_data_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.list_data_files" title="Link to this definition"></a></dt>
+<dd><p>Lists all files inside data folder.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_interface.CAMSDataInterface.read_dataset">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.cams_interface.cams_interface.CAMSDataInterface.read_dataset" title="Link to this definition"></a></dt>
+<dd><p>Returns the files as an xarray.Dataset.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.data_interface.cams_interface.cams_parameters">
+<span id="api-data-interface-cams-interface-cams-parameters-module"></span><h2>api.data_interface.cams_interface.cams_parameters module<a class="headerlink" href="#module-api.data_interface.cams_interface.cams_parameters" title="Link to this heading"></a></h2>
+<p>This module defines a generic base class to be used for the CAMS datasets parameters.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_parameters.CAMSParameters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.data_interface.cams_interface.cams_parameters.</span></span><span class="sig-name descname"><span class="pre">CAMSParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Parameters</span></code></p>
+<p>Base class to be used for CAMS dataset parameters.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_parameters.CAMSParameters.build_call_body">
+<span class="sig-name descname"><span class="pre">build_call_body</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.build_call_body" title="Link to this definition"></a></dt>
+<dd><p>Build the CDSAPI call body.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_parameters.CAMSParameters.data_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data_variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.data_variables" title="Link to this definition"></a></dt>
+<dd><p>Time values are internally represented as a set, use this property to set/get its value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_parameters.CAMSParameters.subset">
+<span class="sig-name descname"><span class="pre">subset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters" title="api.data_interface.cams_interface.cams_parameters.CAMSParameters"><span class="pre">CAMSParameters</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.subset" title="Link to this definition"></a></dt>
+<dd><p>Return true if the parameters of this instance are equal or a subset of other.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.data_interface.cams_interface.cams_parameters.CAMSParameters.other">
+<span class="sig-name descname"><span class="pre">other</span></span><a class="headerlink" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters.other" title="Link to this definition"></a></dt>
+<dd><p>the other instance of CAMSParameters to be compared with self</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#api.data_interface.cams_interface.cams_parameters.CAMSParameters" title="api.data_interface.cams_interface.cams_parameters.CAMSParameters">CAMSParameters</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.data_interface.cams_interface">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.data_interface.cams_interface" title="Link to this heading"></a></h2>
+<p>Module containing the generic CAMS dataset interface.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Elisa Aliverti, Luigi Brancati, Giulia Fiantanese.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

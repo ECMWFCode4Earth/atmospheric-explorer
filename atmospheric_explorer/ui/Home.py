@@ -1,11 +1,9 @@
-"""\
-Main UI page
-"""
+"""Main UI page."""
 # pylint: disable=invalid-name
 
 import streamlit as st
 
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.shape_selection.config import (
     SelectionLevel,
     organizations,
@@ -18,8 +16,6 @@ from atmospheric_explorer.ui.interactive_map.interactive_map import (
 )
 from atmospheric_explorer.ui.session_state import GeneralSessionStateKeys
 from atmospheric_explorer.ui.utils import build_sidebar, page_init
-
-logger = get_logger("atmexp")
 
 
 def _init():
@@ -41,7 +37,7 @@ def _init():
 
 
 def _selectors_org():
-    logger.debug("Setting organization selectors")
+    atm_exp_logger.debug("Setting organization selectors")
     st.session_state[GeneralSessionStateKeys.SELECTED_ORGANIZATION] = st.selectbox(
         st.session_state["map_level_helper"],
         options=organizations.keys(),
@@ -58,7 +54,7 @@ def _selectors_org():
 
 
 def _selectors_no_org():
-    logger.debug("Setting non-organization selectors")
+    atm_exp_logger.debug("Setting non-organization selectors")
     if st.session_state["used_form"]:
         st.session_state[
             GeneralSessionStateKeys.SELECTED_SHAPES
@@ -86,9 +82,9 @@ def selectors():
 
     def _used_form():
         st.session_state["used_form"] = True
-        logger.debug("Set used_form in session state to True")
+        atm_exp_logger.debug("Set used_form in session state to True")
 
-    logger.debug("Setting map selectors form")
+    atm_exp_logger.debug("Setting map selectors form")
     with st.form("selectors"):
         convert = (
             st.session_state[GeneralSessionStateKeys.SELECT_ENTITIES]
@@ -119,7 +115,7 @@ def selectors():
                 """,
             )
             if convert:
-                logger.debug("Converting previous selection to EntitySelection")
+                atm_exp_logger.debug("Converting previous selection to EntitySelection")
                 st.session_state[
                     GeneralSessionStateKeys.SELECTED_SHAPES
                 ] = EntitySelection.convert_selection(
@@ -146,9 +142,10 @@ def selectors():
         )
 
 
-def page():
+def home_page():
+    """Builds the Home page."""
     _init()
-    logger.info("Starting streamlit app")
+    atm_exp_logger.info("Starting streamlit app")
     progress_bar = st.progress(0.0, "Starting app")
     st.title("Atmospheric Explorer")
     st.subheader("Geographical selection")
@@ -165,4 +162,4 @@ def page():
 
 
 if __name__ == "__main__":
-    page()
+    home_page()

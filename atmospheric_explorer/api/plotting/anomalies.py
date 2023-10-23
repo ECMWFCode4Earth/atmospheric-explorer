@@ -12,24 +12,22 @@ from atmospheric_explorer.api.data_interface.data_transformations import (
     split_time_dim,
 )
 from atmospheric_explorer.api.data_interface.eac4 import EAC4Config, EAC4Instance
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.plot_utils import line_with_ci_subplots
 from atmospheric_explorer.api.shape_selection.shape_selection import Selection
-
-logger = get_logger("atmexp")
 
 
 def _eac4_anomalies_data(
     data_variable: str,
     var_name: str,
     dates_range: str,
-    time_values: str | list[str],
+    time_values: set[str] | list[str],
     shapes: Selection = Selection(),
     resampling: str = "1MS",
 ) -> xr.Dataset:
     # pylint: disable=too-many-arguments
     data = EAC4Instance(
-        data_variables=data_variable,
+        data_variables=[data_variable],
         dates_range=dates_range,
         time_values=time_values,
     )
@@ -55,7 +53,7 @@ def eac4_anomalies_plot(
     data_variable: str,
     var_name: str,
     dates_range: str,
-    time_values: str | list[str],
+    time_values: set[str] | list[str],
     title: str,
     shapes: Selection = Selection(),
     reference_dates_range: str | None = None,
@@ -63,7 +61,7 @@ def eac4_anomalies_plot(
 ) -> go.Figure:
     """Generate a monthly anomaly plot for a quantity from the Global Reanalysis EAC4 dataset."""
     # pylint: disable=too-many-arguments
-    logger.debug(
+    atm_exp_logger.debug(
         dedent(
             """\
             Function eac4_anomalies_plot called with arguments

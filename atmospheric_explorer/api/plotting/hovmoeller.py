@@ -11,11 +11,9 @@ from atmospheric_explorer.api.data_interface.data_transformations import (
     shifting_long,
 )
 from atmospheric_explorer.api.data_interface.eac4 import EAC4Config, EAC4Instance
-from atmospheric_explorer.api.loggers import get_logger
+from atmospheric_explorer.api.loggers.loggers import atm_exp_logger
 from atmospheric_explorer.api.plotting.plot_utils import hovmoeller_plot
 from atmospheric_explorer.api.shape_selection.shape_selection import Selection
-
-logger = get_logger("atmexp")
 
 
 def _eac4_hovmoeller_data(
@@ -32,7 +30,7 @@ def _eac4_hovmoeller_data(
     data = EAC4Instance(
         data_variables=data_variable,
         dates_range=dates_range,
-        time_values=time_values,
+        time_values={time_values},
         pressure_level=pressure_level,
         model_level=model_level,
     )
@@ -74,7 +72,7 @@ def eac4_hovmoeller_plot(
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-locals
     # pylint: disable=dangerous-default-value
-    logger.debug(
+    atm_exp_logger.debug(
         dedent(
             """\
             Function eac4_hovmoeller_levels_plot called with arguments
